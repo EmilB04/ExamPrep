@@ -1,4 +1,4 @@
-# ExamPrep
+# MasterPrep
 
 A personal learning workspace for master's courses, built with React, TypeScript, Vite, Tailwind CSS v4, and Motion.
 

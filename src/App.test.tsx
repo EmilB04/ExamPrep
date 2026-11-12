@@ -73,7 +73,7 @@ it('completes the selected imported lecture and restores its recall card after r
   })
   fireEvent.click(screen.getByRole('button', { name: 'Compare explanation' }))
   fireEvent.click(screen.getByRole('button', { name: 'Complete lesson' }))
-  const saved = JSON.parse(localStorage.getItem('examprep.progress.v1')!)
+  const saved = JSON.parse(localStorage.getItem('masterprep.progress.v1')!)
   expect(Object.keys(saved.completed)).toEqual(['cs-lecture-8'])
   expect(saved.completed['cs-lecture-8'].attempts).toBe(12)
   view.unmount()

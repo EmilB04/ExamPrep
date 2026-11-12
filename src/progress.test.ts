@@ -8,6 +8,20 @@ import {
 
 afterEach(() => vi.unstubAllGlobals())
 describe('browser persistence', () => {
+  it('carries existing progress into the renamed workspace without overwriting newer data', () => {
+    const previous = { completed: {}, notes: { course: 'Existing notes' } }
+    const storage = new Map([['examprep.progress.v1', JSON.stringify(previous)]])
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => storage.get(key) ?? null,
+      setItem: (key: string, value: string) => storage.set(key, value),
+    })
+    expect(loadProgress()).toEqual(previous)
+    expect(saveProgress(loadProgress())).toBe(true)
+    expect(storage.get('masterprep.progress.v1')).toBe(JSON.stringify(previous))
+    const updated = { completed: {}, notes: { course: 'Updated notes' } }
+    saveProgress(updated)
+    expect(loadProgress()).toEqual(updated)
+  })
   it('recovers from corrupt data without breaking the workspace', () => {
     vi.stubGlobal('localStorage', { getItem: () => '{bad json' })
     expect(loadProgress()).toEqual(emptyProgress())

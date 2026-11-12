@@ -155,7 +155,7 @@ export default function App() {
           <span className="brand-mark">
             <GraduationCap size={24} />
           </span>
-          ExamPrep<span className="brand-dot">.</span>
+          MasterPrep<span className="brand-dot">.</span>
         </a>
         <div className="workspace-label">YOUR WORKSPACE</div>
         <nav aria-label="Main navigation">
@@ -715,7 +715,7 @@ export default function App() {
                         const url = URL.createObjectURL(blob)
                         const link = document.createElement('a')
                         link.href = url
-                        link.download = 'examprep-notes.md'
+                        link.download = 'masterprep-notes.md'
                         link.click()
                         URL.revokeObjectURL(url)
                       }}

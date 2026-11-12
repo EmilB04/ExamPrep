@@ -7,11 +7,15 @@ export type Progress = {
   completed: Record<string, Completion>
   notes: Record<string, string>
 }
-const key = 'examprep.progress.v1'
+const key = 'masterprep.progress.v1'
+// Read the previous storage key so existing notes and progress survive the rename.
+const legacyKey = 'examprep.progress.v1'
 export const emptyProgress = (): Progress => ({ completed: {}, notes: {} })
 export function loadProgress(): Progress {
   try {
-    const raw: unknown = JSON.parse(localStorage.getItem(key) || 'null')
+    const raw: unknown = JSON.parse(
+      localStorage.getItem(key) ?? localStorage.getItem(legacyKey) ?? 'null',
+    )
     if (!raw || typeof raw !== 'object') return emptyProgress()
     const data = raw as Partial<Progress>
     const completed = Object.fromEntries(
