@@ -1,0 +1,1223 @@
+[
+  {
+    "number": 1,
+    "title": "Introduction and Complex Systems Concepts",
+    "sourceFile": "L01_introduction-and-complex-systems-concepts.md",
+    "reading": "## 1. Course overview\n\n- **Topics across the semester:** what a complex system is; modelling of complex systems; cellular automata; network models; agent-based models; training complex systems with evolutionary algorithms; the brain as a complex system (biological neurons, biological learning, artificial neural networks); agentic AI ecosystems; bonus material.\n- **Group project:** a delivery consisting of a report and code. It counts **50 %** of the final grade. The report must be **10-15 pages**. Both the code/program and the report are evaluated. Groups of **2-3 students** (exceptions in special cases). Some lectures are used as practical \"lab sessions\". Project topics and the deadline are published on Canvas.\n- **Textbook:** Sayama, *Introduction to the Modeling and Analysis of Complex Systems* (free, open source; <https://bingdev.binghamton.edu/sayama/textbook/>). Only some parts are used: chapters 1, 2, 10; CA = 11; networks = 15, 16, 17; ABM = 19. Exercises are on the book website. Code examples: **PyCX** (<https://github.com/hsayama/PyCX>, old site <http://pycx.sourceforge.net/>).\n- **Intro material on the slides:** the *Complexity Explained* project (<https://complexityexplained.github.io/>, De Domenico, Brockmann, Camargo, Gershenson, Goldsmith, Jeschonnek, Kay, Nichele, Nicolás, Schmickl, Stella, Brandoff, Martínez Salinas, Sayama, 2019, DOI 10.17605/OSF.IO/TQGNW), a YouTube video, and a bonus paper (arXiv 2608.10218).\n\n## 2. What is a complex system?\n\n**Simple systems sit at two opposite extremes:**\n\n- **Completely correlated parts**, for example a mechanical watch: every gear is tightly linked to every other gear.\n- **Totally independent parts**, for example rolling dice: each die has nothing to do with the others.\n\nComplex systems live **between** these two extremes. Their parts are neither fully locked together nor fully independent.\n\n**Definition (from the slides):**\n\n> Complex systems are networks made of a number of components that interact with each other, typically in a nonlinear fashion. Complex systems may arise and evolve through self-organization, such that they are neither completely regular nor completely random, permitting the development of emergent behavior at macroscopic scales.\n\n**Two key concepts:**\n\n- **Emergence:** some property of a system observed at macroscopic scales is difficult to explain by the microscopic rules that drive the system. There is a non-trivial relationship between the system's properties at different scales. (Emergence happens **over scale**.)\n- **Self-organization:** the system spontaneously organizes itself, over time, to produce non-trivial macroscopic behaviour. (Self-organization happens **over time**.)\n\n**Summary of what makes a system complex:**\n\n- Small, \"simple\" components\n- Locally correlated and interacting parts\n- Self-organization (over time)\n- Emergence (over scale)\n- \"The whole is more than the sum of its parts\" (Aristotle)\n\n**Examples of self-organization:**\n\n- **Magnetization:** individual magnetic spins start randomly oriented but, under the right conditions, spontaneously align into ordered domains.\n- **Bénard rolls:** a fluid heated from below spontaneously organizes into rolling convection cells instead of conducting heat chaotically.\n\n**Properties of complex systems:**\n\n- **Non-linearity:** small changes in input do not give proportionally small changes in output.\n- **Bifurcation (chaos):** when a control parameter (for example the temperature difference) crosses a critical threshold, the system's behaviour can split into qualitatively different stable states (for example convection rolling clockwise vs. counter-clockwise).\n\n## 3. Modelling: the scientific cycle and its pitfall\n\n**Science** tries to understand the world by discovering fundamental laws that describe how it works.\n\n**The naive scientific cycle:**\n\n1. Observe a phenomenon **P**.\n2. Come up with a hypothesis **H** that explains P (H → P is always true, because you chose H that way).\n3. Derive a prediction **Q** from H (H → Q).\n4. Run an experiment to see whether Q is observed.\n   - If **not Q**, then H is wrong. Go back and formulate a new hypothesis.\n   - If **Q is observed**, this tells you *nothing* about whether H is true. Your hypothesis could still be wrong or insufficient.\n\n**The logical flaw:** this is the fallacy of *affirming the consequent*. Obtaining supportive evidence does not prove your hypothesis. You only failed to disprove it, which makes it a *well-tested* hypothesis, never a proven one.\n\n**What a model is:**\n\n- A **model** is a simplified representation of a system (verbal, conceptual, diagrammatic, physical, formal or mathematical).\n- We (cognitive beings) build models in our minds all the time.\n- **Engineering** is the effort to control or influence nature (or a system) so that something desirable happens, by creating and controlling models.\n\n**Two families of modelling approaches:**\n\n| Approach | Goal | Captures |\n|---|---|---|\n| **Descriptive modelling** | Specify the actual state of a system at one or more points in time. Examples: a photo, a miniature, a biography, regression, statistics, pattern recognition. | What the system *looks like* |\n| **Rule-based modelling** | Find dynamical rules that explain observed behaviour and predict future states. Examples: dynamical equations, first-principles theories, Darwin's theory of evolution. | How the system *will behave* |\n\n**The rule-based modelling cycle:**\n\n1. Observe the system of interest.\n2. Reflect on possible rules that could cause the observed characteristics.\n3. Derive predictions from those rules and compare them with reality.\n4. Repeat and refine until satisfied (or until you run out of time or funding).\n\nThis avoids the \"hypothesis proven\" trap because the goal is refinement, not proof. But it has its own hard step: **coming up with the right rules (step 2) is fundamentally difficult.** It is a personal process that depends on your knowledge, your cognitive thinking and your experience. There is no algorithm for it.\n\n**Why complex systems are especially hard to model:**\n\n- They have unique properties: networks, non-linearity, emergence, self-organization.\n- This pushes modelling toward **computational modelling and simulation** and **AI models (machine learning)**, because closed-form analytical models are often infeasible.\n\n## 4. What comes next in the course\n\nInteractive simulation of complex systems; cellular automata models; network models; agent-based models; evolutionary systems; and so on.\n\n## 5. Exam focus for Lecture 1\n\n- Explain simple vs. complex systems (watch vs. dice).\n- Define complex system, self-organization, emergence, and say which goes with time and which with scale.\n- Give examples of self-organization (magnetization, Bénard rolls) and explain non-linearity and bifurcation.\n- Explain the logical flaw in the naive scientific cycle (affirming the consequent).\n- Compare descriptive and rule-based modelling and describe the rule-based cycle.\n- Say why step 2 (finding rules) is hard and why complex systems push us to simulation and AI.\n\n> **Note on a simplified version:** the original chat also contains a second, beginner-friendly explanation of this lecture (analogies: watches vs. dice, ant colonies, heated liquid forming rolling patterns), written because the content felt too technical on the first pass. That version is not reproduced here.\n",
+    "questions": [
+      {
+        "id": "L1-Q1",
+        "prompt": "A mechanical watch (completely correlated parts) and rolling dice (totally independent parts) are both examples of what?",
+        "options": {
+          "a": "Complex systems",
+          "b": "Simple systems",
+          "c": "Emergent systems",
+          "d": "Self-organizing systems"
+        },
+        "correct": "b",
+        "explanation": "Both sit at opposite extremes (fully correlated vs. fully independent), which is why they are classified as 'simple' rather than complex. Complex systems live in between these extremes.",
+        "hint": "Think about where these two examples sit relative to the 'in-between' zone where complexity lives."
+      },
+      {
+        "id": "L1-Q2",
+        "prompt": "Which term describes a system spontaneously producing structured macroscopic behavior over time, without external control?",
+        "options": {
+          "a": "Emergence",
+          "b": "Bifurcation",
+          "c": "Self-organization",
+          "d": "Non-linearity"
+        },
+        "correct": "c",
+        "explanation": "Self-organization is specifically about the system organizing itself over time; emergence is about macroscopic properties being hard to explain from microscopic rules, across scales.",
+        "hint": "This one is about the time dimension, not the scale dimension."
+      },
+      {
+        "id": "L1-Q3",
+        "prompt": "In the 'naive scientific cycle' slide, what is the logical flaw when an experiment confirms your prediction Q?",
+        "options": {
+          "a": "It proves the hypothesis H is definitely true",
+          "b": "It only shows you failed to disprove H; it does not prove H is true",
+          "c": "It means the experiment was poorly designed",
+          "d": "It proves H is false"
+        },
+        "correct": "b",
+        "explanation": "Observing Q (from H -> Q) does not logically guarantee H. This is the 'affirming the consequent' fallacy. A confirmed prediction only means the hypothesis survived testing, not that it is proven.",
+        "hint": "This is a classic logical fallacy involving conditional statements."
+      },
+      {
+        "id": "L1-Q4",
+        "prompt": "Rule-based modeling primarily tries to capture...",
+        "options": {
+          "a": "What the system looks like",
+          "b": "How the system will behave",
+          "c": "Who created the system",
+          "d": "Why the system exists"
+        },
+        "correct": "b",
+        "explanation": "Rule-based modeling comes up with dynamical rules to explain and predict behavior over time. Descriptive modeling is the one that captures 'what the system looks like'.",
+        "hint": "Contrast this with descriptive modeling."
+      },
+      {
+        "id": "L1-Q5",
+        "prompt": "According to the lecture, what makes step 2 of the rule-based modeling cycle (reflecting on possible rules) fundamentally difficult?",
+        "options": {
+          "a": "It requires expensive lab equipment",
+          "b": "It is a personal, creative process dependent on your knowledge and experience; there is no fixed algorithm",
+          "c": "It always requires machine learning",
+          "d": "It can only be done by professors"
+        },
+        "correct": "b",
+        "explanation": "The slides emphasize that coming up with a model/rules is a personal process depending on your knowledge, cognitive thinking, and experience. It cannot be reduced to a formula.",
+        "hint": "Think about what factors the slide lists: knowledge, thinking style, experience..."
+      }
+    ]
+  },
+  {
+    "number": 2,
+    "title": "Interactive Simulation of Complex Systems and Introduction to Cellular Automata",
+    "sourceFile": "L02_interactive-simulation-and-cellular-automata.md",
+    "reading": "## 1. Complex systems (recap)\n\nA complex system has these characteristics:\n\n- Many small, \"simple\" components.\n- Locally correlated and interacting parts.\n- **Self-organization** is order that appears *over time*, without central control.\n- **Emergence** is properties that appear *over scale*. They exist at the macro level but not in the individual parts.\n- \"The whole is more than the sum of its parts\" (Aristotle).\n\nExamples on the slides: crowds of people, the internet, networks, neurons and ants.\n\n**Core question:** what happens when you have a huge number of dynamical components that interact in nontrivial ways? Emergence and self-organization follow from a system being made of a massive amount of interacting components.\n\n**Exam tip:** self-organization goes with time, emergence with scale. It is easy to swap them.\n\n## 2. Interactive simulation with PyCX\n\nPyCX is a library of Python examples (<https://github.com/hsayama/PyCX>). The workflow is *run, change parameters, re-run*. Every model has the same three functions: initialize, observe, update.\n\n```python\nimport pycxsimulator\nfrom pylab import *\n\ndef initialize():\n    global ...        # set the initial state\ndef observe():\n    global ...\n    cla()             # clears the visualization space\n    ...               # visualize the state\ndef update():\n    global ...        # one discrete time step\n\npycxsimulator.GUI().start(func=[initialize, observe, update])\n```\n\n**Exercise 10.6** is a random-walk particle model. There are n = 1000 particles, and each gets Gaussian noise `normal(0, sd)` in x and y per time step, with sd = 0.1. Initial positions are drawn from `normal(0, 1)`. `observe` plots with `plot(xlist, ylist, '.', alpha=0.2)`.\n\n**Interactive parameter control** uses a *parameter setter*:\n\n```python\ndef num_particles(val = n):\n    '''Number of particles. Change while the simulation is not running, then reset.'''\n    global n\n    n = int(val)\n    return val\n\npycxsimulator.GUI(parameterSetters=[num_particles]).start(func=[initialize, observe, update])\n```\n\n- The docstring is shown as the description in the GUI.\n- `n` must be changed while the simulation is stopped, and then reset. Otherwise you get an error, because the lists have the wrong length.\n\n**Exercise 10.2** (add a setter for `sd`):\n\n```python\ndef sd_param(val = sd):\n    '''Standard deviation of Gaussian noise.'''\n    global sd\n    sd = float(val)      # float, not int\n    return val\n\npycxsimulator.GUI(parameterSetters=[num_particles, sd_param]).start(func=[initialize, observe, update])\n```\n\n`sd` can be changed mid-run without a reset, because it does not change the data structures.\n\n**Simulation without PyCX** means calling the functions yourself:\n\n```python\nt = 0\ninitialize(); observe()\nfor t in range(1, 100):\n    update(); observe()    # observe can e.g. call savefig(str(t)+'.png')\n```\n\n## 3. Cellular Automata (CA)\n\n### What and why\n\n- An **automaton** is a theoretical machine that changes its internal state based on inputs and its previous state.\n- A **CA** is a set of such automata arranged on a regular spatial grid. All cells are updated **simultaneously** by the **same** state-transition function, which only looks at neighbour states.\n- A CA is the \"simplest possible universe capable of computation\". Space is a D-dimensional grid of cells (D = 1, 2, 3), and **time and space are discrete**.\n- The rules are also called an FSM (finite state machine).\n- CA were invented by **John von Neumann** (1940s) to study biological self-replication in machines and universal computers with simple rules. *Theory of Self-Reproducing Automata* was completed by Arthur Burks in 1966.\n- **Applications:** molecular dynamics, hydrodynamics, physical properties of materials, reaction-diffusion chemical processes, growth and morphogenesis, ecology and evolution of populations, traffic jams, social and economic dynamics. Computational uses: image processing, random number generation, cryptography.\n- The state-transition function can be a lookup table, a mathematical formula, a higher-level algorithm or a neural network.\n- Slide example: CA modelling two species of gastropod (Chris King, University of Auckland).\n\n### Formal definition\n\nA CA model consists of identical automata (cells or sites) uniformly arranged on lattice points in a D-dimensional discrete space (usually D = 1, 2 or 3). Each automaton is a dynamical variable whose temporal change is given by:\n\n```\ns_{t+1}(x) = F( s_t(x + x_0), s_t(x + x_1), ..., s_t(x + x_{n-1}) )\n```\n\n- `s_t(x)` is the state of the cell at position x at time t.\n- `F` is the **state-transition function**.\n- `N = {x_0, ..., x_{n-1}}` is the **neighbourhood**. It is usually centred on the cell (x_0 = 0) and local: |x_i - x_0| <= r, where r is the **radius**.\n- `s_t` as a whole (a map from position to state) is called a **configuration**, the spatial pattern the CA shows at time t.\n- Assuming spatial regularity and homogeneity was a reasonable first step because von Neumann had no empirical data on how real-world systems are connected. This is extended later with network models.\n\n### 2D neighbourhoods\n\n| Type | Cells (incl. centre) | Which |\n|---|---|---|\n| **von Neumann** | 5 | C, T, B, L, R (only up/down/left/right) |\n| **Moore** | 9 | the 8 surrounding cells plus the centre |\n\n### Properties\n\n- A **quiescent** cell stays in the same state if all its neighbours are quiescent. Anything else is **active**.\n- **Boundary conditions:**\n  - *No boundaries:* infinite space filled with quiescent cells.\n  - *Periodic:* wrap around.\n  - *Cut-off:* no neighbours at the edge.\n  - *Fixed:* a fixed state at the edge.\n- **Totalistic CA:** the transition depends only on the *sum* of the cells in the neighbourhood.\n\n### 1D: elementary CA and Rule 90\n\n- Each cell has two neighbours (radius 1), so there are 2^3 = 8 possible neighbourhood configurations. Each maps to 0 or 1, giving 2^8 = **256 elementary CA**.\n- The rule number is the output bits read as a binary number. Neighbourhoods are listed from 111 down to 000.\n- **Rule 90** (Wolfram, 1983): 90 = (01011010)_2 = 0·2^7 + 1·2^6 + 0·2^5 + 1·2^4 + 1·2^3 + 0·2^2 + 1·2^1 + 0·2^0.\n  - Outputs for 111, 110, 101, 100, 011, 010, 001, 000 are 0, 1, 0, 1, 1, 0, 1, 0.\n  - This equals **left XOR right**. A single 1 grows into a Sierpinski triangle.\n\n### 2D rule examples\n\n1. **Majority (voting) rule:** the next state is the majority in the neighbourhood. The system **self-organizes into geographically separated patches** (Fig. 11.4, Moore).\n2. **Parity (XOR) rule:** s_{t+1}(x) = (sum of s_t(x + x_i)) mod k. **Any pattern in the initial configuration replicates and propagates** (Fig. 11.5, von Neumann).\n3. **Game of Life** (John Conway, Moore neighbourhood):\n   - An alive cell with fewer than 2 alive neighbours dies (*loneliness*).\n   - An alive cell with more than 3 alive neighbours dies (*overcrowding*).\n   - An alive cell with 2 or 3 alive neighbours lives on (*happiness*).\n   - A dead cell with exactly 3 alive neighbours comes alive (*reproduction*). Otherwise it stays dead.\n\n### Slide exercises, solved\n\n**Exercise 11.1** (1D totalistic, radius 1, periodic, 16 cells, new state = round(S/3)):\n\n- S = 0 or 1 gives 0, and S = 2 or 3 gives 1. This is the majority rule.\n- States (1 = gray), grouped in fours:\n\n```\nt=0  1011 0010 1100 1010\nt=1  0111 0001 1100 0101\nt=2  1111 0001 1100 0010\nt=3  1111 0001 1100 0001\nt=4  1111 0001 1100 0001   (fixed point)\n```\n\nThis is an example of self-organization into stable blocks.\n\n**Exercise 11.2** (2D totalistic, von Neumann, infinite space, new state = round(S/5)):\n\n- S = 0, 1, 2 gives 0, and S = 3, 4, 5 gives 1. A cell becomes 1 when at least 3 of its 5 cells are 1.\n- The starting configuration is an \"H\" of 7 cells.\n- **t=1:** a plus shape (centre plus the four neighbours, 5 cells).\n- **t=2:** only the centre cell.\n- **t=3:** empty. A lone cell has S = 1 and dies, so everything is back in the quiescent state.\n\n## 4. What you should be able to do at the exam\n\n- Define complex system, self-organization and emergence, and tell them apart.\n- Explain initialize / observe / update and what a parameter setter is.\n- Define a CA (cells, grid, neighbourhood, state set, transition function, discrete time and space) and explain the formula.\n- Explain the difference between von Neumann and Moore neighbourhoods, and the four boundary conditions.\n- Compute a CA by hand, explain why there are 2^8 elementary rules, and say what 90 means in binary.\n- Know the majority, parity and Game of Life rules and the behaviour each produces.\n- Know the history: von Neumann (self-replication), Burks (1966), Wolfram (1983), Conway.\n\n**Next on the slides:** more cellular automata; network theory and network models; agent-based models and evolutionary systems; the brain and biological neural network models. Bonus: <https://oimo.io/works/life/>.\n\n> **Note:** the first version of this review was written in Norwegian; the student then asked for the identical review and quiz in English because the exam is likely in English. Only the English version is reproduced here. The student also shared a Notion page with personal notes on this lecture; Claude's suggested additions to those notes (CA formal definition, neighbourhoods/boundaries, Rule 90, the three example rules, PyCX content, the two worked exercises, historical details) are all covered above.\n",
+    "questions": [
+      {
+        "id": "L2-Q1",
+        "prompt": "In the lecture's terminology, which pairing is correct?",
+        "options": {
+          "a": "Self-organization happens over scale; emergence happens over time",
+          "b": "Self-organization happens over time; emergence happens over scale",
+          "c": "Both describe the same thing and happen over time",
+          "d": "Emergence requires a central controller; self-organization does not"
+        },
+        "correct": "b",
+        "explanation": "Self-organization is order arising over time without central control. Emergence is the appearance of macro-level properties across scales that the individual parts do not have.",
+        "hint": "Think: time vs scale."
+      },
+      {
+        "id": "L2-Q2",
+        "prompt": "In a PyCX model, what is the role of the observe() function, and why does it usually start with cla()?",
+        "options": {
+          "a": "It updates the system by one time step; cla() resets the random seed",
+          "b": "It sets the initial state; cla() declares global variables",
+          "c": "It visualizes the current state; cla() clears the previous drawing",
+          "d": "It defines model parameters; cla() closes the GUI"
+        },
+        "correct": "c",
+        "explanation": "initialize() sets the starting state, observe() draws the current state (cla() clears the visualization space first), and update() advances the system one discrete time step.",
+        "hint": ""
+      },
+      {
+        "id": "L2-Q3",
+        "prompt": "When using a PyCX parameter setter such as num_particles(val = n), what must you do when changing n?",
+        "options": {
+          "a": "Change it while the simulation is running to see the effect immediately",
+          "b": "Change it while the simulation is not running, then reset before running again",
+          "c": "Nothing special, since n is always safe to change",
+          "d": "Restart Python, since setters cannot change global variables"
+        },
+        "correct": "b",
+        "explanation": "Changing n mid-run makes the particle lists the wrong length, which causes an error. So change it while stopped and reset first.",
+        "hint": ""
+      },
+      {
+        "id": "L2-Q4",
+        "prompt": "Which statement best defines a cellular automaton (CA)?",
+        "options": {
+          "a": "A set of automata on a regular grid, updated simultaneously by one uniformly applied state-transition function that looks at neighbor states",
+          "b": "A set of agents moving freely in continuous space with random interaction partners",
+          "c": "A network of nodes with irregular connections, updated one at a time",
+          "d": "A continuous-time differential equation model on a lattice"
+        },
+        "correct": "a",
+        "explanation": "CA have discrete space (a regular grid), discrete time, identical cells, synchronous updates, and a local, uniform transition function.",
+        "hint": ""
+      },
+      {
+        "id": "L2-Q5",
+        "prompt": "How many cells are in a 2D von Neumann neighborhood versus a Moore neighborhood (both of radius 1, including the center cell)?",
+        "options": {
+          "a": "von Neumann: 4, Moore: 8",
+          "b": "von Neumann: 5, Moore: 9",
+          "c": "von Neumann: 9, Moore: 5",
+          "d": "von Neumann: 5, Moore: 8"
+        },
+        "correct": "b",
+        "explanation": "von Neumann is the center plus T, B, L, R = 5. Moore is the center plus all 8 surrounding cells = 9.",
+        "hint": ""
+      },
+      {
+        "id": "L2-Q6",
+        "prompt": "How many elementary 1D CA (binary states, radius 1) exist, and why?",
+        "options": {
+          "a": "8, because each cell has 8 neighbors",
+          "b": "64, because there are 2^6 configurations",
+          "c": "256, because there are 2^3 = 8 neighborhood configurations, each mapped to 0 or 1, giving 2^8 rules",
+          "d": "512, because there are 2^9 configurations"
+        },
+        "correct": "c",
+        "explanation": "A neighborhood of 3 binary cells has 2^3 = 8 possible configurations. Each can map to 0 or 1, so there are 2^8 = 256 rules. The rule number is the output bit string read as binary (Rule 90 = 01011010).",
+        "hint": ""
+      },
+      {
+        "id": "L2-Q7",
+        "prompt": "Rule 90 = (01011010) in binary, equivalent to new state = left XOR right. Starting from a single 1 in a quiescent (all-0) infinite row, which cells are 1 after one step?",
+        "options": {
+          "a": "Only the original center cell",
+          "b": "The center cell and both neighbors",
+          "c": "Only the two cells directly left and right of the original cell",
+          "d": "No cells (the pattern dies)"
+        },
+        "correct": "c",
+        "explanation": "The center cell sees L=0, R=0, so XOR = 0. The left neighbor sees R=1 (the original cell) and L=0, so it becomes 1, and likewise the right neighbor. Repeating this builds a Sierpinski triangle.",
+        "hint": ""
+      },
+      {
+        "id": "L2-Q8",
+        "prompt": "Exercise 11.1 uses a 1D totalistic CA with radius 1 and the rule round(S/3). A cell has neighborhood states (left, center, right) = (1, 0, 1). What is its next state?",
+        "options": {
+          "a": "0, because the center is 0",
+          "b": "1, because S = 2 and round(2/3) = 1",
+          "c": "0, because S = 2 and round(2/3) = 0",
+          "d": "1, because both neighbors are 1 and the center is ignored"
+        },
+        "correct": "b",
+        "explanation": "Totalistic means only the sum matters: S = 1+0+1 = 2, and round(0.67) = 1. The rule is equivalent to majority.",
+        "hint": ""
+      },
+      {
+        "id": "L2-Q9",
+        "prompt": "Exercise 11.2 uses a 2D totalistic CA with a von Neumann neighborhood, infinite space and the rule round(S/5). What happens to a single isolated gray cell (state 1) in a quiescent background?",
+        "options": {
+          "a": "It survives unchanged forever",
+          "b": "It spreads to all four neighbors",
+          "c": "It dies at the next step (S = 1 gives round(0.2) = 0), leaving the grid quiescent",
+          "d": "It starts oscillating between 1 and 0"
+        },
+        "correct": "c",
+        "explanation": "For the isolated cell and each of its neighbors, S = 1 and round(1/5) = 0, so everything becomes 0. The slide's H pattern ends this way too: plus shape at t=1, one cell at t=2, empty at t=3. A cell needs S >= 3 to become 1.",
+        "hint": ""
+      },
+      {
+        "id": "L2-Q10",
+        "prompt": "What typical behavior does a binary CA with a Moore neighborhood and the majority rule show, starting from a random configuration?",
+        "options": {
+          "a": "Any initial pattern replicates and propagates",
+          "b": "It self-organizes into geographically separated patches of 0s and 1s",
+          "c": "It stays random forever",
+          "d": "It always dies out to all 0s"
+        },
+        "correct": "b",
+        "explanation": "Majority rule smooths out disagreement locally, so uniform patches form and stabilize. Option A describes the parity (XOR) rule.",
+        "hint": ""
+      },
+      {
+        "id": "L2-Q11",
+        "prompt": "In Conway's Game of Life, what happens to an alive cell with 4 alive neighbors, and to a dead cell with exactly 3 alive neighbors?",
+        "options": {
+          "a": "Alive cell dies (overcrowding); dead cell comes alive (reproduction)",
+          "b": "Alive cell lives on; dead cell stays dead",
+          "c": "Alive cell dies (loneliness); dead cell stays dead",
+          "d": "Alive cell lives on (happiness); dead cell comes alive"
+        },
+        "correct": "a",
+        "explanation": "More than 3 neighbors means overcrowding, so the cell dies. Only 2 or 3 neighbors let an alive cell survive. A dead cell with exactly 3 alive neighbors is born.",
+        "hint": ""
+      },
+      {
+        "id": "L2-Q12",
+        "prompt": "Which boundary condition makes the left edge of a 1D CA treat the rightmost cell as its neighbor?",
+        "options": {
+          "a": "No boundaries (infinite quiescent space)",
+          "b": "Cut-off boundaries",
+          "c": "Fixed boundaries",
+          "d": "Periodic boundaries"
+        },
+        "correct": "d",
+        "explanation": "Periodic means wrap-around. Cut-off means no neighbors at the edge, fixed means a constant state at the edge, and no boundaries means infinite space filled with quiescent cells.",
+        "hint": ""
+      }
+    ]
+  },
+  {
+    "number": 3,
+    "title": "Cellular Automata Part 2 and Neural Cellular Automata",
+    "sourceFile": "L03_cellular-automata-part-2-and-neural-ca.md",
+    "reading": "## 1. The Hugging Face incident (motivation slide)\n\nSources on the slide: OpenAI's post \"Hugging Face incident and the road ahead\", METR's investigation (2026-08-26), and a LessWrong post on the origins of altruistic behaviour in the incident.\n\nTwo concerns about collectives of AI agents:\n\n1. A swarm's capabilities can **grow with its size**, even if each agent is individually limited.\n2. A collective can become **misaligned even when every constituent is perfectly aligned**.\n\n**Exam angle:** both are examples of **emergence**, where the global behaviour is not a property of the parts.\n\n## 2. CA simulation: the droplet / panic model\n\n- **Story:** panic spreading among people sitting in a gym after a fire alarm.\n- **Rule (Moore neighbourhood, 8 neighbours):**\n  - A normal individual becomes panicky if surrounded by **>= 4** panicky individuals.\n  - A panicky individual stays panicky if surrounded by **>= 3** panicky individuals. Otherwise it reverts to normal.\n- **Assumptions:** 2-D n x n grid (n = 100), **periodic** boundary, random initial condition (panicky with probability *p*, normal with 1 - *p*).\n- **Moore neighbourhood:** {(x', y') | x-1 <= x' <= x+1, y-1 <= y' <= y+1}.\n\n**The code (pycxsimulator), three functions:**\n\n- `initialize()` fills `config` randomly with 1 if `random() < p`, and makes an empty `nextconfig`.\n- `observe()` draws the grid with `imshow`.\n- `update()` loops over all cells and counts over dx, dy in {-1, 0, 1}, using `% n` for **periodic boundaries**. It writes `nextconfig[x,y] = 1 if count >= 4 else 0`, then swaps `config, nextconfig = nextconfig, config`.\n\nThree things the code shows, all likely exam points:\n\n- `nextconfig` is a second buffer, so the update is **synchronous**. Every cell reads the old state.\n- The count loop **includes the cell itself**. So `count >= 4` means \">= 4 panicky neighbours\" for a normal cell, and \">= 3 panicky neighbours\" for a panicky one (3 neighbours + itself = 4). One threshold implements both rules.\n- `% n` implements the periodic boundary (the grid wraps like a torus).\n\n**Results:**\n\n- **p = 0.1:** after 20 steps only a few small, stable clusters (\"droplets\") remain.\n- **p = 0.3:** clusters grow, **attach to each other**, and growth becomes unstoppable. The whole space eventually fills with panicky people.\n- The switch between these behaviours happens in a **narrow range of p**. That is a **phase transition**: *a transition of macroscopic properties of a collective system that occurs when its environmental or internal conditions are varied.*\n\n**Exercises on the slides:**\n\n- **11.3:** modify the code to simulate Game of Life from a random start.\n- **11.4:** a 2-D majority-rule CA. Explore the ratio of binary states in the initial condition, the neighbourhood radius, and the number of states.\n\nThe majority rule shows **coarsening**: the grid starts noisy, and domains grow and merge until one state dominates. The slide figure uses a 100 x 100 grid, periodic boundary, radius 5.\n\n## 3. Other CA types\n\n- **Stochastic CA:** probabilistic state-transition rules.\n- **Asynchronous CA:** cells are not all updated at once. Mechanisms are **random updating, sequential, and state-triggered**. They are deemed more robust and more applicable to real-world problems, since real systems have no global clock.\n- **Neural CA:** see sections 5-7.\n\n## 4. Example CA models\n\n### 4a. Turing patterns\n\n- 2-D grid, cells passive (0) or active (1).\n- A cell activates if enough active cells are in its **local** neighbourhood. Active cells **farther out** suppress it, with weaker influence.\n- This is **short-range activation and long-range inhibition**.\n- **Formulas:**\n  - N_a = {x' : |x'| <= R_a} and N_i = {x' : |x'| <= R_i}, with R_a < R_i.\n  - a_t(x) = w_a · sum over N_a of s_t(x + x') - w_i · sum over N_i of s_t(x + x')\n  - s_{t+1}(x) = 1 if a_t(x) > 0, else 0.\n- **Result:** blob and stripe patterns, like animal coat patterns.\n- **Exercise 11.6:** vary R_a, R_i and w_a, w_i and see how the pattern size and shape change.\n\n### 4b. Waves in excitable media\n\n- Models neural and muscle tissue, which can generate and propagate electrophysiological signals (action potentials).\n- **States:** 0 = normal, 1 = excited, 2...k = **refractory** (the cell ignores stimuli).\n- A normal cell gets excited by excited neighbours. After excitation it goes through the refractory states and back to 0.\n- The refractory period gives **directionality** to signal propagation and creates **traveling waves**.\n- **Exercise 11.7:** vary the excitation probability and the refractory period length.\n\n### 4c. Host-pathogen\n\n- **States:** 0 = empty, 1 = healthy host, 2 = infected host.\n- A healthy host grows into nearby empty sites **stochastically**.\n- A healthy host gets infected with a probability that is a **function of the number of infected neighbours**.\n- An infected host dies (immediately or after some time), leaving the site empty.\n- **Exercise 11.8:** vary the infection probability. Find the conditions for co-existence, host-wins and total extinction. Plot healthy and infected populations over time and look for temporal patterns.\n\n### 4d. Epidemic / forest fire\n\n- **States:** 0 = empty, 1 = tree, 2 = burning, 3 = char.\n- Trees are placed with probability *p*. p = 0 means no trees and p = 1 means a full forest.\n- Set one tree on fire. A tree catches fire if **at least one neighbour is burning**. A burning tree becomes char after one time step.\n- **Exercise 11.9:** compare final results for different *p*. Plot **total burned area vs p** and **time until the fire stops vs p**.\n- **Monte Carlo simulation:** run many independent replications per *p*, measure the outcome in each, and average. This gives a statistical distribution and more reliable results than a single run.\n- *Not on the slides:* burned area typically jumps sharply at a critical *p* (the percolation threshold). That is another phase transition.\n\n## 5. Why neural CA? Monolithic vs modular\n\n- Deep learning and transformers are **monolithic** networks.\n- The neocortex is built from ~2 x 10^8 **minicolumns**, many repeated local units. NCA follows this idea: one small local rule is applied everywhere.\n\n## 6. Evolved Neural CA (CA-NEAT)\n\n- S. Nichele, M. Ose, S. Risi, G. Tufte, *CA-NEAT: Evolved Compositional Pattern Producing Networks for Cellular Automata Morphogenesis and Replication*, IEEE Transactions on Cognitive and Developmental Systems, 2018.\n- The CA rule is a **CPPN** (Compositional Pattern Producing Network) **evolved with NEAT**.\n- **Pipeline:** the 5-cell neighbourhood (centre + 4) is converted from discrete to continuous, passed through the evolved CPPN, then **select max** gives the output state.\n- **Task:** morphogenesis, growing a target pattern (the \"Tricolor\" example) from a single seed cell.\n- **Outcomes:** some solutions reach a **point attractor** equal to the target. Most found **cycles** instead. Some visit the target and then drift to a different attractor.\n\n## 7. Google's Growing Neural CA\n\nSources: <https://distill.pub/2020/growing-ca/> and <https://distill.pub/2020/selforg/mnist/>. A **2-D, multichannel, continuous** CA.\n\n| Component | What it does |\n|---|---|\n| **16 channels** | Each cell holds 16 values in [0, 1]. The first 4 are R, G, B, A. The rest are hidden channels. |\n| **Moore neighbourhood** | 3 x 3 cells (9 cells). |\n| **Perception** | Depthwise convolution with **Sobel-x, Sobel-y and identity** filters, concatenated into a perception vector. This lets a cell sense gradients and its own state. |\n| **Network** | Dense-128, ReLU, Dense-16, outputting an update delta-s. |\n| **Stochastic update** | Each cell randomly updates or not, so there is **no global synchronised clock** (a random interval between updates). |\n| **Residual update** | delta-s is **added** to the current state. |\n| **Alive masking** | Cells with no sufficiently alive neighbour (alpha below 0.1) are zeroed, so empty cells do not contribute. *The slide's wording \"no alpha < 0.1\" is a typo for \"no alpha > 0.1\".* |\n\n**Three experiments:**\n\n1. **Growing:** loss is the pixelwise RGBA difference to the target image. It is applied after a **random number of steps (64-96)**.\n2. **Persistent:** you cannot just run for a very long time, so a **sample pool strategy** is used. States from earlier training iterations are re-used as seeds, and the **zygote** (initial seed) is always included. The goal is an **attractor state** that stays stable.\n3. **Regenerate:** the structure is **damaged**, and the NCA learns to regrow it.\n\n## 8. Bonus slides (explicitly *not* part of the syllabus)\n\nOnly a quick overview:\n\n- **Cart-pole NCA** (Variengien, Pontes-Filho, Glover, Nichele, *Towards Self-organized Control: Using Neural Cellular Automata to Robustly Control a Cart-pole Agent*, Innovations in Machine Intelligence 2021): the NCA grid has input cells (4 physical parameters), output cells (expected reward for Left/Right, a Q-value) and intermediate cells. It has a **growing phase** (first ~50 steps) and a **control phase**, and it recovers after damage. 9 independent runs, 1000 time steps.\n- **Neural Cellular Robot Substrate (GECCO 2022):** a single NCA that develops *and* controls a modular robot (body-brain co-evolution, light-chasing task). Pontes-Filho, Walker, Najarro, Nichele, Risi.\n- **Spiking NCA for soft robots:** best paper at the ICLR 2022 workshop \"From cells to societies, collective learning across scales\".\n- **EngramNCA** (memory transfer) and **ARC-NCA** (Abstraction and Reasoning Corpus).\n- **Quanta article:** reverse-engineering CA rules from target structures (\"self-assembly gets automated in reverse of Game of Life\").\n\n**Next weeks (from the slides):** network theory and network models; presentation of group projects; agent-based models and evolutionary systems; the brain and biological neural network models.\n\n## 9. Exam strategy\n\nExpect questions like these:\n\n- Explain the droplet rule, and why p = 0.1 vs 0.3 behave differently (phase transition).\n- Compare synchronous and asynchronous CA, and stochastic CA.\n- Describe the state diagrams of excitable media, host-pathogen and forest fire.\n- Explain short-range activation and long-range inhibition (Turing patterns).\n- Walk through the Growing NCA architecture (Sobel, dense layers, stochastic update, alive masking) and the three experiments.\n- Explain why Monte Carlo is needed.\n",
+    "questions": [
+      {
+        "id": "L3-Q1",
+        "prompt": "In the droplet/panic code, the rule is `nextconfig[x,y] = 1 if count >= 4 else 0`, where the count loop covers dx, dy in {-1,0,1}. Why does this single threshold implement both 'normal becomes panicky at >=4 neighbours' and 'panicky stays panicky at >=3 neighbours'?",
+        "options": {
+          "a": "The code has a hidden second rule for panicky cells",
+          "b": "The count includes the cell itself, so a panicky cell with 3 panicky neighbours reaches 4",
+          "c": "Periodic boundaries add one extra neighbour",
+          "d": "The swap of config and nextconfig adds one to the count"
+        },
+        "correct": "b",
+        "explanation": "The 3x3 loop includes (dx,dy) = (0,0), i.e. the cell itself. A panicky cell contributes 1 to its own count, so it needs only 3 panicky neighbours to reach count 4.",
+        "hint": "Look at which (dx, dy) pairs the nested loop visits."
+      },
+      {
+        "id": "L3-Q2",
+        "prompt": "Why does the code use two arrays, `config` and `nextconfig`, and swap them at the end of `update()`?",
+        "options": {
+          "a": "To make the update synchronous: every cell reads the old state while the new state is written separately",
+          "b": "To make the update asynchronous and random",
+          "c": "To save memory",
+          "d": "To implement the periodic boundary condition"
+        },
+        "correct": "a",
+        "explanation": "With a separate buffer, every cell's new state is computed from the same old configuration, which is a synchronous update. Updating in place would make later cells see already-updated neighbours (sequential/asynchronous behaviour).",
+        "hint": "Think about when each cell reads its neighbours."
+      },
+      {
+        "id": "L3-Q3",
+        "prompt": "With the droplet rule, p = 0.1 ends in a few small stable clusters, while p = 0.3 ends with the whole space panicky. What is this behaviour called, and what characterises it?",
+        "options": {
+          "a": "Coarsening: domains slowly merge under majority rule",
+          "b": "A phase transition: macroscopic behaviour changes abruptly in a narrow range of p",
+          "c": "Monte Carlo sampling: results vary randomly between runs",
+          "d": "Asynchronous updating: cells update at random times"
+        },
+        "correct": "b",
+        "explanation": "A phase transition is a change in the macroscopic properties of a collective system when conditions (here the initial density p) are varied. The switch happens within a rather narrow range of p.",
+        "hint": ""
+      },
+      {
+        "id": "L3-Q4",
+        "prompt": "Which of these is NOT listed on the slides as an asynchronous updating mechanism?",
+        "options": {
+          "a": "Random updating",
+          "b": "Sequential",
+          "c": "State triggered",
+          "d": "Gradient-based"
+        },
+        "correct": "d",
+        "explanation": "The slides list random updating, sequential and state-triggered. Asynchronous CA are deemed more robust and applicable to real-world problems because there is no global clock.",
+        "hint": ""
+      },
+      {
+        "id": "L3-Q5",
+        "prompt": "What produces Turing patterns in the CA model?",
+        "options": {
+          "a": "Long-range activation and short-range inhibition",
+          "b": "Short-range activation and long-range inhibition",
+          "c": "A refractory period after activation",
+          "d": "Stochastic infection probability"
+        },
+        "correct": "b",
+        "explanation": "Active cells in the small neighbourhood R_a promote activation (weight w_a). Active cells in the larger neighbourhood R_i suppress it (weight w_i). The sign of a_t(x) decides s_{t+1}.",
+        "hint": "Reverse it."
+      },
+      {
+        "id": "L3-Q6",
+        "prompt": "In the excitable-media model, what is the role of the refractory states (2...k)?",
+        "options": {
+          "a": "They let cells grow into empty sites",
+          "b": "They make cells permanently inactive",
+          "c": "A recently excited cell ignores stimuli, which gives the signal a direction and creates traveling waves",
+          "d": "They represent dead cells"
+        },
+        "correct": "c",
+        "explanation": "Once excited, a cell cannot respond to further stimuli during the refractory period. The wave therefore moves forward into non-refractory cells instead of back where it came from.",
+        "hint": "Think about why the wave cannot go backwards."
+      },
+      {
+        "id": "L3-Q7",
+        "prompt": "In the host-pathogen model, what determines whether a healthy host (1) becomes infected (2)?",
+        "options": {
+          "a": "A probability that depends on the number of infected hosts in its neighbourhood",
+          "b": "Any single infected neighbour guarantees infection",
+          "c": "Random chance independent of neighbours",
+          "d": "The age of the host"
+        },
+        "correct": "a",
+        "explanation": "Infection is stochastic, with a probability given by a function of the number of infected neighbours. Infected hosts then die, leaving empty sites.",
+        "hint": ""
+      },
+      {
+        "id": "L3-Q8",
+        "prompt": "In the forest-fire exercise you are told to run many independent simulations per value of p and average them. What is this method called, and why is it used?",
+        "options": {
+          "a": "Majority rule: to find the dominant state",
+          "b": "Coarsening: to speed up the fire",
+          "c": "Phase averaging: to remove the phase transition",
+          "d": "Monte Carlo simulation: random sampling over many replications gives more reliable statistics than a single run"
+        },
+        "correct": "d",
+        "explanation": "Each run uses a random initial forest. Averaging an outcome (burned area, time to stop) over many replications gives a distribution and a more reliable estimate.",
+        "hint": "Think about why one random run is unreliable."
+      },
+      {
+        "id": "L3-Q9",
+        "prompt": "In Google's Growing Neural CA, what do the Sobel-x and Sobel-y filters provide to the cell?",
+        "options": {
+          "a": "The cell's own colour",
+          "b": "The random update mask",
+          "c": "An estimate of the local gradient of the channels, so the cell can sense its surroundings' direction and structure",
+          "d": "The loss value"
+        },
+        "correct": "c",
+        "explanation": "A cell only sees its 3x3 Moore neighbourhood. The Sobel filters give gradients, and the identity filter gives its own state. Together they form the perception vector that feeds the Dense-128, ReLU, Dense-16 network.",
+        "hint": "Think about what a Sobel filter computes."
+      },
+      {
+        "id": "L3-Q10",
+        "prompt": "Why is the update rule in the Growing NCA made stochastic?",
+        "options": {
+          "a": "To avoid needing a global synchronised clock: each cell updates at a 'random' interval",
+          "b": "To make the loss lower",
+          "c": "To increase the number of channels",
+          "d": "To remove empty cells"
+        },
+        "correct": "a",
+        "explanation": "Stochastic updating makes the model asynchronous, so cells do not rely on a global clock. Removing empty cells from the computation is the job of alive masking.",
+        "hint": ""
+      },
+      {
+        "id": "L3-Q11",
+        "prompt": "What is the purpose of the sample pool strategy in Experiment 2 (Persistent)?",
+        "options": {
+          "a": "To train on many different target images",
+          "b": "To avoid running very long simulations: previous states (plus always the zygote) are re-used as seeds so the NCA learns a stable attractor",
+          "c": "To damage the seed structure",
+          "d": "To reduce the number of channels"
+        },
+        "correct": "b",
+        "explanation": "You cannot simply run for very long periods during training. Seeding from earlier training states, while always including the zygote, teaches the NCA to keep the pattern stable (an attractor) and still grow from scratch.",
+        "hint": "Think about how to train for long-term stability cheaply."
+      },
+      {
+        "id": "L3-Q12",
+        "prompt": "Which pair of statements correctly summarises the Hugging Face incident concerns on the slide?",
+        "options": {
+          "a": "Larger swarms always become less capable, and aligned agents stay aligned",
+          "b": "Agents must be centralised, and individual capability decides collective capability",
+          "c": "A swarm's capabilities can grow with its size despite limited individual agents, and a collective can be misaligned even if all its constituents are aligned",
+          "d": "Misalignment only occurs when at least one agent is misaligned"
+        },
+        "correct": "c",
+        "explanation": "Both concerns are about emergence: collective capability and collective alignment are not simple sums of the parts.",
+        "hint": ""
+      }
+    ]
+  },
+  {
+    "number": 4,
+    "title": "Network Models Part 1",
+    "sourceFile": "L04_network-models-part-1.md",
+    "reading": "## 1. Why networks?\n\n- Networks are one of the newest developments in complex systems science, used in biology, ecology, sociology, economics, political science, management science, engineering, medicine and more (social, artificial neural, telecommunication and gene regulatory networks).\n- **Two differences from cellular automata (CA):**\n  1. Connectivity is **not uniform or regular**. Some nodes are very well connected and others are not, which makes the mathematics harder.\n  2. The **number of components can change** over time in some dynamical network models.\n- **Definition:** a network (graph) is a set of **nodes** (vertices, actors) plus a set of **edges** (links, ties).\n- **Neighbour:** node *j* is a neighbour of *i* if and only if *i* is connected to *j*.\n\n## 2. Representing a network\n\n| Representation | What it is |\n|---|---|\n| **Adjacency matrix** | Matrix where a_ij = 1 if *i* and *j* are neighbours, else 0 |\n| **Adjacency list** | For each node, the list of its neighbours (for example 3 -> {1, 2, 4}) |\n\n- **Undirected graph:** the matrix is always **symmetric**.\n- **Directed graph:** the matrix is generally **asymmetric**.\n- **Weighted graph:** the matrix holds the weights instead of 0/1.\n\n## 3. Vocabulary to know cold\n\n- **Degree** deg(*i*): the number of edges at a node. **Node strength:** the sum of the weights of a node's edges, which equals the degree in unweighted graphs.\n- **Walk:** a sequence of connected edges.\n  - **Trail:** a walk with no repeated *edge*.\n  - **Path:** a walk with no repeated *node* (so no repeated edge either).\n  - **Cycle:** a walk that starts and ends at the same node, with no other repeated node.\n- **Subgraph:** part of the graph.\n- **Connected graph:** a path exists between every pair of nodes.\n- **Connected component:** a subgraph that is connected internally but not to the rest of the graph.\n\n**Named graph types:**\n\n- **Complete:** every pair of nodes is connected.\n- **Regular:** all nodes have the same degree. Every complete graph is regular.\n- **Bipartite (n-partite):** nodes split into groups with no edge inside a group.\n- **Tree:** no cycles. A forest is made of several trees. Every tree or forest is bipartite and planar.\n- **Planar:** can be drawn in 2D with no edge crossings.\n\n**Edge types:**\n\n- **Undirected / directed:** symmetric or one-way.\n- **Unweighted / weighted:** whether edges carry a value.\n- **Multiple edges:** two nodes connected more than once.\n- **Self-loop:** an edge from a node to itself.\n- **Simple graph:** no directed, weighted or multiple edges and no self-loops.\n- **Multigraph:** may contain multiple edges.\n- **Hyperedge:** connects any number of nodes (hypergraph, not covered in the textbook).\n\n## 4. NetworkX (Python)\n\n- **Classes:**\n  - `Graph`: undirected simple graph (self-loops allowed).\n  - `DiGraph`: directed simple graph.\n  - `MultiGraph`: undirected, multiple edges allowed.\n  - `MultiDiGraph`: directed, multiple edges allowed.\n- **Building a graph:** `add_node`, `add_nodes_from`, `add_edge`, `add_edges_from`, `remove_edge`, `remove_node`. Undefined nodes are created automatically when you add an edge. Removing a node removes its edges too.\n- **Inspecting:** `g`, `g.nodes()`, `g.edges()`, node and edge attributes.\n- **Ready-made graphs:** `complete_graph(5)`, `complete_bipartite_graph(3,4)`, `karate_club_graph()`.\n- **Zachary's Karate Club:** the classic social network of friendships among 34 members of a karate club at a US university, reported by Wayne Zachary in the 1970s.\n- **Random graphs:**\n  - `gnm_random_graph(n, m)`: n nodes, m edges.\n  - `gnp_random_graph(n, p)`: n nodes, edge probability p.\n  - `random_regular_graph(d, n)`: n nodes, all of degree d.\n  - `random_degree_sequence_graph([...])`: a given degree sequence.\n- **Drawing:** `nx.draw(g)` with layouts (random, circular, spectral, shell, spring), plus node names, shapes, sizes and colours.\n- **Import/export:** `nx.read_adjlist('file.csv', delimiter=',')`.\n- **Version note:** the slide code uses the old API (`g.node[i]`, `g.edge`). In current NetworkX use `g.nodes[i]` and `g.edges`. The exam is conceptual, but this matters for projects.\n\n## 5. Three kinds of dynamical network models\n\n| Type | What changes |\n|---|---|\n| **Dynamics ON networks** | Node **states** change over time through interactions with connected nodes. Topology is **fixed**. |\n| **Dynamics OF networks** | The **topology** changes over time (to study what creates topologies, robustness and vulnerability, or how to improve properties). |\n| **Adaptive networks** | **Both**, co-evolving: states and topology adapt to each other. Many real-world systems behave like this. |\n\n## 6. Simulating dynamics on networks\n\nImplementation is very similar to CA, and often easier because neighbours are well defined. All of these use the same `initialize` / `observe` / `update` structure, run with PyCX.\n\n### Local majority rule (`net-majority.py`)\n\n- Nodes are individuals, edges are symmetric information-sharing links, and states are 0 or 1, initially random.\n- Each node adopts the majority state in its **local neighbourhood, including itself**.\n- Updates are **synchronous**, so you need a `nextg` copy of the graph.\n- ratio = count / (degree + 1). If ratio > 0.5 the state becomes 1, if < 0.5 it becomes 0, and on a tie it is **random**.\n- Result on the karate club: **two groups of different states form**.\n\n### Voter model (discrete state/time model 1)\n\n- A revision of the majority rule that is **asynchronous**: only **one opinion transfer per step**.\n- Each node (\"voter\") holds one of a finite set of discrete states (for example a political opinion, red vs. blue).\n- Variants:\n  - **Original (pull):** pick a random *listener*, then a random *speaker* from its neighbours, and the listener copies the speaker.\n  - **Reversed (push):** pick a random *speaker*, then a random *listener* from its neighbours.\n  - **Edge-based (symmetric):** pick a random edge, then randomly assign its endpoints as speaker and listener.\n- Code core (pull): `listener = choice(nodes)`, `speaker = choice(neighbors(listener))`, then `state[listener] = state[speaker]`.\n\n### Epidemic model: SIS (discrete state/time model 2)\n\n- Two states: **Susceptible** and **Infected**.\n- **p_i** is the infection probability, with infection coming from infected neighbours. **p_r** is the recovery probability.\n- An infected node stays infected with probability 1 - p_r. After recovery it is **susceptible again** (hence SIS). The alternative is **SIR**, where recovered nodes are removed or immune.\n- Exercises 16.4 and 16.5 ask: vary p_i or p_r while fixing the other at 0.5. When does the disease persist (a \"pandemic\")? Is the transition gradual or sharp? How do network size and topology change this? (The lecture slides do not give answers, so run the simulation.)\n\n## 7. Worked Exercise 15.1 (graph from the slide)\n\n**Edges:** 1-2, 1-4, 1-5, 2-3, 2-4, 3-4, 3-5, 3-6, 4-6.\n\n**1. Adjacency list:**\n\n- 1 -> {2, 4, 5}\n- 2 -> {1, 3, 4}\n- 3 -> {2, 4, 5, 6}\n- 4 -> {1, 2, 3, 6}\n- 5 -> {1, 3}\n- 6 -> {3, 4}\n\n**Adjacency matrix** (rows and columns 1 to 6):\n\n```\n1: 0 1 0 1 1 0\n2: 1 0 1 1 0 0\n3: 0 1 0 1 1 1\n4: 1 1 1 0 0 1\n5: 1 0 1 0 0 0\n6: 0 0 1 1 0 0\n```\n\nIt is symmetric because the graph is undirected.\n\n**2. Degrees:** deg(1)=3, deg(2)=3, deg(3)=4, deg(4)=4, deg(5)=2, deg(6)=2. The sum is 18, which is 2 x 9 edges. This is a handy sanity check.\n\n**3. Walk classification:**\n\n- 6-3-2-4-2-1: edge 2-4 is used twice and node 2 is repeated, so it is **just a walk (other)**.\n- 1-4-6-3-2: no repeated node, so it is a **path** (and therefore also a trail).\n- 5-1-2-3-5: starts and ends at 5 with no other repeats, so it is a **cycle**.\n\n**4. Triangles:** {1,2,4}, {2,3,4} and {3,4,6}, so **3**. Check: {1,3,5} fails because 1-3 is not an edge.\n\n**5. Remove nodes 3 and 4:** the edges 5-1 and 1-2 remain. The components are **{1,2,5}** and **{6}**, so 2 components.\n\n## 8. Bonus material (not in syllabus)\n\nGraph neural cellular automata (arXiv 2110.14237 and a blog post by Daniele Grattarola), a 2026 arXiv paper (2604.21446), and Stephen Wolfram's \"Finally we may have a path to the fundamental theory of physics\" (2020).\n\n## 9. Exam strategy\n\n- Be ready to **draw or convert** a graph to a matrix or list, compute degrees, and classify walks. These are the typical hands-on tasks.\n- Know **dynamics on / of / adaptive** and give an example of each.\n- Be able to explain **majority rule vs voter model** (synchronous vs asynchronous, deterministic vs random) and the **SIS parameters**.\n",
+    "questions": [
+      {
+        "id": "L4-Q1",
+        "prompt": "Which is a key difference between network models and cellular automata?",
+        "options": {
+          "a": "Networks always have a fixed number of components",
+          "b": "Network components may be connected non-uniformly, with some nodes well connected and others not",
+          "c": "Networks cannot have states on their components",
+          "d": "Networks must be drawn on a regular grid"
+        },
+        "correct": "b",
+        "explanation": "CA cells sit on regular homogeneous grids. Networks can have very uneven connectivity, which makes mathematical analysis harder, and the number of nodes can change in some dynamical models.",
+        "hint": "Think about regular grids vs irregular connectivity."
+      },
+      {
+        "id": "L4-Q2",
+        "prompt": "The adjacency matrix of an UNDIRECTED, unweighted graph is:",
+        "options": {
+          "a": "Always symmetric and contains only 0s and 1s",
+          "b": "Generally asymmetric",
+          "c": "Symmetric, with weights as entries",
+          "d": "Always diagonal"
+        },
+        "correct": "a",
+        "explanation": "If i is a neighbor of j then j is a neighbor of i, so a_ij = a_ji (symmetric). Unweighted means entries are only 0 or 1. Directed graphs generally give asymmetric matrices.",
+        "hint": "Does the connection go both ways?"
+      },
+      {
+        "id": "L4-Q3",
+        "prompt": "In Exercise 15.1 (edges: 1-2, 1-4, 1-5, 2-3, 2-4, 3-4, 3-5, 3-6, 4-6), which nodes have the highest degree?",
+        "options": {
+          "a": "Nodes 1 and 2 (degree 3)",
+          "b": "Nodes 5 and 6 (degree 2)",
+          "c": "Only node 3 (degree 4)",
+          "d": "Nodes 3 and 4 (degree 4)"
+        },
+        "correct": "d",
+        "explanation": "deg(3) = |{2,4,5,6}| = 4 and deg(4) = |{1,2,3,6}| = 4. The degrees sum to 18 = 2 x 9 edges.",
+        "hint": "Count each node's neighbors."
+      },
+      {
+        "id": "L4-Q4",
+        "prompt": "Classify the walk 5 -> 1 -> 2 -> 3 -> 5.",
+        "options": {
+          "a": "Path (but not a cycle)",
+          "b": "Cycle",
+          "c": "A walk that is not a trail",
+          "d": "Not a valid walk"
+        },
+        "correct": "b",
+        "explanation": "It starts and ends at node 5 and goes through no other node more than once, which is the definition of a cycle. All the edges 5-1, 1-2, 2-3, 3-5 exist.",
+        "hint": "Where does it start and end?"
+      },
+      {
+        "id": "L4-Q5",
+        "prompt": "How many triangles (fully connected 3-node subgraphs) are in the Exercise 15.1 graph?",
+        "options": {
+          "a": "3: {1,2,4}, {2,3,4}, {3,4,6}",
+          "b": "2",
+          "c": "4",
+          "d": "1"
+        },
+        "correct": "a",
+        "explanation": "{1,2,4}, {2,3,4} and {3,4,6} are the only triples where all three edges exist. {1,3,5} fails because 1-3 is not an edge.",
+        "hint": "Check every triple whose three edges all exist."
+      },
+      {
+        "id": "L4-Q6",
+        "prompt": "After removing nodes 3 and 4 (and their edges) from the Exercise 15.1 graph, how many connected components remain?",
+        "options": {
+          "a": "1",
+          "b": "2: {1,2,5} and {6}",
+          "c": "3",
+          "d": "4"
+        },
+        "correct": "b",
+        "explanation": "Remaining edges are 5-1 and 1-2, so {1,2,5} is connected. Node 6 only connected to 3 and 4, so it becomes isolated.",
+        "hint": "Which edges survive? Where does node 6 connect?"
+      },
+      {
+        "id": "L4-Q7",
+        "prompt": "Which statement about special graph types is correct?",
+        "options": {
+          "a": "Every regular graph is complete",
+          "b": "A tree can contain cycles",
+          "c": "Every complete graph is regular",
+          "d": "Planar graphs must have no nodes of degree above 2"
+        },
+        "correct": "c",
+        "explanation": "In a complete graph every node connects to all others, so all nodes have the same degree. The converse is false (for example a ring is regular but not complete). Trees have no cycles. Planar only means it can be drawn without crossings.",
+        "hint": "Which property implies the other?"
+      },
+      {
+        "id": "L4-Q8",
+        "prompt": "Which NetworkX class should you use for an UNDIRECTED graph where two nodes can be connected by multiple edges?",
+        "options": {
+          "a": "nx.Graph",
+          "b": "nx.DiGraph",
+          "c": "nx.MultiDiGraph",
+          "d": "nx.MultiGraph"
+        },
+        "correct": "d",
+        "explanation": "Graph = undirected simple, DiGraph = directed simple, MultiGraph = undirected with multiple edges, MultiDiGraph = directed with multiple edges.",
+        "hint": "Two properties: direction and multiplicity."
+      },
+      {
+        "id": "L4-Q9",
+        "prompt": "A model where each person's opinion depends on friends, AND people also cut or form friendships depending on opinions, is best called:",
+        "options": {
+          "a": "Dynamics ON networks",
+          "b": "Dynamics OF networks",
+          "c": "An adaptive network model",
+          "d": "A static network model"
+        },
+        "correct": "c",
+        "explanation": "Adaptive networks describe the co-evolution of node states and network topology, with each adapting to the other.",
+        "hint": "Both states and links change."
+      },
+      {
+        "id": "L4-Q10",
+        "prompt": "In the local majority rule simulation (net-majority.py), which statement is correct?",
+        "options": {
+          "a": "One random node updates per step",
+          "b": "All nodes update simultaneously, using their own state plus neighbors' states, and ties are broken randomly",
+          "c": "Nodes copy exactly one randomly chosen neighbor",
+          "d": "The topology is rewired every step"
+        },
+        "correct": "b",
+        "explanation": "The update is synchronous (hence the nextg copy). Each node counts its own state and its neighbors', with ratio = count/(degree+1). If the ratio is exactly 0.5 the new state is random.",
+        "hint": "Why does the code need both g and nextg?"
+      },
+      {
+        "id": "L4-Q11",
+        "prompt": "What distinguishes the voter model (original/pull version) from the local majority rule?",
+        "options": {
+          "a": "Only one random listener updates per step, by copying a randomly chosen neighbor (asynchronous)",
+          "b": "It updates all nodes simultaneously",
+          "c": "It uses continuous states only",
+          "d": "It requires a directed graph"
+        },
+        "correct": "a",
+        "explanation": "The voter model is asynchronous: one opinion-transfer event per step. In the pull version a random listener is chosen, then a random speaker from the listener's neighbors, and the listener copies the speaker's state.",
+        "hint": "Synchronous vs asynchronous."
+      },
+      {
+        "id": "L4-Q12",
+        "prompt": "In the SIS epidemic model, what happens when an infected node recovers?",
+        "options": {
+          "a": "It becomes permanently immune",
+          "b": "It is removed from the network",
+          "c": "It becomes susceptible again and can be reinfected",
+          "d": "It becomes infected with probability p_i"
+        },
+        "correct": "c",
+        "explanation": "SIS = Susceptible-Infected-Susceptible. Recovery (probability p_r) returns the node to the susceptible state. In the SIR alternative, recovered nodes are no longer susceptible.",
+        "hint": "Read the name: S-I-S."
+      }
+    ]
+  },
+  {
+    "number": 5,
+    "title": "Network Models Part 2",
+    "sourceFile": "L05_network-models-part-2.md",
+    "reading": "The lecture has three parts: simulating dynamics on and of networks, then measuring networks with NetworkX.\n\n## 1. Three kinds of dynamical network models\n\n| Type | What changes | Topology |\n|---|---|---|\n| **Dynamics ON networks** | Node states change through interactions with neighbours | Fixed |\n| **Dynamics OF networks** | The topology itself changes (to understand how topologies form, test robustness, or improve properties) | Changing |\n| **Adaptive networks** | Both, co-evolving: states affect links and links affect states | Changing |\n\n**Exam tip:** be able to give one example of each. The adaptive epidemic model is the standard adaptive example.\n\n## 2. Simulating dynamics on networks\n\nImplementation is very similar to cellular automata (CA), but \"neighbours\" are simpler to define on a network: they are the nodes connected by edges.\n\n**Local majority rule (social network):**\n\n- Nodes are individuals and edges are symmetric information-sharing links.\n- Each state is 0 or 1, and initial states are random.\n- Each node adopts the majority state in its neighbourhood, which includes itself.\n- All nodes update **simultaneously**.\n\n**SIS epidemic model** (discrete state and time):\n\n- A **Susceptible** node is infected with probability **p_i** through infected neighbours.\n- An **Infected** node recovers with probability **p_r**, and stays infected with 1 - p_r.\n- A recovered node becomes **susceptible again**, so there is no immunity. In the **SIR** alternative, recovered nodes are immune.\n- Book exercises:\n  - **16.4:** vary p_i or p_r while fixing the other at 0.5, and find the condition under which the disease persists indefinitely. Check whether the transition is gradual or sharp.\n  - **16.5:** try a larger network and other topologies, and see how size and topology affect persistence.\n\n**Diffusion model** (continuous state and time):\n\n- Each node's state moves toward its neighbours' average.\n- The update is: `new c_i = c_i + alpha · (sum_j c_j - c_i · deg(i)) · dt`\n- The term in parentheses is the sum over neighbours of (c_j - c_i). The state flows from high to low, like heat.\n- **alpha** is the diffusion constant and **dt** is the time step. Over time all states converge toward gray, a common value.\n\n## 3. Simulating dynamics of networks\n\n1. **Small-world networks** are made by **random edge rewiring**. Start with a ring-like regular network and randomly rewire edges, which gives short paths while keeping high clustering.\n2. **Scale-free networks** are made by **preferential attachment** (Barabási-Albert). New nodes prefer to connect to nodes that already have many links (\"the rich get richer\"). This gives a **power-law degree distribution** P(k) ~ k^(-gamma) (gamma = 3 in the lecture figure). It looks like a **straight line on log-log axes**, while on linear axes it is a steep drop with a long tail.\n\n## 4. Adaptive networks\n\n- **Adaptive SIS:** people avoid sick friends, so behaviour changes the topology, which changes how the disease spreads. A new parameter **p_s** controls how readily susceptible nodes cut links to infected neighbours. In Sayama's model they cut the link and rewire elsewhere. **Exercise 16.19** varies p_s (with p_i = 0.5, p_r = 0.2) to find when the disease is **eradicated**, then compares random, small-world and scale-free topologies. *(Open point flagged in the original chat: the exact mechanism of link cutting/rewiring in the adaptive SIS model should be verified against the book's Code 16.15.)*\n- **Adaptive diffusion:** edge weights get **stronger or weaker depending on the state difference across the edge**. This models **homophily**, the tendency to connect with similar others. Result: the network splits into **separate clusters**, each with its own state (the figure shows a white group and a black group).\n\n## 5. Network measures (NetworkX)\n\n**Size and density**\n\n- Size is the number of nodes n and edges m. The karate club graph has n = 34, m = 78.\n- **Density** is the fraction of possible edges that exist: **rho = 2m / (n(n-1))** for undirected networks and **m / (n(n-1))** for directed ones. Karate club rho ≈ 0.139.\n- Size and density do **not** determine topology: many different topologies share the same size and density.\n\n**Percolation and giant components**\n\n- Erdős-Rényi random graph: n nodes, each pair connected with probability p.\n- A **giant component** is a connected component whose size is of the same order as the whole network.\n- **Network percolation** is the appearance of a giant component, which happens when the **average degree is above 1**.\n- In the n = 100 experiment, the transition happens at about **p ≈ 10^-2**. It goes from isolated nodes (p = 0.0001) to one giant network (p = 0.1).\n\n**Shortest paths**\n\n- d(i->j) is the shortest path length. It is symmetric in undirected networks but not in general for directed ones.\n- Example: `nx.shortest_path_length(g, 16, 25)` gives 4, and the path is [16, 5, 0, 31, 25].\n- **Characteristic path length** L = sum of d(i->j) / (n(n-1)), the average shortest path over all node pairs.\n- **Eccentricity** eps(i) = max_j d(i->j), the distance to the farthest node.\n- **Diameter** D = max eccentricity. Nodes with eps = D are **peripheries**.\n- **Radius** R = min eccentricity. Nodes with eps = R are **centres**.\n\n**Centrality** (who is most important?)\n\n- **Degree centrality:** c_D(i) = deg(i) / (n-1)\n- **Betweenness:** the probability that the shortest path between two random nodes passes through node i\n- **Closeness** and **eigenvector** centrality\n- **PageRank:** a variation of eigenvector centrality (Page and Brin, Google). It is the asymptotic probability that a random walker is standing on node i.\n\n**Clustering (local property)**\n\n- **C(i)** = actual links among i's neighbours divided by possible links, deg(i)(deg(i)-1)/2.\n- It is the probability that i's neighbours are also neighbours of each other.\n- It assumes an undirected network.\n- Average clustering is C = sum of C(i) / n.\n\n**Degree distribution**\n\n- P(k) = (number of nodes with degree k) / n, the probability that a node has degree k.\n- Karate club has a few high-degree hubs and many low-degree nodes. Scale-free networks follow a power law.\n\n**Communities and modularity**\n\n- A **community** is a set of nodes connected more densely to each other than to the rest.\n- **Modularity** is the extent to which a network is organised into communities.\n- There are many different ways to detect communities.\n\n## 6. Likely exam angles\n\n- Distinguish dynamics on, of and adaptive, with an example of each.\n- Explain how SIS works, what p_i and p_r do, and how SIS differs from SIR.\n- Explain why adaptive behaviour can eradicate a disease (links to infected nodes are cut).\n- Explain how small-world and scale-free networks are generated.\n- Compute density, and explain percolation and the giant component.\n- Define eccentricity, diameter, radius and the characteristic path length formula.\n- Compare the centrality measures.\n- Interpret what C(i) means.\n- Describe adaptive diffusion and homophily.\n",
+    "questions": [
+      {
+        "id": "L5-Q1",
+        "prompt": "A model where the network topology itself changes over time, e.g. through random rewiring or preferential attachment, is best described as:",
+        "options": {
+          "a": "Dynamics ON networks",
+          "b": "Dynamics OF networks",
+          "c": "A cellular automaton",
+          "d": "A local majority rule model"
+        },
+        "correct": "b",
+        "explanation": "Dynamics OF networks changes the topology. Dynamics ON networks keeps topology fixed and changes node states. Adaptive networks do both.",
+        "hint": "Think: what is changing, the states or the links?"
+      },
+      {
+        "id": "L5-Q2",
+        "prompt": "In the SIS model, what happens to a node after it recovers?",
+        "options": {
+          "a": "It becomes permanently immune",
+          "b": "It is removed from the network",
+          "c": "It becomes susceptible again",
+          "d": "It becomes infected again with probability 1"
+        },
+        "correct": "c",
+        "explanation": "SIS = Susceptible-Infected-Susceptible: recovery returns the node to the susceptible state. Permanent immunity would be the SIR model.",
+        "hint": "Look at the name of the model."
+      },
+      {
+        "id": "L5-Q3",
+        "prompt": "Which formula gives the density of an undirected network with n nodes and m edges?",
+        "options": {
+          "a": "m / (n(n-1))",
+          "b": "2m / (n(n-1))",
+          "c": "m / n",
+          "d": "n / (2m)"
+        },
+        "correct": "b",
+        "explanation": "An undirected network has n(n-1)/2 possible edges, so density = m / (n(n-1)/2) = 2m / (n(n-1)). The m / (n(n-1)) version is for directed networks. For the karate club graph (n = 34, m = 78), the density is about 0.139.",
+        "hint": "How many possible edges are there if direction does not matter?"
+      },
+      {
+        "id": "L5-Q4",
+        "prompt": "According to the lecture, network percolation (appearance of a giant component) in a random graph occurs when:",
+        "options": {
+          "a": "The average node degree is above 1",
+          "b": "Every node has degree at least 10",
+          "c": "The density equals exactly 0.5",
+          "d": "The network is directed"
+        },
+        "correct": "a",
+        "explanation": "A giant component appears when the average degree exceeds 1. In the n = 100 Erdős-Rényi experiment this happened around p ≈ 10^-2.",
+        "hint": "Recall the definition box on the giant component."
+      },
+      {
+        "id": "L5-Q5",
+        "prompt": "What is the radius of a network?",
+        "options": {
+          "a": "The maximum eccentricity over all nodes",
+          "b": "The average shortest path length",
+          "c": "The minimum eccentricity over all nodes",
+          "d": "The number of edges divided by nodes"
+        },
+        "correct": "c",
+        "explanation": "Radius R = min eccentricity. The nodes achieving it are the centers. The maximum eccentricity is the diameter, and nodes achieving it are the peripheries.",
+        "hint": "Radius is to center what diameter is to periphery."
+      },
+      {
+        "id": "L5-Q6",
+        "prompt": "Betweenness centrality of a node measures:",
+        "options": {
+          "a": "The fraction of other nodes it is directly connected to",
+          "b": "How likely the shortest path between two random nodes passes through it",
+          "c": "The probability that a random walker is standing on it",
+          "d": "The size of the community it belongs to"
+        },
+        "correct": "b",
+        "explanation": "Betweenness captures brokerage. Option a is degree centrality, and option c is PageRank.",
+        "hint": "It is about being 'in between' other nodes."
+      },
+      {
+        "id": "L5-Q7",
+        "prompt": "The clustering coefficient C(i) of node i is:",
+        "options": {
+          "a": "The fraction of all nodes in the network that i can reach",
+          "b": "The number of communities i belongs to",
+          "c": "deg(i) / (n-1)",
+          "d": "The fraction of possible links among i's neighbors that actually exist"
+        },
+        "correct": "d",
+        "explanation": "C(i) = actual links among neighbors divided by deg(i)(deg(i)-1)/2. It is the probability that i's neighbors are also neighbors of each other. Option c is degree centrality.",
+        "hint": "It is about triangles around node i."
+      },
+      {
+        "id": "L5-Q8",
+        "prompt": "Which pair correctly matches a network model with its generating mechanism?",
+        "options": {
+          "a": "Small-world: preferential attachment; Scale-free: random edge rewiring",
+          "b": "Small-world: random edge rewiring; Scale-free: preferential attachment",
+          "c": "Small-world: local majority rule; Scale-free: diffusion",
+          "d": "Both are generated by Erdős-Rényi sampling"
+        },
+        "correct": "b",
+        "explanation": "Small-world networks come from randomly rewiring edges (small-world.py). Scale-free networks come from preferential attachment (barabasi-albert.py), producing a power-law degree distribution.",
+        "hint": "'Rich get richer' belongs to one of them."
+      },
+      {
+        "id": "L5-Q9",
+        "prompt": "In the adaptive diffusion model, edge weights are strengthened or weakened according to the difference of node states across the edge. What sociological phenomenon does this represent?",
+        "options": {
+          "a": "Percolation",
+          "b": "Preferential attachment",
+          "c": "Homophily",
+          "d": "Modularity"
+        },
+        "correct": "c",
+        "explanation": "Homophily is the tendency to connect with similar others. The adaptive diffusion model produces clusters of similar states because links between similar nodes get stronger.",
+        "hint": "'Birds of a feather flock together.'"
+      },
+      {
+        "id": "L5-Q10",
+        "prompt": "Why can the adaptive SIS model eradicate a disease that would persist in the standard SIS model?",
+        "options": {
+          "a": "Susceptible nodes cut links to infected neighbors, reducing infection pathways",
+          "b": "Infected nodes are removed from the network permanently",
+          "c": "The recovery probability p_r is automatically increased",
+          "d": "Network size shrinks to zero"
+        },
+        "correct": "a",
+        "explanation": "In the adaptive SIS model, susceptible nodes sever (and rewire) links to infected neighbors with probability p_s. The topology changes in response to the epidemic, which changes how it spreads. If p_s is high enough, the disease can be eradicated (Exercise 16.19).",
+        "hint": "Think about your friend with the flu."
+      }
+    ]
+  },
+  {
+    "number": 6,
+    "title": "Agent-Based Models (ABM)",
+    "sourceFile": "L06_agent-based-models.md",
+    "reading": "## 1. The big picture\n\nAn **agent-based model (ABM)** is a computational simulation with many discrete agents. You build many virtual individuals and simulate their behaviour explicitly on a computer. ABMs are one of the most general frameworks for complex systems, and they include **cellular automata and dynamical networks as special cases**.\n\n**Agents:**\n\n- Have internal properties (attributes such as position, age, knowledge, memory, experience, emotion)\n- Are spatially localised and perceive the environment\n- Interact locally with other agents and follow predefined rules\n- Have **no central supervisor**\n- May learn autonomously\n- May produce non-trivial **collective behaviour** as a whole (emergence)\n\n## 2. Developing an ABM (Macal & North, 2006)\n\n1. Identify the agents and get a theory of agent behaviour\n2. Identify agent relationships and get a theory of agent interaction\n3. Get the requisite agent-related data\n4. Validate the agent behaviour models and the model as a whole\n5. Run the model and analyse the output\n\n## 3. Approach A vs. approach B (very likely exam material)\n\n| | **A** | **B** |\n|---|---|---|\n| Assumptions | Derived from empirically observed phenomena | Hypothetical |\n| Goal | Produce previously unknown collective behaviour | Reproduce empirically observed collective phenomena |\n| Use | **Make predictions** with validated theories | **Explore and develop new explanations** |\n| Scales | Micro-known -> macro-unknown | Micro-unknown -> macro-known |\n\nMemory hook: **A = predict, B = explain.**\n\n## 4. Implementing an ABM\n\n**Code steps:**\n\n1. Choose a data format for each agent's properties\n2. Create a population of agents in that format\n3. Write code to visualise agent states, plus any analysis tools\n4. Write code to update each agent's state according to the model's assumptions\n\n**Six design tasks:**\n\n1. Data structure for agent attributes\n2. Data structure for environment states\n3. Rules for how the environment behaves on its own\n4. Rules for agent-environment interaction\n5. Rules for how agents behave on their own\n6. Rules for agent-agent interaction\n\n**In Python:** a dynamic class works as a pure data structure (`class agent: pass`, then `a = agent(); a.x = 2; a.name = 'John'`).\n\nSimulator structure (pycxsimulator): `initialize()`, `observe()`, `update()`.\n\n## 5. Example models\n\n### Schelling's segregation model\n\n- Early 1970s, Thomas Schelling (2005 Nobel laureate in Economics). It is considered the first ABM.\n- Built with **approach B**: hypothetical micro-rules reproduce the known macro-pattern of geographic segregation.\n- **Rules:** two agent types in a finite 2-D space. Each iteration, a randomly chosen agent checks its neighbourhood. If the fraction of same-type neighbours is **below a threshold**, it jumps to a random location.\n- **Code parameters:** `n = 1000` agents, `r = 0.1` neighbourhood radius, `th = 0.5` threshold.\n- **Key finding:** segregation occurs even when the threshold is much lower than expected, so people do not need to be strongly homophilic.\n- **Counter-intuitive:** very high homophily can produce a mixed society, because agents keep moving and never reach a stationary state.\n- **Exercise 19.2:** vary `th`, `r`, `n` and find where segregation occurs. Is the transition gradual or sharp?\n\n### Diffusion-limited aggregation (DLA)\n\n- Two particle types: movable ones random-walk in 2-D, immovable ones stay put.\n- **Only rule:** when a movable particle comes close enough to an immovable one, it becomes immovable forever.\n- Start with one immovable seed in the centre, and a cluster pattern grows from it. With multiple seeds, clusters interact at macroscopic scales.\n\n### Garbage collection by ants (Resnick, *Turtles, Termites and Traffic Jams*)\n\n- Ants wander randomly. If an ant holds garbage, it drops it. If it holds nothing, it picks some up.\n- This is an agent-**environment** interaction (the garbage lives in the environment).\n- **Result:** the ants spontaneously collect and pile up garbage and clear the space. This is emergent behaviour that runs against intuition.\n\n### Birth/death of agents\n\nThe update procedure must:\n\n- Decide whether each current agent survives. If yes, update its state. If no, remove it from the list.\n- Simulate births. New agents are added to the list at the end.\n\n### Predator-prey model\n\n- Rabbits and foxes wander and reproduce. Foxes move faster.\n- A rabbit survives if it is not caught. A fox survives if it ate recently. Fox reproduction depends on successful eating.\n- Population curves **oscillate**, and extinction of predators (or both) can occasionally happen.\n- **Exercise 19.9:** make coexistence more robust. **Exercise 19.10:** add grass as a third species.\n\n### Evolution in ABMs (evolvable predator-prey)\n\nThree components:\n\n- **Inheritance:** offspring have attributes similar to their parents'\n- **Variation:** diversity in attributes, mainly from imperfect inheritance (mutation)\n- **Selection:** different attributes give different survivability (fitness)\n\nWhen all three are present, evolution can occur in **any** system: biological, social, cultural or informational. Exercises 19.11-19.13 cover evolving the movement magnitude `m` and later the reproduction rates.\n\nThe bonus links (an arXiv paper and OpenAI's Neural MMO) are marked as extra material, so they are unlikely to be core exam content.\n\n## 6. Practice beyond the quiz\n\n- **Exercise 19.2 and 19.8:** be ready to explain what you would vary and what you would expect to see.\n- **A vs. B:** be able to classify a new model as predictive (A) or explanatory (B) and justify it with the micro-known / macro-unknown framing.\n\n> **Note:** in the original chat the student labelled this \"Lecture 5\", but the attached PDF was Lecture 6 (agent-based models). It is filed here as Lecture 6.\n",
+    "questions": [
+      {
+        "id": "L6-Q1",
+        "prompt": "Which of the following is NOT a typical property of agents in an ABM according to the lecture?",
+        "options": {
+          "a": "They have internal properties",
+          "b": "They interact locally based on predefined rules",
+          "c": "They are controlled by a central supervisor",
+          "d": "They may learn autonomously"
+        },
+        "correct": "c",
+        "explanation": "ABM agents have no central supervisor. Global patterns emerge from local interactions alone.",
+        "hint": "Think about where the 'collective behavior' comes from."
+      },
+      {
+        "id": "L6-Q2",
+        "prompt": "Which statement correctly describes approach A for building ABMs?",
+        "options": {
+          "a": "Hypothetical assumptions are used to reproduce known macro phenomena",
+          "b": "Empirically derived assumptions are used to produce previously unknown collective behaviors (micro-known to macro-unknown)",
+          "c": "Macro-level equations are used to derive micro-level rules",
+          "d": "Only cellular automata are used to model agents"
+        },
+        "correct": "b",
+        "explanation": "Approach A uses validated micro-level theories to make predictions about unknown macro behavior. Approach B does the reverse: hypothetical micro-rules reproduce known macro phenomena.",
+        "hint": "A = predict, B = explain."
+      },
+      {
+        "id": "L6-Q3",
+        "prompt": "Schelling's segregation model was developed using which approach, and why?",
+        "options": {
+          "a": "Approach A, because it used empirical micro-data",
+          "b": "Approach A, because it predicted a new phenomenon",
+          "c": "Approach B, because it used hypothetical micro-rules to reproduce a known macro-pattern (segregation)",
+          "d": "Neither, because it is a cellular automaton"
+        },
+        "correct": "c",
+        "explanation": "Segregation was already observed (macro-known). Schelling used simple hypothetical micro-rules (micro-unknown) to reproduce it.",
+        "hint": "Segregation was already observed in reality."
+      },
+      {
+        "id": "L6-Q4",
+        "prompt": "In Schelling's model, what does a randomly chosen agent do when the fraction of same-type neighbors is below the threshold?",
+        "options": {
+          "a": "It changes its type",
+          "b": "It jumps to a randomly chosen location in the space",
+          "c": "It moves to the nearest cluster of its own type",
+          "d": "It stays put and waits for neighbors to change"
+        },
+        "correct": "b",
+        "explanation": "The agent relocates to a random location. It does not seek out similar neighbors. Segregation emerges anyway.",
+        "hint": "The rule is 'extremely simple'."
+      },
+      {
+        "id": "L6-Q5",
+        "prompt": "What was Schelling's key finding about the threshold needed for segregation?",
+        "options": {
+          "a": "It must be very high (around 80%)",
+          "b": "Segregation never occurs in the model",
+          "c": "It can be much lower than one would expect, so segregation occurs even if people are not strongly homophilic",
+          "d": "It must be exactly 50%"
+        },
+        "correct": "c",
+        "explanation": "Mild preferences are enough to produce strong macro-level segregation, which is a classic example of emergence.",
+        "hint": "The result is counterintuitive."
+      },
+      {
+        "id": "L6-Q6",
+        "prompt": "What can happen in Schelling's model when homophily (the threshold) is very high?",
+        "options": {
+          "a": "Perfect, stable segregation",
+          "b": "A mixed state, because agents keep moving and never reach a stationary state",
+          "c": "All agents become the same type",
+          "d": "The simulation always ends with extinction"
+        },
+        "correct": "b",
+        "explanation": "With a very high threshold almost nobody is satisfied, so agents keep jumping and the system stays mixed.",
+        "hint": "Think about whether agents ever become 'satisfied'."
+      },
+      {
+        "id": "L6-Q7",
+        "prompt": "What is the only interaction rule in the diffusion-limited aggregation (DLA) model?",
+        "options": {
+          "a": "Movable particles repel immovable particles",
+          "b": "Immovable particles slowly start moving over time",
+          "c": "When a movable particle comes close enough to an immovable one, it becomes immovable forever",
+          "d": "Movable particles reproduce when they meet"
+        },
+        "correct": "c",
+        "explanation": "Random-walking particles stick to the cluster on contact, so the cluster grows outward from the seed(s) into a branching spatial pattern.",
+        "hint": "Think 'sticking'."
+      },
+      {
+        "id": "L6-Q8",
+        "prompt": "In the 'garbage collection by ants' model, ants drop garbage if holding some and pick it up if holding none. What emerges?",
+        "options": {
+          "a": "Garbage becomes scattered more and more",
+          "b": "Nothing changes statistically",
+          "c": "The ants spontaneously pile up garbage and clear up the space in the long run",
+          "d": "The ants die out"
+        },
+        "correct": "c",
+        "explanation": "This is emergent collective behavior from brainless agents, and it runs counter to intuition. It is also an example of agent-environment interaction (Resnick).",
+        "hint": "The result is counterintuitive."
+      },
+      {
+        "id": "L6-Q9",
+        "prompt": "In ABMs with birth and death of agents, how should the updating procedure handle agents?",
+        "options": {
+          "a": "Surviving agents are updated, dead agents are removed from the list, and newborn agents are added to the end of the list",
+          "b": "The population size must stay fixed",
+          "c": "Dead agents stay in the list with a 'dead' flag forever",
+          "d": "Newborns replace the oldest agents in place"
+        },
+        "correct": "a",
+        "explanation": "The procedure checks survival for each current agent, updates or removes it, then simulates births and appends the new agents at the end.",
+        "hint": "Three actions: update, remove, add."
+      },
+      {
+        "id": "L6-Q10",
+        "prompt": "In the predator-prey ABM, which rule is correct?",
+        "options": {
+          "a": "Rabbits move faster than foxes",
+          "b": "A fox survives if it ate rabbits not long ago, and its reproduction depends on successfully eating rabbits",
+          "c": "Rabbits only survive if they eat foxes",
+          "d": "Foxes reproduce independently of food"
+        },
+        "correct": "b",
+        "explanation": "Foxes move faster than rabbits. A rabbit survives if it is not caught. A fox survives if it ate recently, and its reproduction depends on eating.",
+        "hint": "Predators depend on prey."
+      },
+      {
+        "id": "L6-Q11",
+        "prompt": "Which set lists the three components of evolution in the lecture?",
+        "options": {
+          "a": "Mutation, migration, extinction",
+          "b": "Inheritance, variation, selection",
+          "c": "Birth, death, learning",
+          "d": "Perception, interaction, adaptation"
+        },
+        "correct": "b",
+        "explanation": "Inheritance: offspring resemble parents. Variation: diversity, mainly from imperfect inheritance (mutation). Selection: attributes affect survivability (fitness). With all three, evolution can occur in biological, social, cultural or informational systems.",
+        "hint": "Offspring resemble parents, differ slightly, and fitness filters them."
+      },
+      {
+        "id": "L6-Q12",
+        "prompt": "According to Macal & North (2006), which step comes immediately before 'Run the model and analyze the output'?",
+        "options": {
+          "a": "Identify the agents and get a theory of agent behavior",
+          "b": "Identify the agent relationships",
+          "c": "Get the requisite agent-related data",
+          "d": "Validate the agent behavior models in addition to the model as a whole"
+        },
+        "correct": "d",
+        "explanation": "The order is: 1) agents and behavior theory, 2) relationships and interaction theory, 3) data, 4) validation, 5) run and analyze.",
+        "hint": "Validate, then run."
+      }
+    ]
+  },
+  {
+    "number": 7,
+    "title": "Artificial Evolution",
+    "sourceFile": "L07_artificial-evolution.md",
+    "reading": "## 1. The big idea: evolution as optimisation\n\nEvolutionary Computation (EC) is a family of **optimisation** methods inspired by natural selection. You need three things:\n\n- **A search space** (\"universe of possible\"): all candidate solutions you could have.\n- **A quality measure** (fitness): a way to score how good a candidate is.\n- **A search process**: the computer explores the space for good solutions.\n\nThe lecture's analogy maps nature onto this: the universe of possible is *physics*, quality is *the ability to stay alive*, the computer is *nature*, and the method is *natural evolution*.\n\n## 2. The basic scheme\n\nNatural evolution, abstracted:\n\n1. A **population** of individuals competes for **limited resources**.\n2. The population is **dynamic**: individuals die and are born.\n3. The **fittest** survive and reproduce more than the others.\n4. **Offspring inherit** traits from their parents. They are *similar but not identical*.\n\nWhen this runs on a computer, it is Evolutionary Computation. Designing an EA means answering six questions: **What is an individual? What is a population? What are the resources? How do individuals compete? How is fitness measured? How do individuals reproduce?** The rest of the lecture answers these.\n\n## 3. The three components of evolution (key definition)\n\n| Component | Meaning |\n|---|---|\n| **Inheritance** | Offspring have attributes similar to their parents. |\n| **Variation** | There is diversity in the population, mainly from *imperfect* inheritance (mutation). |\n| **Selection** | Different attributes give different survival chances (**fitness**). |\n\n**Key exam point:** when all three are present, evolution happens in *any* system, not just biological ones. This substrate independence is why we can run evolution on bitstrings, programs, antennas, or robots.\n\n**Real-world example:** the **NASA ST5 antenna (2006)**. An evolutionary design program found a strange, bent-wire shape that produced the required radiation pattern. A human engineer would probably not have designed it. It is a classic \"human-competitive\" result.\n\n## 4. Individuals: genotype vs. phenotype\n\n- **Phenotype** is the candidate solution itself, the thing that gets evaluated. Examples: a program, a set of numerical parameters, a picture.\n- **Genotype** is the internal representation that evolution manipulates. It can be the phenotype itself, or a defined data structure such as a fixed or variable-length **bitstring** or an **abstract syntax tree**.\n\n**Why separate them?**\n\n- To resemble nature (DNA -> organism).\n- To make manipulation easy. Mutation and crossover on a bitstring are trivial.\n- **Genotype-to-phenotype mapping** is the step that decodes bits or numbers into the actual solution to evaluate.\n\n## 5. Population and competition\n\n- A population is a set of individuals with a **fixed (maximum) size**.\n- The \"limited resource\" is a **place in the population**.\n- So whenever a new individual is born, **someone must leave (die)**. Deciding *who* is part of the algorithm design.\n\n## 6. Population dynamics: one generation\n\n1. *(Optional)* **Elitism**: copy the best *n* individuals unchanged into the next generation, so the best solution is never lost.\n2. **Select parent(s)** for reproduction, for example with fitness-proportional selection.\n3. **Create offspring** in one of two ways:\n   - one parent -> **mutation**, or\n   - two parents -> **crossover + mutation**.\n4. **Repeat** until the new population is full. One full replacement is one **generation**.\n\nThis is \"Evolution: diagram 1\": **Start -> Evaluation -> Selection -> Variation -> Evaluation -> ... -> End.**\n\n## 7. Selection methods\n\n**Fitness-proportional selection** (also called roulette wheel):\n\n- Each individual's chance of being picked is its fitness divided by the total fitness.\n\n**Rank-proportional selection:**\n\n- Sort individuals by fitness and give each a rank (worst = 1, best = N).\n- Each individual's chance of being picked is proportional to its rank.\n\nIn both methods, **weak individuals still have a small chance** of being selected. This preserves diversity.\n\n**Worked example (useful for the exam):** four individuals with fitness 1, 1, 1, 97.\n\n| | Ind. A | B | C | D |\n|---|---|---|---|---|\n| Fitness-proportional | 0.01 | 0.01 | 0.01 | **0.97** |\n| Rank-proportional (ranks 1,2,3,4 / 10) | 0.1 | 0.2 | 0.3 | **0.4** |\n\nUnder fitness-proportional selection, one \"super-individual\" takes over and diversity collapses (premature convergence). Rank-based selection keeps the selection pressure steady regardless of fitness scale.\n\n## 8. Variation operators (bitstrings)\n\n**Bit-flip mutation:**\n\n1. Copy the parent genotype *gp* into the child *gc*.\n2. Flip each bit independently with probability *p*. A common value is **p = 0.01**.\n\nExpected number of flips = length x p. For a 100-bit genome that is about 1 flip per child.\n\n**Crossover:**\n\n- **One-point:** choose one cut. The child takes everything before the cut from parent 1 and everything after it from parent 2.\n  `gp1 = AAAAA|AAA`, `gp2 = BBBBB|BBB` -> `gc = AAAAABBB`\n- **Two-point:** choose two cuts. The child takes the middle segment from parent 2 and the outer parts from parent 1.\n  `AAA|AAAA|AAA` + `BBB|BBBB|BBB` -> `AAABBBBAAA`\n\nThe slide's \"Crossover -> Mutation\" picture shows the full chain: [7 11 3] x [11 2 8] -> crossover -> [7 2 8] -> mutation -> [7 **3** 8].\n\n## 9. Initialisation and fitness\n\n- **Initialisation** can be totally random, or use smarter methods that depend on the genotype type.\n- **Fitness** measures how well an individual solves the problem. It is either a quality to **maximise** or an error to **minimise**. The plot in the slides is a minimisation: fitness drops quickly at first, then plateaus.\n- The fitness-vs-generation curve answers two questions: *Is my EA working?* and *When should I stop?* Stop on a plateau, at a generation limit, or when the target is reached.\n- **Run at least 30 times.** EAs are stochastic, so a single run proves nothing. You report averages and statistics over many independent runs.\n\n## 10. Diversity: exploration vs. exploitation (very examinable)\n\n**Population diversity:**\n\n- *Too low* -> too much **exploitation** -> stuck in a **local optimum**.\n- *Diverse enough* -> good.\n\n**Variational inheritance** (how different children are from their parents):\n\n- *Too similar* -> too much exploitation -> slow or no evolution, local optimum.\n- *Too different* -> no exploitation, only coarse exploration -> effectively **random search**.\n\nThe goal is balance. Mutation rate, selection pressure, and elitism are the main controls.\n\n## 11. Fitness landscape\n\nImagine genotype space as the ground and fitness as height. The core question is: **does a small step in genotype give a small change in fitness?** The slide shows three cases:\n\n- **(a) Needle in a haystack:** flat with isolated peaks. There is no gradient to follow, so it is almost impossible to search.\n- **(b) Rugged:** many local peaks. Easy to get trapped, compared with a **smooth** single hill that is easy to climb.\n- **(c) Realistic:** a path climbing between peaks.\n\nGood representations make the landscape smooth: small mutations should cause small fitness changes.\n\n## 12. Types of evolutionary algorithms\n\n| Type | Genotype | Operators |\n|---|---|---|\n| **Genetic Algorithm (GA)** | Bitstrings (may encode numbers) or strings of numbers | Crossover + mutation |\n| **Genetic Programming (GP)** | Genotype = phenotype = tree or list of instructions (a program) | Subtree crossover and mutation |\n| **Evolution Strategy (ES)** | Typically real numbers | **Mutation only** |\n| **NeuroEvolution (NE)** | Neural networks | Evolve weights (and possibly topology) |\n\n## 13. NeuroEvolution: NEAT vs. HyperNEAT\n\n**NEAT** (Stanley & Miikkulainen, 2002) uses a **direct encoding**: the genome describes the network one-to-one.\n\n- **Node genes** list the nodes: sensor, hidden, or output.\n- **Connection genes** each record in-node, out-node, weight, enabled/**disabled**, and an **innovation number**. The innovation number is a historical marker that lets NEAT line up genes from different parents during crossover.\n- Networks **start small and grow** (\"augmenting topologies\").\n- **Speciation** groups similar networks into species. New structures are protected while they mature, as in the species plot where bands split over generations.\n\n**HyperNEAT** (Stanley et al., 2009) uses an **indirect encoding**: the genome is a *rule for building* the phenotype.\n\n- What evolves is a **CPPN** (Compositional Pattern Producing Network).\n- The CPPN takes the coordinates of two neurons, **(x1, y1, x2, y2)**, and outputs **the weight of the connection between them**.\n- It uses varied activation functions (sigmoid, **sine**, **Gaussian**). These produce symmetry, repetition, and regularity.\n- A small genome can therefore describe a very large network. It scales well.\n\n**One-line contrast:** direct encoding means \"genome = blueprint\"; indirect encoding means \"genome = recipe or developmental rule\".\n\n## 14. Where evaluation happens: the four diagrams\n\n1. **Diagram 1:** the basic loop of evaluation -> selection -> variation.\n2. **Diagram 2:** **evolution + simulator**. The genotype (bits) maps to a neural network, which controls a simulated robot in a maze, which yields a fitness (f = 3.14). This is fast and cheap but has a sim-to-reality gap.\n3. **Diagram 3:** evolution runs on a computer, but **evaluation happens on a real physical robot**. This is realistic but slow.\n4. **Diagram 4:** **embodied, distributed evolution**. The robots themselves exchange and evolve genomes with no central computer. It connects to the idea of self-replicating machines (bonus book: *Rise of the Self-Replicators*).\n\n## 15. Evolutionary robotics\n\n- **Evolving controllers:** you can evolve network weights, connections, learning rules, nodes, or whole architectures. Example: Waibel, Floreano & Keller (2011) evolved robot controllers to test **Hamilton's rule** for the evolution of altruism. The robots could \"share tokens\".\n- **Evolving bodies:** the genome specifies morphology, for example leg segment lengths \"4,3, 5,3, 4,4, 5,4\". The process has four steps: (1) fitness evaluation, (2) selection, (3) crossover and mutation, (4) replace the previous generation. This is *artificial selection* against a fitness function.\n\n## 16. Exam checklist\n\nYou should be able to:\n\n- State and explain the **three components** and why evolution is substrate-independent.\n- Distinguish **genotype and phenotype**, and explain the mapping.\n- Walk through **one generation**, including elitism.\n- **Compute** fitness-proportional vs. rank-proportional probabilities.\n- **Apply** bit-flip mutation and one- and two-point crossover by hand.\n- Explain **exploration vs. exploitation** and how diversity relates to local optima.\n- Interpret **fitness landscapes** and fitness curves, and explain why you need **>= 30 runs**.\n- Compare **GA / GP / ES / NE**, and **NEAT (direct) vs. HyperNEAT (indirect, CPPN)**.\n",
+    "questions": [
+      {
+        "id": "L7-Q1",
+        "prompt": "Which three components must be present for evolution to occur in any system?",
+        "options": {
+          "a": "Mutation, crossover, elitism",
+          "b": "Inheritance, variation, selection",
+          "c": "Population, fitness, generations",
+          "d": "Genotype, phenotype, mapping"
+        },
+        "correct": "b",
+        "explanation": "Inheritance (offspring resemble parents), variation (diversity, mainly from imperfect copying), and selection (attributes affect survival/fitness). With all three, evolution can occur in any substrate, not just biology.",
+        "hint": "Think of the yellow box from the textbook slide."
+      },
+      {
+        "id": "L7-Q2",
+        "prompt": "In an EA evolving neural network controllers encoded as bitstrings, what is the phenotype?",
+        "options": {
+          "a": "The bitstring",
+          "b": "The fitness value",
+          "c": "The neural network decoded from the bitstring",
+          "d": "The mutation rate"
+        },
+        "correct": "c",
+        "explanation": "The phenotype is the candidate solution that gets evaluated (the network). The bitstring is the genotype; the genotype-to-phenotype mapping decodes one into the other.",
+        "hint": ""
+      },
+      {
+        "id": "L7-Q3",
+        "prompt": "Four individuals have fitness 2, 3, 5, 10. Using fitness-proportional selection, what is the probability of selecting the individual with fitness 5?",
+        "options": {
+          "a": "0.25",
+          "b": "0.50",
+          "c": "0.30",
+          "d": "0.20"
+        },
+        "correct": "a",
+        "explanation": "Total fitness = 2+3+5+10 = 20. P = 5/20 = 0.25.",
+        "hint": "Divide by the sum of all fitness values."
+      },
+      {
+        "id": "L7-Q4",
+        "prompt": "What is the main advantage of rank-proportional over fitness-proportional selection?",
+        "options": {
+          "a": "It always selects the best individual",
+          "b": "It prevents one very fit individual from dominating, keeping selection pressure stable",
+          "c": "It removes the need for mutation",
+          "d": "Weak individuals can never be selected"
+        },
+        "correct": "b",
+        "explanation": "Rank selection depends only on order, not on fitness magnitude, so a super-fit outlier cannot take over the population. This reduces premature convergence. Weak individuals still have a small chance in both schemes.",
+        "hint": ""
+      },
+      {
+        "id": "L7-Q5",
+        "prompt": "Two-point crossover: gp1 = 000|1111|000 and gp2 = 111|0000|111. Which child results (middle segment from gp2)?",
+        "options": {
+          "a": "0000000000",
+          "b": "1111111111",
+          "c": "0001111111",
+          "d": "1110000111"
+        },
+        "correct": "a",
+        "explanation": "Outer parts from gp1 (000 ... 000) and middle from gp2 (0000) gives 000 0000 000 = 0000000000.",
+        "hint": "Keep gp1's ends, swap in gp2's middle."
+      },
+      {
+        "id": "L7-Q6",
+        "prompt": "With bit-flip mutation at p = 0.01 on a 200-bit genotype, how many bits are flipped on average per child?",
+        "options": {
+          "a": "0.01",
+          "b": "1",
+          "c": "2",
+          "d": "20"
+        },
+        "correct": "c",
+        "explanation": "Each bit flips independently with probability p, so expected flips = L x p = 200 x 0.01 = 2.",
+        "hint": ""
+      },
+      {
+        "id": "L7-Q7",
+        "prompt": "Offspring are almost always very different from their parents (very high mutation). What does the EA degrade into?",
+        "options": {
+          "a": "Hill climbing stuck in a local optimum",
+          "b": "Essentially random search, with no exploitation",
+          "c": "Elitist search",
+          "d": "Premature convergence"
+        },
+        "correct": "b",
+        "explanation": "Too-different children mean good traits are not preserved, so there is only coarse exploration. That is random search. Too-similar children cause the opposite problem: over-exploitation and local optima.",
+        "hint": ""
+      },
+      {
+        "id": "L7-Q8",
+        "prompt": "Why should an EA typically be run at least 30 times?",
+        "options": {
+          "a": "To guarantee the global optimum",
+          "b": "Because EAs are stochastic, so results must be assessed statistically over many independent runs",
+          "c": "Because 30 generations are always needed",
+          "d": "To fill the population"
+        },
+        "correct": "b",
+        "explanation": "Random initialization, selection, and mutation make each run different. Multiple runs (>=30) give reliable averages and support statistical comparison.",
+        "hint": ""
+      },
+      {
+        "id": "L7-Q9",
+        "prompt": "Which fitness landscape is hardest for an evolutionary algorithm to search?",
+        "options": {
+          "a": "A single smooth hill",
+          "b": "A flat landscape with an isolated narrow peak (needle in a haystack)",
+          "c": "A landscape where small genotype changes give small fitness changes",
+          "d": "A gently sloping plane"
+        },
+        "correct": "b",
+        "explanation": "With no gradient, small steps give no information about where the peak is, so selection has nothing to work with. Smooth landscapes, where small genotype steps mean small fitness changes, are the easiest.",
+        "hint": ""
+      },
+      {
+        "id": "L7-Q10",
+        "prompt": "Which EA type typically uses real-valued genotypes and only mutation?",
+        "options": {
+          "a": "Genetic Algorithm",
+          "b": "Genetic Programming",
+          "c": "Evolution Strategy",
+          "d": "NEAT"
+        },
+        "correct": "c",
+        "explanation": "ES uses real numbers and mutation only. GA uses bitstrings or number strings with crossover and mutation; GP evolves trees or instruction lists; NEAT evolves neural network topology and weights.",
+        "hint": ""
+      },
+      {
+        "id": "L7-Q11",
+        "prompt": "What is the key difference between NEAT and HyperNEAT?",
+        "options": {
+          "a": "NEAT uses indirect encoding; HyperNEAT uses direct encoding",
+          "b": "NEAT encodes the network directly (node and connection genes); HyperNEAT evolves a CPPN that generates connection weights from neuron coordinates",
+          "c": "HyperNEAT does not use evolution",
+          "d": "NEAT only evolves weights, never topology"
+        },
+        "correct": "b",
+        "explanation": "NEAT is a direct encoding with growing topologies, innovation numbers, and speciation. HyperNEAT is an indirect encoding: the CPPN takes (x1, y1, x2, y2) and outputs a weight, so a compact genome can describe a large, regular network.",
+        "hint": "Direct = blueprint, indirect = recipe."
+      },
+      {
+        "id": "L7-Q12",
+        "prompt": "In NEAT, what is the purpose of the innovation number on connection genes?",
+        "options": {
+          "a": "It stores the connection weight",
+          "b": "It marks the historical origin of a gene so genes from different parents can be aligned during crossover",
+          "c": "It counts how many times a gene was mutated",
+          "d": "It disables the connection"
+        },
+        "correct": "b",
+        "explanation": "Innovation numbers are historical markers. Matching numbers mean genes with the same origin, which lets NEAT perform meaningful crossover between networks with different topologies.",
+        "hint": ""
+      },
+      {
+        "id": "L7-Q13",
+        "prompt": "What does elitism do in an EA?",
+        "options": {
+          "a": "Removes the best individuals to increase diversity",
+          "b": "Copies the best n individuals unchanged into the next generation",
+          "c": "Increases the mutation rate for the best individuals",
+          "d": "Selects parents by rank"
+        },
+        "correct": "b",
+        "explanation": "Elitism guarantees the best solutions found so far are never lost, so the best fitness never gets worse between generations. Too much elitism can, however, reduce diversity.",
+        "hint": ""
+      },
+      {
+        "id": "L7-Q14",
+        "prompt": "In 'Evolution: diagram 4', what characterizes the evolutionary setup?",
+        "options": {
+          "a": "Evolution and evaluation both in a simulator",
+          "b": "Evolution on a computer, evaluation on one real robot",
+          "c": "Embodied, distributed evolution where the robots themselves exchange genomes, with no central computer",
+          "d": "Hand-designed controllers"
+        },
+        "correct": "c",
+        "explanation": "Diagram 2 is evolution plus a simulator, diagram 3 is computer evolution with real-robot evaluation, and diagram 4 is fully embodied, distributed evolution among robots.",
+        "hint": ""
+      }
+    ]
+  },
+  {
+    "number": 8,
+    "title": "Brains and Biological Neural Networks",
+    "sourceFile": "L08_brains-and-biological-neural-networks.md",
+    "reading": "## 1. The big picture\n\nThe lecture asks three questions: what is intelligence, how do neurons self-organise and communicate to produce it, and how can we build artificial \"brains\" in a computer? The central theme is how closely artificial neural networks (ANNs) resemble real brains, and the answer is \"not very\".\n\n## 2. The biological neuron\n\n- **Dendrites** receive input.\n- **Soma** (cell body) integrates the inputs.\n- **Axon** conducts the signal.\n- **Axon terminal** outputs the signal at the **synapse**.\n\n**Synapse sequence:** the presynaptic terminal holds vesicles of neurotransmitter. They go through mobilisation, docking, fusion and release, and the neurotransmitter then binds to receptors on the postsynaptic terminal.\n\n**Neuronal signalling:** the membrane potential rises, spikes, dips below baseline and recovers. This all-or-nothing spike is the action potential.\n\n**Two synapse types:**\n\n| | Excitatory | Inhibitory |\n|---|---|---|\n| Transmitter | Glutamate | GABA |\n| Ion | Na+ | Cl- |\n| Effect | Depolarisation | Hyperpolarisation |\n\n## 3. The artificial neuron (perceptron / McCulloch-Pitts unit)\n\nInputs x1...xn are multiplied by weights w1...wn. A constant input of 1 with weight w0 acts as the bias. The results are summed (sigma) and passed through a **step function (threshold)** to give the output, which fans out to y1...ym.\n\nThe mapping to biology is dendrites -> inputs, soma -> weighted sum and threshold, axon -> output.\n\n## 4. History\n\n- **1943:** McCulloch & Pitts, *A Logical Calculus of the Ideas Immanent in Nervous Activity*.\n- **1950:** Turing, *Computing Machinery and Intelligence*. It introduces the Imitation Game and asks \"Can machines think?\".\n- **1956:** Dartmouth Summer Research Project proposal, which assumed every aspect of intelligence can in principle be described precisely enough for a machine to simulate it.\n- **Original goal:** an artificial (electronic) brain, a thinking machine, general intelligence.\n\n## 5. Brain vs. AI: the numbers\n\n- Neurons: **~10^11**\n- Synapses: **7 x 10^14 - 10^15** (700-1000 trillion)\n- Power: **~12 W** (vs. 60 W for a standard light bulb)\n- **1 mm^3 of cortex:** ~90,000 neurons, ~700,000,000 synapses\n- Brain volume: ~1200 cm^3\n\n**Sanity check:** 1 cm^3 = 1000 mm^3, so 1000 x 7 x 10^8 ≈ 7 x 10^11, roughly **1 trillion synapses per cm^3**. That is why the lecture compares the 1-trillion-parameter Google Brain **Switch Transformer** to about 1 cm^3 of cortex. The whole brain is about 1200 times larger.\n\n**Switch Transformer (Fedus, Zoph, Shazeer):**\n\n- It is a Mixture-of-Experts (MoE) model.\n- Instead of reusing the same parameters for every input, it selects *different* parameters per input.\n- The result is a **sparsely activated** model with a huge parameter count but constant computational cost.\n- It simplifies MoE routing and uses lower-precision training (bfloat16).\n- It reports up to 7x pre-training speedup over T5-Base and 4x over T5-XXL.\n\n## 6. Cost of AI: energy and carbon (Strubell et al.)\n\n**Benchmarks (lbs CO2e):**\n\n- Round-trip flight NY-SF: 1,984\n- Human life, 1 year: 11,023\n- American life, 1 year: 36,156\n- US car, lifetime: 126,000\n- **Transformer (213M) with neural architecture search: 626,155**\n\n**Training costs, one run:**\n\n| Model | Date | kWh | lbs CO2e | Cloud cost |\n|---|---|---|---|---|\n| Transformer 65M | Jun 2017 | 27 | 26 | $41-$140 |\n| Transformer 213M | Jun 2017 | 201 | 192 | $289-$981 |\n| ELMo | Feb 2018 | 275 | 262 | $433-$1,472 |\n| BERT 110M | Oct 2018 | 1,507 | 1,438 | $3,751-$12,571 |\n| Transformer 213M + NAS | Jan 2019 | 656,347 | 626,155 | $942,973-$3,201,722 |\n| GPT-2 | Feb 2019 | - | - | $12,902-$43,008 |\n\nThe GPT-2 carbon footprint could not be calculated because there was no power draw data for its hardware. Models are usually trained many times during development, so real costs are higher. The takeaway is that the brain does far more on about 12 W.\n\n## 7. Does AI learn like the brain? Backpropagation\n\n**Forward prediction:** x_l = W_(l-1) f(x_(l-1))\n**Cost:** C = ||t - x_L||^2\n**Weight update:** delta W_l ∝ delta_(l+1) f(x_l)^T\n**Errors:**\n\n- Last layer: delta_L = t - x_L\n- Earlier layers: delta_l = W_l^T delta_(l+1) · f'(x_l)\n\nLearning is gradient descent: the weights move in the direction that reduces the cost.\n\n**Why backprop is considered biologically implausible** (Whittington & Bogacz 2019, among others):\n\n1. **No local error.** Error backprop is done by a separate, global algorithm, so each weight update depends on all downstream neurons. Real synapses change based on **local signals only**.\n2. **Symmetric forward and backward weights.** Errors travel back through the same weights (W^T) used going forward. This would need identical connections in both directions.\n3. **Unrealistic neurons.** ANNs use continuous outputs, while real neurons use **spikes**. ANN neurons are also reduced to simple input summations.\n4. **Layer-by-layer synchronous propagation.** Real brains do not work this way.\n5. **Supervision.** Expected and correct values are compared directly.\n6. **Spikes are not differentiable**, but backprop needs differentiable activation functions.\n7. **Frozen weights.** Once an ANN is trained, its weights stop changing, whereas the brain keeps learning.\n\nAlternative research directions on the slides:\n\n- Bengio et al., *Towards Biologically Plausible Deep Learning*\n- Guerguiev et al., *Towards deep learning with segregated dendrites*\n- Illing et al., *Biologically plausible deep learning: but how far can we go with shallow networks?*\n- Jones & Kording, *Can Single Neurons Solve MNIST?*, which asks about the computational power of dendritic trees\n\n## 8. Spiking neurons: the biologically closer model\n\n**Leaky integrate-and-fire (LIF):**\n\n- Input spikes arrive through weighted synapses (w1...w5).\n- Each spike bumps up the neuron's state by its weight. The state **leaks** (decays) over time.\n- When the state crosses a threshold **Th**, the neuron emits an **output spike** and resets.\n- Information is carried by spike timing, not continuous values.\n\n**Learning rule:** \"Neurons that fire together wire together\" (Hebbian learning). The concrete form is **STDP (spike-timing-dependent plasticity)**:\n\n- Pre-synaptic neuron fires **before** post-synaptic: the weight **increases** (potentiation).\n- Pre-synaptic neuron fires **after** post-synaptic: the weight **decreases** (depression).\n- The change is largest when the spikes are close in time.\n\n**Tools:**\n\n- Libraries: BindsNET, cuSNN, PySNN\n- Simulators: Brian, NEST, NEURON\n- Neuromorphic hardware: Intel **Loihi**, **SpiNNaker**, IBM **TrueNorth**\n\n## 9. Bonus material: living neurons as computers\n\n- **NeuroAI:** the paper *Toward Next-Generation AI: Catalyzing the NeuroAI Revolution*.\n- **Cortical Labs:** in vitro neurons learn and show \"sentience\" when embodied in a simulated game world (Pong, later Doom).\n  - It is a closed loop: the game state is delivered as *stimulation* (input), the neural *output* is recorded, and *feedback* is stimulation.\n  - Neural activity changes in real time to **minimise environmental unpredictability**, based on the **Free Energy Principle**.\n- Other companies: Koniku, FinalSpark.\n- **Micro-Electrode Array (MEA):** a dish of cultured neurons on 32, 60 or 120 electrodes. Electrodes stimulate and record. The chain is MEA -> headstage (amplifier and stimulator) -> interface board -> PC and software.\n- **Reservoir computing:** the biological network acts as the reservoir and an ANN readout decodes it. Example: chaotic time series prediction on MEAs.\n- **Cyborg paper:** Aaser et al. 2017 (ECAL, Best Poster Award), *Towards Making a Cyborg: A Closed-Loop Reservoir-Neuro System*. Biological network -> ANN readout -> robot control, with feedback to the culture.\n- **Jensen Farner et al. 2021:** evolving **spiking neuron cellular automata** and networks to emulate in vitro neuronal activity. The slide's sigma figure shows **sigma < 1** (activity dies out), **sigma = 1** (activity sustained, critical) and **sigma > 1** (activity explodes).\n\n## 10. Likely exam angles\n\n- Compare biological and artificial neurons part by part.\n- Explain why backprop is biologically implausible, giving at least 3-4 reasons.\n- Explain LIF and STDP, and what \"fire together, wire together\" means.\n- Compare the brain and AI on scale, power and training cost.\n- Explain sparsity and MoE in the Switch Transformer.\n- Describe a closed-loop MEA setup and what it is used for.\n",
+    "questions": [
+      {
+        "id": "L8-Q1",
+        "prompt": "Which part of a biological neuron integrates the incoming signals?",
+        "options": {
+          "a": "Dendrites",
+          "b": "Soma (cell body)",
+          "c": "Axon",
+          "d": "Axon terminal"
+        },
+        "correct": "b",
+        "explanation": "Dendrites receive input, the soma integrates it, the axon conducts the signal and the axon terminal outputs it at the synapse.",
+        "hint": "Think of it as the 'summation' part of the artificial neuron."
+      },
+      {
+        "id": "L8-Q2",
+        "prompt": "What is the correct order of events at a chemical synapse?",
+        "options": {
+          "a": "Docking -> mobilization -> release -> fusion",
+          "b": "Mobilization -> docking -> fusion -> release -> binding to receptors",
+          "c": "Fusion -> docking -> mobilization -> release",
+          "d": "Release -> fusion -> docking -> mobilization"
+        },
+        "correct": "b",
+        "explanation": "Vesicles with neurotransmitter are mobilized, dock at the membrane, fuse, and release neurotransmitter, which binds receptors on the postsynaptic terminal.",
+        "hint": ""
+      },
+      {
+        "id": "L8-Q3",
+        "prompt": "What does the classic artificial neuron (McCulloch-Pitts / perceptron) compute?",
+        "options": {
+          "a": "A weighted sum of inputs (plus bias) passed through a step/threshold function",
+          "b": "The product of all inputs passed through a sigmoid",
+          "c": "A train of spikes whose timing encodes the output",
+          "d": "The gradient of the cost function"
+        },
+        "correct": "a",
+        "explanation": "Inputs xi are multiplied by weights wi (with a constant 1 input for the bias w0), summed, and passed through a step function.",
+        "hint": ""
+      },
+      {
+        "id": "L8-Q4",
+        "prompt": "Which paper, from 1943, laid the logical foundation for neural-network-like computation?",
+        "options": {
+          "a": "Turing, 'Computing Machinery and Intelligence'",
+          "b": "The Dartmouth proposal",
+          "c": "McCulloch & Pitts, 'A Logical Calculus of the Ideas Immanent in Nervous Activity'",
+          "d": "Fedus et al., 'Switch Transformers'"
+        },
+        "correct": "c",
+        "explanation": "McCulloch & Pitts published in 1943. Turing's Imitation Game paper is 1950, and the Dartmouth proposal is from 1956.",
+        "hint": ""
+      },
+      {
+        "id": "L8-Q5",
+        "prompt": "Roughly how many synapses are there in 1 mm^3 of cortex, and what does this imply for 1 cm^3?",
+        "options": {
+          "a": "~700 thousand per mm^3, so ~700 million per cm^3",
+          "b": "~700 million per mm^3, so ~1 trillion (≈7x10^11) per cm^3",
+          "c": "~90,000 per mm^3, so ~90 million per cm^3",
+          "d": "~700 billion per mm^3, so ~700 trillion per cm^3"
+        },
+        "correct": "b",
+        "explanation": "~700,000,000 synapses/mm^3 x 1000 mm^3 ≈ 7x10^11, which is on the order of the Switch Transformer's 1 trillion parameters. The whole ~1200 cm^3 brain gives ~10^15 synapses.",
+        "hint": ""
+      },
+      {
+        "id": "L8-Q6",
+        "prompt": "What makes the Switch Transformer 'sparsely activated'?",
+        "options": {
+          "a": "It deletes most weights after training",
+          "b": "It uses spikes instead of continuous activations",
+          "c": "It routes each input to different selected parameters (Mixture of Experts), keeping computational cost constant despite the huge parameter count",
+          "d": "It trains only one layer at a time"
+        },
+        "correct": "c",
+        "explanation": "MoE models select different parameters for each incoming example. The result is an outrageous number of parameters but constant computational cost.",
+        "hint": ""
+      },
+      {
+        "id": "L8-Q7",
+        "prompt": "According to the lecture's carbon footprint chart, which has the largest footprint?",
+        "options": {
+          "a": "One average American's life for a year (36,156 lbs CO2e)",
+          "b": "A US car including fuel over its lifetime (126,000 lbs)",
+          "c": "Training a 213M-parameter Transformer with neural architecture search (626,155 lbs)",
+          "d": "A round-trip flight NY-SF (1,984 lbs)"
+        },
+        "correct": "c",
+        "explanation": "Transformer (213M) with neural architecture search is ~5x a car's lifetime footprint. Plain training of the same model is only ~192 lbs, so the architecture search is what drives the cost.",
+        "hint": ""
+      },
+      {
+        "id": "L8-Q8",
+        "prompt": "Backprop computes earlier-layer errors as delta_l = W_l^T delta_(l+1) · f'(x_l). Which biological objection does the W_l^T term illustrate?",
+        "options": {
+          "a": "Neurons use spikes rather than continuous values",
+          "b": "Forward and backward weights must be symmetric (identical connections in both directions)",
+          "c": "Weights are frozen after training",
+          "d": "Learning requires supervision"
+        },
+        "correct": "b",
+        "explanation": "Errors are propagated back through the same weights used forward (transposed). Real brains have no known mechanism guaranteeing identical connections in both directions.",
+        "hint": ""
+      },
+      {
+        "id": "L8-Q9",
+        "prompt": "Why are spikes a problem for standard backpropagation?",
+        "options": {
+          "a": "They are too slow to compute",
+          "b": "They are discrete threshold events that are not differentiable",
+          "c": "They require symmetric weights",
+          "d": "They only occur in inhibitory synapses"
+        },
+        "correct": "b",
+        "explanation": "Backprop needs differentiable activation functions. A spike is a discrete event produced when the internal state crosses a threshold, so no gradient exists.",
+        "hint": ""
+      },
+      {
+        "id": "L8-Q10",
+        "prompt": "In a leaky integrate-and-fire neuron, what happens when the neuron state reaches the threshold?",
+        "options": {
+          "a": "The neuron emits an output spike and its state resets",
+          "b": "The weights are multiplied by the error",
+          "c": "The neuron stops receiving input permanently",
+          "d": "The input spikes are stored as weights"
+        },
+        "correct": "a",
+        "explanation": "Input spikes increase the state by their weights (while it leaks over time). When the threshold is crossed, an output spike is fired and the state resets.",
+        "hint": ""
+      },
+      {
+        "id": "L8-Q11",
+        "prompt": "According to STDP, what happens to a synaptic weight when the pre-synaptic neuron fires shortly BEFORE the post-synaptic neuron?",
+        "options": {
+          "a": "It decreases (depression)",
+          "b": "It stays unchanged",
+          "c": "It increases (potentiation)",
+          "d": "It is reset to zero"
+        },
+        "correct": "c",
+        "explanation": "'Neurons that fire together wire together': pre-before-post strengthens the connection (the pre neuron plausibly helped cause the post spike). Post-before-pre weakens it.",
+        "hint": ""
+      },
+      {
+        "id": "L8-Q12",
+        "prompt": "In the Cortical Labs / MEA closed-loop setup, what is the role of feedback stimulation?",
+        "options": {
+          "a": "It permanently freezes the culture's weights",
+          "b": "It lets the neurons' activity adapt in real time to reduce unpredictability of their environment (Free Energy Principle)",
+          "c": "It converts spikes into a differentiable signal for backprop",
+          "d": "It replaces the game with a pre-recorded video"
+        },
+        "correct": "b",
+        "explanation": "Game state is sent in as stimulation and neural output is recorded as the player's action. Feedback stimulation closes the loop, and the neurons change activity to minimise environmental unpredictability.",
+        "hint": ""
+      }
+    ]
+  }
+]
