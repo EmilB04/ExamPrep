@@ -1,5 +1,7 @@
+import { ActionButton } from './ActionButton'
 import { useState } from 'react'
 import { ArrowRight, RotateCcw } from 'lucide-react'
+import { motion } from 'motion/react'
 
 const positions = [
   [90, 45],
@@ -44,25 +46,28 @@ export function ComplexExploration({ kind }: { kind: string }) {
           {edges.map((edge) => {
             const [a, b] = edge.split('-').map(Number)
             return (
-              <line
+              <motion.line
                 key={edge}
                 x1={positions[a][0]}
                 y1={positions[a][1]}
                 x2={positions[b][0]}
                 y2={positions[b][1]}
-                stroke="#b4a5d1"
+                stroke="var(--accent)"
                 strokeWidth="2"
+                initial={{ pathLength: 0, opacity: 0 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 0.3 }}
               />
             )
           })}
           {positions.map(([x, y], i) => (
             <g key={i}>
-              <circle cx={x} cy={y} r="17" fill="#9582c4" />
+              <circle cx={x} cy={y} r="17" fill="var(--strong)" />
               <text
                 x={x}
                 y={y + 4}
                 textAnchor="middle"
-                style={{ fill: 'white', fontSize: 12 }}
+                style={{ fill: 'var(--surface)', fontSize: 12 }}
               >
                 {i + 1}
               </text>
@@ -95,7 +100,7 @@ export function ComplexExploration({ kind }: { kind: string }) {
           ))}
         </select>
         <div className="button-row">
-          <button
+          <ActionButton
             className="secondary-button"
             onClick={() =>
               setEdges((e) =>
@@ -105,7 +110,7 @@ export function ComplexExploration({ kind }: { kind: string }) {
           >
             {edges.includes(pair) ? 'Remove edge' : 'Add edge'}
             <ArrowRight size={15} />
-          </button>
+          </ActionButton>
         </div>
         <p>
           Density = 2m / [n(n−1)]. Change edges and compare node degrees:{' '}
@@ -129,13 +134,20 @@ export function ComplexExploration({ kind }: { kind: string }) {
         <h3>Target: maximise the number of ones</h3>
         <div className="bitstring">
           {bits.map((bit, i) => (
-            <button
+            <ActionButton
               key={i}
               aria-label={`Flip bit ${i + 1}, currently ${bit}`}
               onClick={() => setBits(bits.map((b, j) => (i === j ? 1 - b : b)))}
             >
-              {bit}
-            </button>
+              <motion.span
+                key={bit}
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                {bit}
+              </motion.span>
+            </ActionButton>
           ))}
         </div>
         <div className="model-stats">
@@ -224,7 +236,11 @@ export function ComplexExploration({ kind }: { kind: string }) {
           onChange={(e) => setCurrent(+e.target.value)}
         />
         <div className="voltage-track">
-          <span style={{ width: `${voltage * 100}%` }} />
+          <motion.span
+            initial={false}
+            animate={{ width: `${voltage * 100}%` }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+          />
         </div>
         <div className="model-stats">
           <span>
@@ -238,7 +254,7 @@ export function ComplexExploration({ kind }: { kind: string }) {
           </span>
         </div>
         <div className="button-row">
-          <button
+          <ActionButton
             className="secondary-button"
             onClick={() => {
               const next = voltage + 0.2 * (current - voltage)
@@ -251,8 +267,8 @@ export function ComplexExploration({ kind }: { kind: string }) {
           >
             Advance time
             <ArrowRight size={15} />
-          </button>
-          <button
+          </ActionButton>
+          <ActionButton
             className="icon-button"
             aria-label="Reset neuron"
             onClick={() => {
@@ -262,7 +278,7 @@ export function ComplexExploration({ kind }: { kind: string }) {
             }}
           >
             <RotateCcw size={16} />
-          </button>
+          </ActionButton>
         </div>
         <p>
           Each step: v ← v + 0.2(I−v). At threshold 1, emit a spike and reset to

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { ActionButton } from './ActionButton'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
   ArrowDownToLine,
@@ -22,7 +23,6 @@ import {
   Network,
   NotebookPen,
   Play,
-  Sparkles,
   Target,
   X,
 } from 'lucide-react'
@@ -34,13 +34,15 @@ import type { Course } from './content'
 import { Illustration } from './Illustration'
 import { loadProgress, nextReview, saveProgress } from './progress'
 import type { Progress } from './progress'
+import { ThemeControl } from './ThemeControl'
+import { ConceptPattern } from './ConceptPattern'
 
 type Page = 'overview' | 'courses' | 'review' | 'notes' | 'materials'
 const nav = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-  { id: 'courses', label: 'My courses', icon: BookOpen },
+  { id: 'courses', label: 'Courses', icon: BookOpen },
   { id: 'review', label: 'Recall practice', icon: Layers3 },
-  { id: 'notes', label: 'My notebook', icon: NotebookPen },
+  { id: 'notes', label: 'Notebook', icon: NotebookPen },
   { id: 'materials', label: 'Course materials', icon: Library },
 ] as const
 const stages = ['Read & understand', 'Explore', 'Check understanding', 'Recall']
@@ -61,9 +63,45 @@ export default function App() {
   const [progress, setProgress] = useState<Progress>(loadProgress)
   const [storageOk, setStorageOk] = useState(true)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const sidebarRef = useRef<HTMLElement>(null)
   const [reviewId, setReviewId] = useState<string | null>(null)
   const [revealed, setRevealed] = useState(false)
   const [now, setNow] = useState(Date.now())
+  useEffect(() => {
+    if (!mobileOpen) return
+    const previousFocus = document.activeElement as HTMLElement | null
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    sidebarRef.current?.querySelector<HTMLElement>('button, a')?.focus()
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileOpen(false)
+      if (event.key !== 'Tab') return
+      const controls =
+        sidebarRef.current?.querySelectorAll<HTMLElement>('a, button')
+      if (!controls?.length) return
+      const first = controls[0]
+      const last = controls[controls.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
+    }
+    document.addEventListener('keydown', handleKey)
+    const desktop = window.matchMedia?.('(min-width: 761px)')
+    const closeOnDesktop = () => {
+      if (desktop?.matches) setMobileOpen(false)
+    }
+    desktop?.addEventListener('change', closeOnDesktop)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKey)
+      desktop?.removeEventListener('change', closeOnDesktop)
+      previousFocus?.focus()
+    }
+  }, [mobileOpen])
   useEffect(() => {
     setStorageOk(saveProgress(progress))
   }, [progress])
@@ -137,13 +175,27 @@ export default function App() {
         Skip to content
       </a>
       {mobileOpen && (
-        <button
+        <ActionButton
           className="sidebar-overlay"
           aria-label="Close navigation"
           onClick={() => setMobileOpen(false)}
+          whileHover={{}}
+          whileTap={{}}
         />
       )}
-      <aside className={`sidebar ${mobileOpen ? 'open' : ''}`}>
+      <aside
+        id="primary-navigation"
+        ref={sidebarRef}
+        aria-label="Learning navigation"
+        className={`sidebar ${mobileOpen ? 'open' : ''}`}
+      >
+        <ActionButton
+          className="icon-button sidebar-close"
+          aria-label="Close navigation"
+          onClick={() => setMobileOpen(false)}
+        >
+          <X size={20} />
+        </ActionButton>
         <a
           className="brand"
           href="#"
@@ -157,62 +209,64 @@ export default function App() {
           </span>
           MasterPrep<span className="brand-dot">.</span>
         </a>
-        <div className="workspace-label">YOUR WORKSPACE</div>
+        <div className="workspace-label">LEARN</div>
         <nav aria-label="Main navigation">
           {nav.map((item) => (
-            <button
+            <ActionButton
               key={item.id}
               className={`nav-item ${page === item.id ? 'active' : ''}`}
               aria-current={page === item.id ? 'page' : undefined}
               onClick={() => navigate(item.id)}
             >
+              {page === item.id && (
+                <motion.span
+                  className="nav-slider"
+                  layoutId="active-navigation"
+                  transition={{ type: 'spring', stiffness: 430, damping: 34 }}
+                  aria-hidden="true"
+                />
+              )}
               <item.icon size={19} />
               {item.label}
               {item.id === 'review' && due.length > 0 && (
                 <span className="nav-count">{due.length}</span>
               )}
-            </button>
+            </ActionButton>
           ))}
         </nav>
         <div className="sidebar-rule" />
-        <div className="workspace-label">THIS SEMESTER</div>
+        <div className="workspace-label">COURSE LIBRARY</div>
         <div className="sidebar-courses">
           {courses.map((c) => (
-            <button key={c.id} onClick={() => openCourse(c)}>
+            <ActionButton key={c.id} onClick={() => openCourse(c)}>
               <span className={`course-dot ${c.color}`} />
               {c.shortTitle}
-            </button>
+            </ActionButton>
           ))}
         </div>
         <div className="sidebar-bottom">
-          <div className="small-tip">
-            <span className="tip-icon">
-              <Lightbulb size={19} />
-            </span>
-            <strong>A little, often.</strong>
-            <p>Small sessions. Time to reflect. Come back and try again.</p>
-          </div>
-          <div className="profile">
-            <span className="avatar">E</span>
-            <span>
-              <strong>My learning space</strong>
-              <small>Master’s · Applied Computer Science</small>
-            </span>
+          <div className="local-workspace">
+            <NotebookPen size={18} />
+            <div>
+              <strong>Pick up where you left off</strong>
+              <p>Progress and notes stay in this browser.</p>
+            </div>
           </div>
         </div>
       </aside>
-      <div className="main-shell">
+      <div className="main-shell" inert={mobileOpen}>
         <header className="topbar">
           <div className="breadcrumb">
-            <button
+            <ActionButton
               className="icon-button mobile-toggle"
               aria-label="Open navigation"
               aria-expanded={mobileOpen}
+              aria-controls="primary-navigation"
               onClick={() => setMobileOpen(!mobileOpen)}
             >
               <Menu size={21} />
-            </button>
-            <span>My workspace</span>
+            </ActionButton>
+            <span>Workspace</span>
             <ChevronRight size={14} />
             <b>
               {learning
@@ -222,10 +276,7 @@ export default function App() {
                   : nav.find((n) => n.id === page)?.label}
             </b>
           </div>
-          <div className="semester">
-            <span className="status-dot" />
-            Autumn 2026<span className="top-avatar">E</span>
-          </div>
+          <ThemeControl />
         </header>
         <main
           id="main"
@@ -262,13 +313,13 @@ export default function App() {
                 />
               ) : selected ? (
                 <>
-                  <button
+                  <ActionButton
                     className="back-link"
                     onClick={() => navigate('courses')}
                   >
                     <ArrowLeft size={16} />
                     All courses
-                  </button>
+                  </ActionButton>
                   <div className={`course-heading ${selected.color}`}>
                     <span className="course-icon">
                       <CourseIcon course={selected} size={30} />
@@ -314,7 +365,7 @@ export default function App() {
                               </small>
                             </div>
                             {lesson && (
-                              <button
+                              <ActionButton
                                 className="secondary-button"
                                 onClick={() => start(selected, lesson)}
                               >
@@ -322,7 +373,7 @@ export default function App() {
                                   ? 'Revisit'
                                   : 'Start'}
                                 <ArrowRight size={15} />
-                              </button>
+                              </ActionButton>
                             )}
                           </div>
                         )
@@ -347,7 +398,7 @@ export default function App() {
                         <p>
                           {selected.lessons
                             ? 'Eight imported lecture reviews and 89 questions. The reviews were written by Claude; source qualifications remain visible in each lesson. Original diagrams are not included in the export.'
-                            : 'Topic groups follow the course description. The starter lesson is illustrative and has not been checked against your lecture notes.'}
+                            : 'Topic groups follow the course description. The starter lesson is illustrative and has not been checked against the full lecture materials.'}
                         </p>
                       </div>
                     </aside>
@@ -357,18 +408,18 @@ export default function App() {
                 <>
                   <div className="page-heading">
                     <div>
-                      <div className="eyebrow">
-                        A LITTLE PROGRESS, EVERY DAY
-                      </div>
+                      <div className="eyebrow">READ. EXPLORE. RECALL.</div>
                       <h1>
-                        Make room for understanding
+                        Make sense of the complex
                         <span className="heading-dot">.</span>
                       </h1>
-                      <p>Your courses, one clear learning path at a time.</p>
+                      <p>
+                        Explore a concept. Put it into practice. See what stays.
+                      </p>
                     </div>
                     <span className="term-tag">
                       <GraduationCap size={16} />
-                      Master’s workspace
+                      Master’s courses · Autumn 2026
                     </span>
                   </div>
                   <div className="overview-columns">
@@ -381,25 +432,18 @@ export default function App() {
                               ? 'REVISIT A CONCEPT'
                               : 'YOUR NEXT STEP'}
                           </span>
-                          <h2>
-                            {completed.length ? (
-                              'Keep your momentum.'
-                            ) : (
-                              <>
-                                Build understanding.
-                                <br />
-                                Then put it to the test.
-                              </>
-                            )}
-                          </h2>
+                          <h2>{next.lesson.title}</h2>
                           <p>
-                            {next.lesson.title}
-                            <br />
-                            <span>
-                              {next.shortTitle} · {next.lesson.minutes} min
+                            {next.shortTitle}
+                            <span className="hero-meta">
+                              <Clock3 size={14} />
+                              {next.lesson.minutes} min ·{' '}
+                              {next.lesson.reading
+                                ? next.lesson.eyebrow
+                                : 'Starter lesson'}
                             </span>
                           </p>
-                          <button
+                          <ActionButton
                             className="primary-button"
                             onClick={() => start(next)}
                           >
@@ -407,46 +451,22 @@ export default function App() {
                               ? 'Revisit lesson'
                               : 'Start learning'}
                             <ArrowRight size={17} />
-                          </button>
+                          </ActionButton>
                         </div>
-                        <div className="hero-art" aria-hidden="true">
-                          <div className="orbit orbit-one" />
-                          <div className="orbit orbit-two" />
-                          <div className="art-spark spark-one">✦</div>
-                          <div className="art-spark spark-two">✦</div>
-                          <div className="floating-note note-back">
-                            <div />
-                            <div />
-                            <div />
-                            <div />
-                          </div>
-                          <div className="floating-note note-front">
-                            <span className="note-symbol">
-                              <Brain size={36} strokeWidth={1.5} />
-                            </span>
-                            <span className="art-line" />
-                            <span className="art-line short" />
-                            <span className="art-check">
-                              <Check size={18} />
-                            </span>
-                          </div>
-                          <span className="art-label">
-                            <Sparkles size={14} />
-                            Connect the dots
-                          </span>
-                        </div>
+                        <ConceptPattern />
                       </section>
                       <div className="section-heading course-section">
                         <h2>
-                          Your courses <span className="count-badge">03</span>
+                          Course library{' '}
+                          <span className="count-badge">{courses.length}</span>
                         </h2>
-                        <button
+                        <ActionButton
                           className="text-link"
                           onClick={() => navigate('courses')}
                         >
                           View all
                           <ArrowRight size={15} />
-                        </button>
+                        </ActionButton>
                       </div>
                       <div className="course-grid">
                         {courses.map((c) => (
@@ -491,8 +511,8 @@ export default function App() {
                             : `${completed.length} ${completed.length === 1 ? 'lesson' : 'lessons'} completed. Keep building your understanding.`}
                         </p>
                         <div className="stat-line">
-                          <span>Courses in your workspace</span>
-                          <b>3</b>
+                          <span>Available courses</span>
+                          <b>{courses.length}</b>
                         </div>
                         <div className="stat-line">
                           <span>Cards ready to review</span>
@@ -509,13 +529,13 @@ export default function App() {
                             ? `${due.length} recall ${due.length === 1 ? 'card is' : 'cards are'} ready for another look.`
                             : 'Complete a lesson to add its key concept to your recall practice.'}
                         </p>
-                        <button
+                        <ActionButton
                           className="text-link"
                           onClick={() => navigate('review')}
                         >
                           Open recall practice
                           <ArrowRight size={15} />
-                        </button>
+                        </ActionButton>
                       </div>
                     </aside>
                   </div>
@@ -564,9 +584,11 @@ export default function App() {
                     </div>
                   </section>
                   <footer className="page-footer">
-                    <span>Built for curiosity. Made for your master’s.</span>
+                    <span>MasterPrep · Read, explore, and recall</span>
                     <span>
-                      Progress saved in this browser{' '}
+                      {storageOk
+                        ? 'Progress saved in this browser'
+                        : 'Progress could not be saved'}{' '}
                       <span className="status-dot" />
                     </span>
                   </footer>
@@ -574,8 +596,8 @@ export default function App() {
               ) : page === 'courses' ? (
                 <>
                   <PageHeading
-                    eyebrow="YOUR SEMESTER"
-                    title="Three courses. New connections."
+                    eyebrow="COURSE LIBRARY"
+                    title="Find your next concept."
                     text="Explore a topic, work through a lesson, and check what stayed with you."
                   />
                   <div className="course-grid full-grid">
@@ -595,9 +617,9 @@ export default function App() {
                     <Lightbulb size={20} />
                     <p>
                       Complex Systems has eight lecture reviews and 89 quiz
-                      questions from your export. Machine Learning and
-                      Scientific Methods each have an illustrative starter
-                      lesson, awaiting your materials.
+                      questions. Machine Learning and Scientific Methods each
+                      have an illustrative starter lesson; full lecture content
+                      is not available yet.
                     </p>
                   </div>
                 </>
@@ -621,28 +643,28 @@ export default function App() {
                           </p>
                           <p>How did it go?</p>
                           <div className="button-row">
-                            <button
+                            <ActionButton
                               className="secondary-button"
                               onClick={() => rate(currentReview, false)}
                             >
                               Revisit in 10 minutes
-                            </button>
-                            <button
+                            </ActionButton>
+                            <ActionButton
                               className="primary-button"
                               onClick={() => rate(currentReview, true)}
                             >
                               Remembered · in 3 days
                               <Check size={17} />
-                            </button>
+                            </ActionButton>
                           </div>
                         </>
                       ) : (
-                        <button
+                        <ActionButton
                           className="primary-button"
                           onClick={() => setRevealed(true)}
                         >
                           Reveal explanation
-                        </button>
+                        </ActionButton>
                       )}
                     </div>
                   ) : completed.length ? (
@@ -666,7 +688,7 @@ export default function App() {
                                 : `Next review: ${new Date(progress.completed[c.lesson.id].reviewAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}`}
                             </p>
                           </div>
-                          <button
+                          <ActionButton
                             className="secondary-button"
                             onClick={() => {
                               setReviewId(c.lesson.id)
@@ -675,7 +697,7 @@ export default function App() {
                           >
                             Practice
                             <ArrowRight size={15} />
-                          </button>
+                          </ActionButton>
                         </div>
                       ))}
                     </div>
@@ -692,13 +714,13 @@ export default function App() {
               ) : page === 'notes' ? (
                 <>
                   <PageHeading
-                    eyebrow="YOUR NOTEBOOK"
+                    eyebrow="NOTEBOOK"
                     title="Put it in your own words."
                     text="Keep questions, explanations, and connections alongside each course."
                   />
                   <div className="section-heading">
                     <p>Notes save automatically in this browser.</p>
-                    <button
+                    <ActionButton
                       className="secondary-button"
                       onClick={() => {
                         const blob = new Blob(
@@ -722,7 +744,7 @@ export default function App() {
                     >
                       <ArrowDownToLine size={16} />
                       Export notes
-                    </button>
+                    </ActionButton>
                   </div>
                   <div className="notes-grid">
                     {courses.map((c) => (
@@ -753,26 +775,26 @@ export default function App() {
                 <>
                   <PageHeading
                     eyebrow="COURSE MATERIALS"
-                    title="A place for your curriculum."
-                    text="The foundation is ready. Your lecture materials will give it depth."
+                    title="The material behind the lessons."
+                    text="See what is available and where each course begins."
                   />
                   <div className="materials-intro panel">
                     <Library size={28} />
                     <div>
-                      <h2>Bring your notes into the learning loop.</h2>
+                      <h2>Lecture reviews and source references</h2>
                       <p>
-                        Complex Systems is imported from your course export:
-                        eight lecture reviews, 89 questions, explanations, and
-                        hints. The text is split into reading sections, followed
-                        by an interactive example, a lecture quiz, and recall
+                        The Complex Systems collection includes eight lecture
+                        reviews, 89 questions, explanations, and hints. The text
+                        is split into reading sections, followed by an
+                        interactive example, a lecture quiz, and recall
                         practice.
                       </p>
                       <p>
                         Machine Learning and Scientific Methods still use
-                        illustrative examples. No live Claude connection or
-                        document upload processor is configured. Source
-                        qualifications appear in the Complex Systems lessons;
-                        original diagrams were not included in the export.
+                        illustrative examples. Lecture imports are curated; file
+                        uploads are not available yet. Source qualifications
+                        appear in the Complex Systems lessons; original diagrams
+                        were not included in the export.
                       </p>
                     </div>
                   </div>
@@ -838,7 +860,15 @@ function CourseCard({
   onClick: () => void
 }) {
   return (
-    <button className={`course-card ${c.color}`} onClick={onClick}>
+    <ActionButton
+      className={`course-card ${c.color}`}
+      onClick={onClick}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.99 }}
+      transition={{ duration: 0.24 }}
+    >
       <div className="course-card-top">
         <span className="course-icon">
           <CourseIcon course={c} />
@@ -860,9 +890,13 @@ function CourseCard({
         <span>10 ECTS</span>
       </div>
       <div className="course-progress">
-        <span style={{ width: `${(done / lessonsFor(c).length) * 100}%` }} />
+        <motion.span
+          initial={{ width: 0 }}
+          animate={{ width: `${(done / lessonsFor(c).length) * 100}%` }}
+          transition={{ duration: 0.45, ease: 'easeOut' }}
+        />
       </div>
-    </button>
+    </ActionButton>
   )
 }
 function EmptyState({
@@ -883,10 +917,10 @@ function EmptyState({
       <span>{icon}</span>
       <h2>{title}</h2>
       <p>{text}</p>
-      <button className="primary-button" onClick={onClick}>
+      <ActionButton className="primary-button" onClick={onClick}>
         {action}
         <ArrowRight size={16} />
-      </button>
+      </ActionButton>
     </div>
   )
 }
@@ -909,10 +943,10 @@ function LearningSession({
   const lesson = course.lesson
   return (
     <>
-      <button className="back-link" onClick={onBack}>
+      <ActionButton className="back-link" onClick={onBack}>
         <X size={17} />
         Leave session
-      </button>
+      </ActionButton>
       <div className="session-top">
         <span className={`tag ${course.color}`}>
           {course.code} · {course.shortTitle}
@@ -926,13 +960,18 @@ function LearningSession({
       <h1 className="lesson-title">{lesson.title}</h1>
       <ol className="session-steps">
         {stages.map((s, i) => (
-          <li
+          <motion.li
             key={s}
             className={i === step ? 'current' : i < step ? 'done' : ''}
           >
-            <span>{i < step ? <Check size={14} /> : i + 1}</span>
+            <motion.span
+              animate={{ scale: i === step ? 1.08 : 1 }}
+              transition={{ type: 'spring', stiffness: 420, damping: 24 }}
+            >
+              {i < step ? <Check size={14} /> : i + 1}
+            </motion.span>
             {s}
-          </li>
+          </motion.li>
         ))}
       </ol>
       {finished ? (
@@ -946,10 +985,10 @@ function LearningSession({
             You read, explored, checked your understanding, and practised
             recall. Your recall card is scheduled for tomorrow.
           </p>
-          <button className="primary-button" onClick={onBack}>
+          <ActionButton className="primary-button" onClick={onBack}>
             Back to learning path
             <ArrowRight size={16} />
-          </button>
+          </ActionButton>
         </div>
       ) : (
         <AnimatePresence mode="wait">
@@ -1059,14 +1098,14 @@ function LearningSession({
                     </div>
                   </div>
                 ) : (
-                  <button
+                  <ActionButton
                     className="secondary-button"
                     disabled={!recall.trim()}
                     onClick={() => setReveal(true)}
                   >
                     Compare explanation
                     <ChevronRight size={16} />
-                  </button>
+                  </ActionButton>
                 )}
                 <p className="sample-note">
                   This is self-assessed recall. Your response is not
@@ -1075,7 +1114,7 @@ function LearningSession({
               </>
             )}
             <div className="lesson-actions">
-              <button
+              <ActionButton
                 className="back-link"
                 disabled={step === 0}
                 onClick={() => {
@@ -1085,9 +1124,9 @@ function LearningSession({
               >
                 <ArrowLeft size={16} />
                 Previous
-              </button>
+              </ActionButton>
               <span>{step + 1} / 4</span>
-              <button
+              <ActionButton
                 className="primary-button"
                 disabled={
                   step === 2 ? !quizReady : step === 3 ? !reveal : false
@@ -1111,7 +1150,7 @@ function LearningSession({
                       ? 'Test your understanding'
                       : 'Practise recall'}
                 <ArrowRight size={16} />
-              </button>
+              </ActionButton>
             </div>
           </motion.section>
         </AnimatePresence>

@@ -5,18 +5,9 @@ import type { ReactNode } from 'react'
 import App from './App'
 import { complexLessons } from './complex-systems'
 
-vi.mock('motion/react', () => ({
+vi.mock('motion/react', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('motion/react')>()),
   AnimatePresence: ({ children }: { children: ReactNode }) => children,
-  motion: {
-    div: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-    section: ({
-      children,
-      'aria-label': label,
-    }: {
-      children: ReactNode
-      'aria-label': string
-    }) => <section aria-label={label}>{children}</section>,
-  },
 }))
 beforeEach(() => {
   localStorage.clear()
@@ -24,6 +15,22 @@ beforeEach(() => {
   Element.prototype.scrollIntoView = vi.fn()
 })
 afterEach(cleanup)
+
+it('uses a shared workspace without a fixed profile and supports closing the navigation with Escape', () => {
+  render(<App />)
+  expect(document.querySelector('.avatar, .top-avatar, .profile')).toBeNull()
+  expect(screen.queryByText('My learning space')).toBeNull()
+  expect(screen.getByRole('group', { name: 'Color theme' })).toBeTruthy()
+  const menu = screen.getByRole('button', { name: 'Open navigation' })
+  menu.focus()
+  fireEvent.click(menu)
+  expect(menu.getAttribute('aria-expanded')).toBe('true')
+  expect(document.body.style.overflow).toBe('hidden')
+  fireEvent.keyDown(document, { key: 'Escape' })
+  expect(menu.getAttribute('aria-expanded')).toBe('false')
+  expect(document.activeElement).toBe(menu)
+  expect(document.body.style.overflow).toBe('')
+})
 
 it('completes the selected imported lecture and restores its recall card after reloading', () => {
   const view = render(<App />)

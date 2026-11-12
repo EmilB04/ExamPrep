@@ -1,7 +1,9 @@
+import { ActionButton } from './ActionButton'
 import { useState } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { motion } from 'motion/react'
 
 export function LectureReading({ text }: { text: string }) {
   const sections = text.split(/(?=^## )/m).filter((s) => s.trim())
@@ -30,7 +32,13 @@ export function LectureReading({ text }: { text: string }) {
           </option>
         ))}
       </select>
-      <article className="markdown">
+      <motion.article
+        className="markdown"
+        key={index}
+        initial={{ opacity: 0, y: 7 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+      >
         <Markdown
           remarkPlugins={[remarkGfm]}
           components={{
@@ -44,27 +52,27 @@ export function LectureReading({ text }: { text: string }) {
         >
           {sections[index]}
         </Markdown>
-      </article>
+      </motion.article>
       <div className="reading-controls">
-        <button
+        <ActionButton
           className="secondary-button"
           disabled={index === 0}
           onClick={() => go(index - 1)}
         >
           <ArrowLeft size={14} />
           Previous section
-        </button>
+        </ActionButton>
         <span>
           {index + 1} / {sections.length}
         </span>
-        <button
+        <ActionButton
           className="secondary-button"
           disabled={index === sections.length - 1}
           onClick={() => go(index + 1)}
         >
           Next section
           <ArrowRight size={14} />
-        </button>
+        </ActionButton>
       </div>
       <p className="sample-note">
         Use the section menu to revisit a topic. Continue to exploration when

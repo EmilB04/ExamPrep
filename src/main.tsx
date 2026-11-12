@@ -2,6 +2,8 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { MotionConfig } from 'motion/react'
 import App from './App'
+import '@fontsource-variable/manrope'
+import '@fontsource-variable/dm-sans'
 import './styles.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

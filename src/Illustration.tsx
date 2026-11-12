@@ -1,3 +1,4 @@
+import { ActionButton } from './ActionButton'
 import { useState } from 'react'
 import { RotateCcw } from 'lucide-react'
 import { ComplexExploration } from './ComplexExploration'
@@ -114,19 +115,19 @@ export function Illustration({
         {interactive && (
           <>
             <div className="button-row">
-              <button
+              <ActionButton
                 className="secondary-button"
                 onClick={() => setGeneration((g) => g + 1)}
               >
                 Next generation
-              </button>
-              <button
+              </ActionButton>
+              <ActionButton
                 className="icon-button"
                 aria-label="Reset automaton"
                 onClick={() => setGeneration(0)}
               >
                 <RotateCcw size={17} />
-              </button>
+              </ActionButton>
             </div>
             <p>
               Generation {12 + generation}. Each cell becomes the XOR of its

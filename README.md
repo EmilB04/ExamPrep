@@ -1,6 +1,6 @@
 # MasterPrep
 
-A personal learning workspace for master's courses, built with React, TypeScript, Vite, Tailwind CSS v4, and Motion.
+A learning platform for master's courses, built with React, TypeScript, Vite, Tailwind CSS v4, and Motion. The course library is shared; progress, notebook content, and display preferences belong to each visitor's browser.
 
 ## Start locally
 
@@ -20,11 +20,13 @@ npm run build
 ## Included
 
 - Three courses: ITI41020, ITI41225, and ITI41720, with links to the official Autumn 2026 course descriptions.
-- Eight Complex Systems lectures imported from your course export, including 89 questions with explanations and hints; one illustrative starter lesson each for Machine Learning and Scientific Methods.
+- Eight Complex Systems lectures imported from the supplied course export, including 89 questions with explanations and hints; one illustrative starter lesson each for Machine Learning and Scientific Methods.
 - Four-stage learning: reading in sections → interactive exploration → lecture quiz with feedback, retry, and first-attempt summary → written, self-assessed recall.
 - Course topic outlines; topics without lessons are explicitly labelled as awaiting materials.
 - Browser-local progress and notes, Markdown note export, and recall cards scheduled one day after lesson completion. Reviewing a card schedules another review in ten minutes or three days.
 - Responsive navigation, keyboard-operable exercises, reduced-motion support, and feedback when browser persistence fails.
+- Light, Dark, and System display options, with a saved browser preference, live system-theme updates, and an early theme script to avoid a light flash on reload. Fonts are self-hosted.
+- Motion transitions for navigation and theme selection, cards, buttons, reading sections, quiz feedback, lesson steps, and interactive diagrams. System reduced-motion preferences are respected.
 
 Progress is local to the browser and origin. There are no accounts or cross-device sync. Quiz completion requires working through every question; recall is self-assessed, not automatically marked. First-attempt quiz scores appear during the session; completion dates and total answer attempts persist, but score history is not yet stored.
 
