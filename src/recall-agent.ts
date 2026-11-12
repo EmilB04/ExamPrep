@@ -8,13 +8,9 @@ export type RecallFeedback = {
   incorrect: string[]
   feedback: string
 }
-export type RecallRequest = {
-  prompt: string
-  material: string
-  recall: string
-}
+export type RecallRequest = { lessonId: string; recall: string }
 
-export const limits = { recall: 4000, material: 60000, prompt: 1000 }
+export const limits = { recall: 4000 }
 
 /** Everything the agent may judge a recall against: the lesson's own material. */
 export function lessonMaterial(lesson: Lesson): string {
@@ -50,8 +46,7 @@ export async function checkRecall(
   signal?: AbortSignal,
 ): Promise<RecallFeedback> {
   const body: RecallRequest = {
-    prompt: lesson.recall,
-    material: lessonMaterial(lesson),
+    lessonId: lesson.id,
     recall: recall.trim(),
   }
   let res: Response

@@ -1,6 +1,8 @@
 import Anthropic from '@anthropic-ai/sdk'
+import { lessonCourses } from '../src/content'
 import {
   isRecallFeedback,
+  lessonMaterial,
   limits,
   type RecallFeedback,
   type RecallRequest,
@@ -42,18 +44,12 @@ const json = (body: unknown, status = 200) =>
 function parseRequest(value: unknown): RecallRequest | string {
   if (!value || typeof value !== 'object') return 'Invalid request.'
   const v = value as Record<string, unknown>
-  if (
-    typeof v.prompt !== 'string' ||
-    typeof v.material !== 'string' ||
-    typeof v.recall !== 'string'
-  )
+  if (typeof v.lessonId !== 'string' || typeof v.recall !== 'string')
     return 'Invalid request.'
   if (!v.recall.trim()) return 'Write your recall first.'
   if (v.recall.length > limits.recall)
     return `Recall is too long (max ${limits.recall} characters).`
-  if (v.material.length > limits.material || v.prompt.length > limits.prompt)
-    return 'Lesson material is too large.'
-  return { prompt: v.prompt, material: v.material, recall: v.recall }
+  return { lessonId: v.lessonId, recall: v.recall }
 }
 
 export default {
@@ -63,6 +59,10 @@ export default {
       return json({ error: 'Not found.' }, 404)
     if (request.method !== 'POST')
       return json({ error: 'Method not allowed.' }, 405)
+    // Browsers always send Origin on cross-site POSTs; reject other sites.
+    const origin = request.headers.get('origin')
+    if (origin && origin !== url.origin)
+      return json({ error: 'Forbidden.' }, 403)
     if (!env.ANTHROPIC_API_KEY)
       return json({ error: 'The recall checker is not configured.' }, 503)
 
@@ -74,11 +74,17 @@ export default {
     }
     if (typeof parsed === 'string') return json({ error: parsed }, 400)
 
+    // Material and prompt come from the bundled course content, never the client.
+    const entry = lessonCourses.find((c) => c.lesson.id === parsed.lessonId)
+    if (!entry) return json({ error: 'Unknown lesson.' }, 404)
+    const material = lessonMaterial(entry.lesson)
+    const prompt = entry.lesson.recall
+
     const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY })
     try {
       const response = await client.messages.create({
         model: MODEL,
-        max_tokens: 4000,
+        max_tokens: 1000,
         output_config: {
           effort: 'low',
           format: { type: 'json_schema', schema },
@@ -87,7 +93,7 @@ export default {
         messages: [
           {
             role: 'user',
-            content: `<course_material>\n${parsed.material}\n</course_material>\n\n<prompt>\n${parsed.prompt}\n</prompt>\n\n<student_recall>\n${parsed.recall}\n</student_recall>`,
+            content: `<course_material>\n${material}\n</course_material>\n\n<prompt>\n${prompt}\n</prompt>\n\n<student_recall>\n${parsed.recall}\n</student_recall>`,
           },
         ],
       })

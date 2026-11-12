@@ -9,7 +9,7 @@ export default defineConfig({
       notFoundHandling: 'single-page-application',
       runWorkerFirst: ['/api/*'],
     },
-    // Recall checker. Set with: npx cf secret put ANTHROPIC_API_KEY (or .dev.vars locally)
+    // Recall checker. Set with: npx cf workers secrets update ANTHROPIC_API_KEY (or .dev.vars locally)
     env: { ANTHROPIC_API_KEY: bindings.secret() },
   },
 })

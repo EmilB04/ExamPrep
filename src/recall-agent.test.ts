@@ -40,7 +40,7 @@ it('posts the recall and returns parsed feedback', async () => {
     (fetchMock.mock.calls[0] as unknown as [string, RequestInit])[1]
       .body as string,
   )
-  expect(body.recall).toBe('my recall')
+  expect(body).toEqual({ lessonId: lesson.id, recall: 'my recall' })
 })
 
 it('explains when the endpoint is missing', async () => {
