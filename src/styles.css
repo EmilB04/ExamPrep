@@ -2366,3 +2366,167 @@ textarea::placeholder {
   font-size: 12px;
   color: var(--subtle);
 }
+
+/* Study workspace extensions share the existing theme tokens. */
+:root {
+  scrollbar-color: var(--line-strong) var(--canvas);
+  scrollbar-width: thin;
+}
+html {
+  scrollbar-gutter: stable;
+}
+textarea {
+  resize: none;
+}
+.session-steps li {
+  padding: 0;
+}
+.session-steps li > button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 4px 19px 0;
+  text-align: left;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.session-steps li > button > span {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: var(--surface-soft);
+  font-size: 10px;
+}
+.session-steps .current > button > span {
+  background: var(--green-tint);
+  color: var(--green-ink);
+}
+.session-steps button:hover {
+  color: var(--brand);
+}
+.account-status {
+  padding: 16px 20px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+}
+.account-status p {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+.account-status strong {
+  overflow-wrap: anywhere;
+}
+.account-actions,
+.assistant-actions,
+.assistant-suggestions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.course-assistant {
+  margin-bottom: 24px;
+}
+.assistant-panel {
+  margin-top: 12px;
+  padding: clamp(18px, 3vw, 30px);
+}
+.assistant-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 16px;
+}
+.assistant-heading h2 {
+  margin: 6px 0 12px;
+  font-family: var(--font-display);
+}
+.assistant-panel label {
+  display: block;
+  font-weight: 600;
+  font-size: 13px;
+  margin: 16px 0 8px;
+}
+.assistant-panel select {
+  width: 100%;
+  max-width: 480px;
+  min-height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 10px;
+}
+.assistant-panel textarea {
+  width: 100%;
+  min-height: 110px;
+}
+.assistant-suggestions {
+  margin: 18px 0;
+}
+.assistant-messages {
+  max-height: 480px;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+}
+.assistant-message {
+  padding: 18px;
+  margin: 12px 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+.assistant-message.user {
+  margin-left: 8%;
+  background: var(--green-tint);
+}
+.assistant-message pre {
+  overflow-x: auto;
+}
+.assistant-message > strong {
+  font-size: 12px;
+  color: var(--muted);
+}
+.assistant-actions {
+  margin-top: 12px;
+}
+@media (max-width: 600px) {
+  .topbar {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 72px;
+    padding-block: 10px;
+    gap: 10px;
+  }
+  .topbar-actions {
+    flex-wrap: wrap;
+  }
+  .session-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .session-steps li > button {
+    padding-bottom: 10px;
+  }
+  .account-actions {
+    width: 100%;
+  }
+}
+@media (forced-colors: active) {
+  :root {
+    scrollbar-color: auto;
+  }
+}

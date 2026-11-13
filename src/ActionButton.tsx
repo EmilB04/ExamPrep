@@ -10,6 +10,7 @@ export function ActionButton({
   const reduce = useReducedMotion()
   return (
     <motion.button
+      type="button"
       whileHover={
         reduce || props.disabled ? undefined : whileHover || { y: -1 }
       }
