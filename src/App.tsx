@@ -23,6 +23,7 @@ import {
   Network,
   NotebookPen,
   Play,
+  Search,
   Target,
   X,
 } from 'lucide-react'
@@ -36,6 +37,9 @@ import { loadProgress, nextReview, saveProgress } from './progress'
 import type { Progress } from './progress'
 import { ThemeControl } from './ThemeControl'
 import { ConceptPattern } from './ConceptPattern'
+import { RecallCheck } from './RecallCheck'
+import { SpotlightSearch } from './SpotlightSearch'
+import type { SearchItem } from './search'
 
 type Page = 'overview' | 'courses' | 'review' | 'notes' | 'materials'
 const nav = [
@@ -67,6 +71,25 @@ export default function App() {
   const [reviewId, setReviewId] = useState<string | null>(null)
   const [revealed, setRevealed] = useState(false)
   const [now, setNow] = useState(Date.now())
+  const [searchOpen, setSearchOpen] = useState(false)
+  useEffect(() => {
+    const handleKey = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null
+      const typing =
+        target?.isContentEditable ||
+        ['INPUT', 'TEXTAREA', 'SELECT'].includes(target?.tagName ?? '')
+      if (
+        (event.key.toLowerCase() === 'k' && (event.metaKey || event.ctrlKey)) ||
+        (event.key === '/' && !typing && !event.metaKey && !event.ctrlKey)
+      ) {
+        event.preventDefault()
+        setMobileOpen(false)
+        setSearchOpen((open) => !open)
+      }
+    }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [])
   useEffect(() => {
     if (!mobileOpen) return
     const previousFocus = document.activeElement as HTMLElement | null
@@ -168,6 +191,20 @@ export default function App() {
     setRevealed(false)
     setNow(Date.now())
   }
+  function openResult(item: SearchItem) {
+    setSearchOpen(false)
+    const t = item.target
+    if (t.type === 'page') return navigate(t.page)
+    const course = courses.find((c) => c.id === t.courseId)
+    if (!course) return
+    if (t.type === 'course') return openCourse(course)
+    const lesson = lessonsFor(course).find((l) => l.id === t.lessonId)
+    if (!lesson) return openCourse(course)
+    setPage('courses')
+    setSelected(null)
+    setMobileOpen(false)
+    start(course, lesson)
+  }
   const currentReview = lessonCourses.find((c) => c.lesson.id === reviewId)
   return (
     <div className="app-shell">
@@ -254,7 +291,13 @@ export default function App() {
           </div>
         </div>
       </aside>
-      <div className="main-shell" inert={mobileOpen}>
+      <SpotlightSearch
+        open={searchOpen}
+        notes={progress.notes}
+        onClose={() => setSearchOpen(false)}
+        onSelect={openResult}
+      />
+      <div className="main-shell" inert={mobileOpen || searchOpen}>
         <header className="topbar">
           <div className="breadcrumb">
             <ActionButton
@@ -276,7 +319,19 @@ export default function App() {
                   : nav.find((n) => n.id === page)?.label}
             </b>
           </div>
-          <ThemeControl />
+          <div className="topbar-actions">
+            <ActionButton
+              className="search-trigger"
+              aria-label="Search"
+              aria-keyshortcuts="Control+K Meta+K"
+              onClick={() => setSearchOpen(true)}
+            >
+              <Search size={16} />
+              <span>Search</span>
+              <kbd>⌘K</kbd>
+            </ActionButton>
+            <ThemeControl />
+          </div>
         </header>
         <main
           id="main"
@@ -1089,6 +1144,7 @@ function LearningSession({
                   onChange={(e) => setRecall(e.target.value)}
                   placeholder="Try to reconstruct the idea from memory…"
                 />
+                <RecallCheck lesson={lesson} recall={recall} />
                 {reveal ? (
                   <div className="takeaway">
                     <Lightbulb size={21} />

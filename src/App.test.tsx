@@ -91,3 +91,17 @@ it('completes the selected imported lecture and restores its recall card after r
   ).toBeTruthy()
   expect(screen.getAllByRole('button', { name: 'Practice' })).toHaveLength(1)
 })
+
+it('opens spotlight search with Ctrl+K and jumps to a result', () => {
+  render(<App />)
+  expect(screen.queryByRole('dialog', { name: 'Search MasterPrep' })).toBeNull()
+  fireEvent.keyDown(document, { key: 'k', ctrlKey: true })
+  const input = screen.getByRole('combobox')
+  expect(document.activeElement).toBe(input)
+  fireEvent.change(input, { target: { value: 'notebook' } })
+  fireEvent.keyDown(input, { key: 'Enter' })
+  expect(screen.queryByRole('dialog')).toBeNull()
+  expect(
+    screen.getByRole('heading', { name: /Put it in your own words/ }),
+  ).toBeTruthy()
+})

@@ -7,3 +7,4 @@ dist/
 .cloudflare/
 .wrangler/
 test-results/
+.dev.vars
