@@ -2464,11 +2464,48 @@ textarea {
   right: 0;
   bottom: 74px;
   width: min(420px, calc(100vw - 48px));
-  max-height: min(680px, calc(100dvh - 122px));
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100dvh - 122px);
+  overflow: hidden;
+  padding: 0;
+  box-shadow: 0 16px 56px #06151830;
+}
+.assistant-panel.has-conversation {
+  width: min(600px, calc(100vw - 48px));
+}
+.assistant-body {
+  min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 22px;
-  box-shadow: 0 16px 56px #06151830;
+  padding: 0 22px 12px;
+}
+.assistant-heading,
+.assistant-composer,
+.assistant-status {
+  flex-shrink: 0;
+}
+.assistant-composer {
+  padding: 12px 22px 16px;
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+}
+.assistant-status {
+  padding: 0 22px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.assistant-status:empty {
+  display: none;
+}
+.assistant-panel > [role='alert'] {
+  margin: 8px 22px;
+  font-size: 13px;
+}
+.assistant-composer .assistant-privacy {
+  margin: 10px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
 }
 .main-content {
   padding-bottom: 100px;
@@ -2478,21 +2515,36 @@ textarea {
     right: max(16px, env(safe-area-inset-right));
     bottom: max(16px, env(safe-area-inset-bottom));
   }
-  .assistant-panel {
+  .assistant-panel,
+  .assistant-panel.has-conversation {
     width: calc(100vw - 32px);
     max-height: calc(100dvh - 110px);
-    padding: 18px;
+  }
+  .assistant-body {
+    padding-inline: 16px;
+  }
+  .assistant-panel .assistant-heading {
+    padding: 16px;
+  }
+  .assistant-composer {
+    padding: 10px 16px 12px;
+  }
+  .assistant-status {
+    padding-inline: 16px;
   }
 }
 .assistant-heading {
+  padding: 18px 22px 14px;
   display: flex;
   justify-content: space-between;
   align-items: start;
   gap: 16px;
 }
 .assistant-heading h2 {
-  margin: 6px 0 12px;
+  margin: 4px 0 0;
   font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 1.35;
 }
 .assistant-panel label {
   display: block;
@@ -2512,14 +2564,17 @@ textarea {
 }
 .assistant-panel textarea {
   width: 100%;
-  min-height: 110px;
+  min-height: 64px;
+  max-height: 120px;
+  margin-bottom: 0;
+}
+.assistant-panel .assistant-composer label {
+  margin-top: 0;
 }
 .assistant-suggestions {
   margin: 18px 0;
 }
 .assistant-messages {
-  max-height: 480px;
-  overflow-y: auto;
   overflow-wrap: anywhere;
 }
 .assistant-message {
@@ -2533,8 +2588,35 @@ textarea {
   margin-left: 8%;
   background: var(--green-tint);
 }
+.assistant-message :is(h1, h2, h3, h4, h5, h6) {
+  font-size: 17px;
+  line-height: 1.4;
+  letter-spacing: normal;
+  margin: 16px 0 8px;
+}
+.assistant-message :is(h1, h2) {
+  font-size: 20px;
+}
+.assistant-message :is(p, li) {
+  font-size: 14px;
+  line-height: 1.65;
+}
+.assistant-message p {
+  margin: 8px 0;
+}
+.assistant-message :is(ul, ol) {
+  padding-left: 20px;
+}
 .assistant-message pre {
   overflow-x: auto;
+  max-width: 100%;
+  font-size: 12px;
+}
+.assistant-message table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  font-size: 13px;
 }
 .assistant-message > strong {
   font-size: 12px;
@@ -2734,4 +2816,130 @@ textarea {
   .topbar .theme-control {
     display: none;
   }
+}
+
+/* PortfolioV2's chat structure: one transcript, pinned composer, optional expansion. */
+.assistant-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.assistant-panel.expanded {
+  width: min(760px, calc(100vw - 48px));
+  height: calc(100dvh - 122px);
+}
+.assistant-panel.expanded .assistant-body {
+  flex: 1;
+}
+@media (max-width: 600px) {
+  .course-assistant:has(.assistant-panel) {
+    z-index: 45;
+  }
+  .course-assistant:has(.assistant-panel) > .assistant-toggle {
+    visibility: hidden;
+  }
+  .assistant-panel,
+  .assistant-panel.has-conversation,
+  .assistant-panel.expanded {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    max-height: none;
+    border-radius: 0;
+    padding-top: env(safe-area-inset-top);
+    box-sizing: border-box;
+  }
+  .assistant-body {
+    flex: 1;
+  }
+  .assistant-expand {
+    display: none;
+  }
+  .assistant-composer {
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+}
+
+/* Course-assistant typography stays at reading scale inside the floating workspace. */
+.assistant-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.assistant-mark {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  color: var(--on-brand);
+  background: var(--brand);
+}
+.assistant-identity .eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+.assistant-identity h2 {
+  font-size: 18px;
+}
+.assistant-heading {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 12px;
+}
+.assistant-panel .assistant-intro {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.assistant-panel select {
+  max-width: none;
+  font-size: 13px;
+}
+.assistant-body > label {
+  margin-top: 8px;
+}
+.assistant-body > .sample-note {
+  font-size: 11px;
+  line-height: 1.6;
+  margin: 10px 0 16px;
+}
+.assistant-message {
+  padding: 12px 14px;
+}
+.assistant-message.user {
+  width: fit-content;
+  max-width: 85%;
+  margin-left: auto;
+  border-radius: 16px 16px 4px 16px;
+}
+.assistant-message.assistant {
+  padding: 8px 0 8px 16px;
+  border: 0;
+  border-left: 2px solid var(--line-strong);
+  border-radius: 0;
+  background: transparent;
+}
+.assistant-message > strong {
+  font-size: 11px;
+}
+.assistant-message :is(h1, h2) {
+  font-size: 18px;
+}
+.assistant-message :is(h3, h4, h5, h6) {
+  font-size: 15px;
+}
+.assistant-composer textarea {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.assistant-composer .assistant-actions {
+  justify-content: space-between;
+  gap: 8px;
+}
+.assistant-actions :is(.primary-button, .secondary-button, .back-link) {
+  font-size: 12px;
 }
