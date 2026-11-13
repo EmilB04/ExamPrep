@@ -1,0 +1,4 @@
+# Copy to .dev.vars for local Worker development; never commit the real key.
+ANTHROPIC_API_KEY=replace-with-your-key
+ACCESS_TEAM_DOMAIN=your-team.cloudflareaccess.com
+ACCESS_AUD=your-access-application-audience

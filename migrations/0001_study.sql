@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS study_progress (
+  user_id TEXT PRIMARY KEY,
+  data TEXT NOT NULL,
+  revision INTEGER NOT NULL DEFAULT 1,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS ai_usage (
+  user_id TEXT NOT NULL,
+  minute INTEGER NOT NULL,
+  requests INTEGER NOT NULL,
+  PRIMARY KEY (user_id, minute)
+);

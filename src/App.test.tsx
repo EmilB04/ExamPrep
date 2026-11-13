@@ -105,3 +105,28 @@ it('opens spotlight search with Ctrl+K and jumps to a result', () => {
     screen.getByRole('heading', { name: /Put it in your own words/ }),
   ).toBeTruthy()
 })
+
+it('allows header jumps without treating skipped stages as completed', () => {
+  render(<App />)
+  fireEvent.click(screen.getByRole('button', { name: 'Complex Systems' }))
+  fireEvent.click(screen.getAllByRole('button', { name: 'Start' })[0])
+  const recallStep = screen.getByRole('button', { name: /4\s*Recall/ })
+  fireEvent.click(recallStep)
+  expect(recallStep.getAttribute('aria-current')).toBe('step')
+  fireEvent.change(screen.getByLabelText('Your explanation'), {
+    target: { value: 'Some recall' },
+  })
+  fireEvent.click(screen.getByRole('button', { name: 'Compare explanation' }))
+  expect(
+    (
+      screen.getByRole('button', {
+        name: 'Complete lesson',
+      }) as HTMLButtonElement
+    ).disabled,
+  ).toBe(true)
+  expect(
+    JSON.parse(localStorage.getItem('masterprep.progress.v1')!).completed,
+  ).toEqual({})
+  fireEvent.click(screen.getByRole('button', { name: /1\s*Read & understand/ }))
+  expect(screen.getByLabelText(/Reading section/)).toBeTruthy()
+})

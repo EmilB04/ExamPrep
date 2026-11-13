@@ -33,9 +33,11 @@ import { LectureReading } from './LectureReading'
 import { LessonQuiz } from './LessonQuiz'
 import type { Course } from './content'
 import { Illustration } from './Illustration'
-import { loadProgress, nextReview, saveProgress } from './progress'
-import type { Progress } from './progress'
+import { nextReview } from './progress'
+import { useStudySync } from './useStudySync'
+import { CourseAssistant } from './CourseAssistant'
 import { ThemeControl } from './ThemeControl'
+import { ProfileControl } from './ProfileControl'
 import { ConceptPattern } from './ConceptPattern'
 import { RecallCheck } from './RecallCheck'
 import { SpotlightSearch } from './SpotlightSearch'
@@ -64,14 +66,15 @@ export default function App() {
   const [page, setPage] = useState<Page>('overview')
   const [selected, setSelected] = useState<Course | null>(null)
   const [learning, setLearning] = useState<Course | null>(null)
-  const [progress, setProgress] = useState<Progress>(loadProgress)
-  const [storageOk, setStorageOk] = useState(true)
+  const sync = useStudySync()
+  const { progress, setProgress, storageOk } = sync
   const [mobileOpen, setMobileOpen] = useState(false)
   const sidebarRef = useRef<HTMLElement>(null)
   const [reviewId, setReviewId] = useState<string | null>(null)
   const [revealed, setRevealed] = useState(false)
   const [now, setNow] = useState(Date.now())
   const [searchOpen, setSearchOpen] = useState(false)
+  const [cloudConfirm, setCloudConfirm] = useState(false)
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null
@@ -125,9 +128,6 @@ export default function App() {
       previousFocus?.focus()
     }
   }, [mobileOpen])
-  useEffect(() => {
-    setStorageOk(saveProgress(progress))
-  }, [progress])
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 30000)
     return () => clearInterval(timer)
@@ -235,7 +235,7 @@ export default function App() {
         </ActionButton>
         <a
           className="brand"
-          href="#"
+          href="/"
           onClick={(e) => {
             e.preventDefault()
             navigate('overview')
@@ -286,7 +286,7 @@ export default function App() {
             <NotebookPen size={18} />
             <div>
               <strong>Pick up where you left off</strong>
-              <p>Progress and notes stay in this browser.</p>
+              <p>Study as a guest or sign in to sync notes and progress.</p>
             </div>
           </div>
         </div>
@@ -331,12 +331,89 @@ export default function App() {
               <kbd>⌘K</kbd>
             </ActionButton>
             <ThemeControl />
+            <ProfileControl
+              user={sync.user}
+              configured={sync.configured}
+              status={sync.status}
+            />
           </div>
         </header>
         <main
           id="main"
           className={learning ? 'main-content session-content' : 'main-content'}
         >
+          <div className="account-status panel">
+            <div>
+              <strong>
+                {sync.user ? sync.user.email : 'Your study workspace'}
+              </strong>
+              <p role="status">{sync.status}</p>
+            </div>
+            <div className="account-actions">
+              {sync.user && (
+                <ActionButton
+                  className="back-link"
+                  disabled={!sync.ready || sync.blocked}
+                  onClick={sync.importGuest}
+                >
+                  Import browser notes & progress
+                </ActionButton>
+              )}
+              {sync.blocked && (
+                <>
+                  <ActionButton
+                    className="secondary-button"
+                    onClick={sync.download}
+                  >
+                    Download local copy
+                  </ActionButton>
+                  <ActionButton
+                    className="secondary-button"
+                    onClick={sync.reconnect}
+                  >
+                    Retry connection
+                  </ActionButton>
+                  {sync.user && (
+                    <ActionButton
+                      className="back-link"
+                      disabled={!sync.ready}
+                      onClick={() => setCloudConfirm(true)}
+                    >
+                      Load cloud version
+                    </ActionButton>
+                  )}
+                </>
+              )}
+            </div>
+            {cloudConfirm && (
+              <div className="notice">
+                <p>
+                  Loading the cloud version replaces this account’s local copy.
+                  Download your copy first to keep unsynced edits.
+                </p>
+                <ActionButton
+                  className="secondary-button"
+                  onClick={() => {
+                    sync.download()
+                    void sync.loadCloud()
+                    setCloudConfirm(false)
+                  }}
+                >
+                  Download copy and load cloud
+                </ActionButton>
+                <ActionButton
+                  className="back-link"
+                  onClick={() => setCloudConfirm(false)}
+                >
+                  Cancel
+                </ActionButton>
+              </div>
+            )}
+          </div>
+          <CourseAssistant
+            context={learning || selected}
+            signedIn={!!sync.user}
+          />
           {!storageOk && (
             <div className="storage-alert" role="alert">
               Your browser could not save progress. Keep this tab open and
@@ -345,6 +422,8 @@ export default function App() {
           )}
           <AnimatePresence mode="wait">
             <motion.div
+              inert={!sync.ready}
+              aria-busy={!sync.ready}
               key={
                 learning
                   ? `learn-${learning.lesson.id}`
@@ -642,7 +721,9 @@ export default function App() {
                     <span>MasterPrep · Read, explore, and recall</span>
                     <span>
                       {storageOk
-                        ? 'Progress saved in this browser'
+                        ? sync.user
+                          ? sync.status
+                          : 'Progress saved in this browser'
                         : 'Progress could not be saved'}{' '}
                       <span className="status-dot" />
                     </span>
@@ -774,7 +855,11 @@ export default function App() {
                     text="Keep questions, explanations, and connections alongside each course."
                   />
                   <div className="section-heading">
-                    <p>Notes save automatically in this browser.</p>
+                    <p>
+                      {sync.user
+                        ? 'Notes save automatically to your account.'
+                        : 'Notes save automatically in this browser.'}
+                    </p>
                     <ActionButton
                       className="secondary-button"
                       onClick={() => {
@@ -812,7 +897,9 @@ export default function App() {
                           {c.shortTitle} notes
                         </label>
                         <textarea
+                          className="resize-none"
                           id={`notes-${c.id}`}
+                          maxLength={100000}
                           placeholder="What clicked? What needs another look?"
                           value={progress.notes[c.id] || ''}
                           onChange={(e) =>
@@ -1015,17 +1102,24 @@ function LearningSession({
       <h1 className="lesson-title">{lesson.title}</h1>
       <ol className="session-steps">
         {stages.map((s, i) => (
-          <motion.li
-            key={s}
-            className={i === step ? 'current' : i < step ? 'done' : ''}
-          >
-            <motion.span
-              animate={{ scale: i === step ? 1.08 : 1 }}
-              transition={{ type: 'spring', stiffness: 420, damping: 24 }}
+          <motion.li key={s} className={i === step ? 'current' : ''}>
+            <button
+              type="button"
+              aria-current={i === step ? 'step' : undefined}
+              onClick={() => {
+                if (i === 2 && step !== 2) setQuizReady(false)
+                setStep(i)
+                setFinished(false)
+              }}
             >
-              {i < step ? <Check size={14} /> : i + 1}
-            </motion.span>
-            {s}
+              <motion.span
+                animate={{ scale: i === step ? 1.08 : 1 }}
+                transition={{ type: 'spring', stiffness: 420, damping: 24 }}
+              >
+                {i + 1}
+              </motion.span>
+              {s}
+            </button>
           </motion.li>
         ))}
       </ol>
@@ -1139,6 +1233,7 @@ function LearningSession({
                   Your explanation
                 </label>
                 <textarea
+                  className="resize-none"
                   id="recall-answer"
                   value={recall}
                   onChange={(e) => setRecall(e.target.value)}
@@ -1169,6 +1264,12 @@ function LearningSession({
                 </p>
               </>
             )}
+            {step === 3 && !quizReady && (
+              <p className="notice">
+                Complete Check understanding before marking this lesson
+                complete. You can jump there using the header.
+              </p>
+            )}
             <div className="lesson-actions">
               <ActionButton
                 className="back-link"
@@ -1185,7 +1286,11 @@ function LearningSession({
               <ActionButton
                 className="primary-button"
                 disabled={
-                  step === 2 ? !quizReady : step === 3 ? !reveal : false
+                  step === 2
+                    ? !quizReady
+                    : step === 3
+                      ? !reveal || !quizReady
+                      : false
                 }
                 onClick={() => {
                   if (step === 3) {

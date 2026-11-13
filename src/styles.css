@@ -2366,3 +2366,331 @@ textarea::placeholder {
   font-size: 12px;
   color: var(--subtle);
 }
+
+/* Study workspace extensions share the existing theme tokens. */
+:root {
+  scrollbar-color: var(--line-strong) var(--canvas);
+  scrollbar-width: thin;
+}
+html {
+  scrollbar-gutter: stable;
+}
+textarea {
+  resize: none;
+}
+.session-steps li {
+  padding: 0;
+}
+.session-steps li > button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 4px 19px 0;
+  text-align: left;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+.session-steps li > button > span {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: var(--surface-soft);
+  font-size: 10px;
+}
+.session-steps .current > button > span {
+  background: var(--green-tint);
+  color: var(--green-ink);
+}
+.session-steps button:hover {
+  color: var(--brand);
+}
+.account-status {
+  padding: 16px 20px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+}
+.account-status p {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+.account-status strong {
+  overflow-wrap: anywhere;
+}
+.account-actions,
+.assistant-actions,
+.assistant-suggestions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.course-assistant {
+  position: fixed;
+  z-index: 25;
+  right: max(24px, env(safe-area-inset-right));
+  bottom: max(24px, env(safe-area-inset-bottom));
+}
+.assistant-toggle {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  border: 1px solid var(--brand);
+  border-radius: 50%;
+  background: var(--brand);
+  color: var(--on-brand);
+  box-shadow: 0 8px 28px #06151830;
+  cursor: pointer;
+}
+.assistant-toggle:hover {
+  background: var(--brand-hover);
+}
+.assistant-panel {
+  position: absolute;
+  right: 0;
+  bottom: 74px;
+  width: min(420px, calc(100vw - 48px));
+  max-height: min(680px, calc(100dvh - 122px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 22px;
+  box-shadow: 0 16px 56px #06151830;
+}
+.main-content {
+  padding-bottom: 100px;
+}
+@media (max-width: 600px) {
+  .course-assistant {
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  .assistant-panel {
+    width: calc(100vw - 32px);
+    max-height: calc(100dvh - 110px);
+    padding: 18px;
+  }
+}
+.assistant-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 16px;
+}
+.assistant-heading h2 {
+  margin: 6px 0 12px;
+  font-family: var(--font-display);
+}
+.assistant-panel label {
+  display: block;
+  font-weight: 600;
+  font-size: 13px;
+  margin: 16px 0 8px;
+}
+.assistant-panel select {
+  width: 100%;
+  max-width: 480px;
+  min-height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  padding: 10px;
+}
+.assistant-panel textarea {
+  width: 100%;
+  min-height: 110px;
+}
+.assistant-suggestions {
+  margin: 18px 0;
+}
+.assistant-messages {
+  max-height: 480px;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+}
+.assistant-message {
+  padding: 18px;
+  margin: 12px 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-soft);
+}
+.assistant-message.user {
+  margin-left: 8%;
+  background: var(--green-tint);
+}
+.assistant-message pre {
+  overflow-x: auto;
+}
+.assistant-message > strong {
+  font-size: 12px;
+  color: var(--muted);
+}
+.assistant-actions {
+  margin-top: 12px;
+}
+@media (max-width: 600px) {
+  .topbar {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 72px;
+    padding-block: 10px;
+    gap: 10px;
+  }
+  .topbar-actions {
+    flex-wrap: wrap;
+  }
+  .session-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .session-steps li > button {
+    padding-bottom: 10px;
+  }
+  .account-actions {
+    width: 100%;
+  }
+}
+@media (forced-colors: active) {
+  :root {
+    scrollbar-color: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .session-steps li {
+    font-size: 12px;
+  }
+}
+
+/* Profile is the final action in the workspace navigation. */
+.topbar {
+  flex-wrap: nowrap;
+  gap: 16px;
+}
+.breadcrumb {
+  flex: 1;
+  overflow: hidden;
+}
+.breadcrumb > svg,
+.breadcrumb .mobile-toggle {
+  flex-shrink: 0;
+}
+.topbar-actions {
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
+  gap: 12px;
+}
+.profile-control {
+  position: relative;
+  flex-shrink: 0;
+}
+.profile-trigger {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  color: var(--brand);
+  background: var(--green-tint);
+  cursor: pointer;
+}
+.profile-trigger:hover,
+.profile-trigger[aria-expanded='true'] {
+  background: var(--surface-hover);
+  border-color: var(--brand);
+}
+.profile-online {
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: var(--green);
+}
+.profile-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 12px);
+  z-index: 35;
+  width: min(300px, calc(100vw - 36px));
+  padding: 22px;
+  box-shadow: 0 12px 40px #06151820;
+}
+.profile-panel strong {
+  display: block;
+  margin-top: 10px;
+  overflow-wrap: anywhere;
+  font-size: 15px;
+}
+.profile-panel p {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.profile-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin-top: 18px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--surface-soft);
+  font-size: 13px;
+  text-decoration: none;
+}
+.profile-action:hover {
+  background: var(--surface-hover);
+}
+@media (max-width: 600px) {
+  .topbar {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+  .topbar-actions {
+    gap: 8px;
+  }
+  .breadcrumb {
+    gap: 6px;
+  }
+  .topbar .theme-control button {
+    min-width: 30px;
+    padding-inline: 6px;
+  }
+  .profile-trigger {
+    width: 40px;
+    height: 40px;
+  }
+}
+@media (max-width: 360px) {
+  .topbar .search-trigger {
+    width: 34px;
+    min-width: 34px;
+  }
+  .topbar .theme-control button {
+    min-width: 26px;
+    padding-inline: 4px;
+  }
+}
