@@ -2,7 +2,7 @@ import { apiFetch } from './api-client'
 import { useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { MessageCircle, Send, X } from 'lucide-react'
+import { Maximize2, Minimize2, MessageCircle, Send, X } from 'lucide-react'
 import { courses, type Course } from './content'
 import { ActionButton } from './ActionButton'
 
@@ -15,6 +15,14 @@ export function CourseAssistant({
   signedIn: boolean
 }) {
   const [open, setOpen] = useState(false)
+  const [expanded, setExpanded] = useState(false)
+  const [mobile, setMobile] = useState(
+    () => window.matchMedia?.('(max-width: 600px)').matches ?? false,
+  )
+  const [viewport, setViewport] = useState<{
+    height: number
+    top: number
+  } | null>(null)
   const [courseId, setCourseId] = useState(context?.id || courses[0].id)
   const [messages, setMessages] = useState<Message[]>([])
   const [question, setQuestion] = useState('')
@@ -24,6 +32,52 @@ export function CourseAssistant({
   const input = useRef<HTMLTextAreaElement>(null)
   const launcher = useRef<HTMLButtonElement>(null)
   const closeButton = useRef<HTMLButtonElement>(null)
+  const panel = useRef<HTMLDivElement>(null)
+  const body = useRef<HTMLDivElement>(null)
+  const answer = useRef<HTMLElement>(null)
+  const followAnswer = useRef(true)
+  useEffect(() => {
+    if (!open || !input.current) return
+    input.current.style.height = 'auto'
+    input.current.style.height = `${Math.min(input.current.scrollHeight, 120)}px`
+  }, [question, open])
+  useEffect(() => {
+    const mq = window.matchMedia?.('(max-width: 600px)')
+    const update = () => setMobile(mq?.matches ?? false)
+    mq?.addEventListener('change', update)
+    return () => mq?.removeEventListener('change', update)
+  }, [])
+  useEffect(() => {
+    if (!open || !mobile) {
+      setViewport(null)
+      return
+    }
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const visible = window.visualViewport
+    const update = () =>
+      setViewport({
+        height: visible?.height ?? window.innerHeight,
+        top: visible?.offsetTop ?? 0,
+      })
+    update()
+    visible?.addEventListener('resize', update)
+    visible?.addEventListener('scroll', update)
+    window.addEventListener('resize', update)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      visible?.removeEventListener('resize', update)
+      visible?.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [open, mobile])
+  useEffect(() => {
+    if (!open || !body.current || !answer.current || !followAnswer.current)
+      return
+    body.current.scrollTop +=
+      answer.current.getBoundingClientRect().top -
+      body.current.getBoundingClientRect().top
+  }, [messages, open])
   function close() {
     setOpen(false)
     launcher.current?.focus()
@@ -43,6 +97,7 @@ export function CourseAssistant({
   async function ask(text = question) {
     if (!text.trim() || busy) return
     const controller = new AbortController()
+    followAnswer.current = true
     abort.current = controller
     const history: Message[] = [
       ...messages.slice(-18),
@@ -101,11 +156,34 @@ export function CourseAssistant({
       </ActionButton>
       {open && (
         <div
-          className="assistant-panel panel"
+          ref={panel}
+          className={`assistant-panel panel ${messages.length ? 'has-conversation' : ''} ${expanded ? 'expanded' : ''}`}
+          style={
+            mobile && viewport
+              ? { height: viewport.height, top: viewport.top }
+              : undefined
+          }
+          aria-modal={mobile || undefined}
           id="course-assistant-panel"
           role="dialog"
           aria-labelledby="assistant-title"
           onKeyDown={(e) => {
+            if (e.key === 'Tab' && mobile) {
+              const controls = Array.from(
+                panel.current?.querySelectorAll<HTMLElement>(
+                  'button:not([disabled]), a[href], select:not([disabled]), textarea:not([disabled])',
+                ) ?? [],
+              ).filter((el) => el.getClientRects().length)
+              const first = controls[0]
+              const last = controls.at(-1)
+              if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault()
+                last?.focus()
+              } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault()
+                first?.focus()
+              }
+            }
             if (e.key === 'Escape') {
               e.stopPropagation()
               close()
@@ -113,84 +191,128 @@ export function CourseAssistant({
           }}
         >
           <div className="assistant-heading">
-            <div>
-              <div className="eyebrow">YOUR STUDY PARTNER</div>
-              <h2 id="assistant-title">Ask MasterPrep</h2>
+            <div className="assistant-identity">
+              <span className="assistant-mark">
+                <MessageCircle size={18} aria-hidden="true" />
+              </span>
+              <div>
+                <div className="eyebrow">COURSE ASSISTANT</div>
+                <h2 id="assistant-title">Ask MasterPrep</h2>
+              </div>
             </div>
-            <ActionButton
-              className="icon-button"
-              ref={closeButton}
-              aria-label="Close course assistant"
-              onClick={close}
-            >
-              <X size={18} />
-            </ActionButton>
+            <div className="assistant-header-actions">
+              <ActionButton
+                className="icon-button assistant-expand"
+                aria-label={
+                  expanded
+                    ? 'Collapse course assistant'
+                    : 'Expand course assistant'
+                }
+                title={
+                  expanded
+                    ? 'Collapse course assistant'
+                    : 'Expand course assistant'
+                }
+                aria-pressed={expanded}
+                onClick={() => setExpanded((value) => !value)}
+              >
+                {expanded ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+              </ActionButton>
+              <ActionButton
+                className="icon-button"
+                ref={closeButton}
+                aria-label="Close course assistant"
+                onClick={close}
+              >
+                <X size={18} />
+              </ActionButton>
+            </div>
           </div>
-          <p>
-            Ask about your courses, work through an example, or try a different
-            explanation. Answers use the available lesson material and may
-            contain mistakes.
-          </p>
-          <label htmlFor="assistant-course">Course</label>
-          <select
-            id="assistant-course"
-            value={courseId}
-            disabled={busy}
-            onChange={(e) => {
-              setCourseId(e.target.value)
-              setMessages([])
-              setError('')
+          <div
+            className="assistant-body"
+            ref={body}
+            onScroll={(e) => {
+              const el = e.currentTarget
+              followAnswer.current =
+                el.scrollHeight - el.scrollTop - el.clientHeight < 48
             }}
           >
-            {courses.map((c) => (
-              <option value={c.id} key={c.id}>
-                {c.title}
-              </option>
-            ))}
-          </select>
-          {context?.id === courseId && (
-            <p className="sample-note">
-              Lesson context: {context.lesson.title}
-            </p>
-          )}
-          {!signedIn && (
-            <p className="notice">
-              Sign in to ask the assistant. Your notes are never included in
-              questions automatically.
-            </p>
-          )}
-          {!messages.length && (
-            <div className="assistant-suggestions">
-              {[
-                'Explain the main idea more simply',
-                'Give me a worked example',
-                'Ask me a practice question',
-              ].map((q) => (
-                <ActionButton
-                  className="secondary-button"
-                  key={q}
-                  disabled={busy || !signedIn}
-                  onClick={() => {
-                    setQuestion(q)
-                    void ask(q)
-                  }}
+            {!messages.length && (
+              <p className="assistant-intro">
+                Ask about your courses, work through an example, or try a
+                different explanation. Answers use the available lesson material
+                and may contain mistakes.
+              </p>
+            )}
+            <label htmlFor="assistant-course">Course</label>
+            <select
+              id="assistant-course"
+              value={courseId}
+              disabled={busy}
+              onChange={(e) => {
+                setCourseId(e.target.value)
+                setMessages([])
+                setError('')
+              }}
+            >
+              {courses.map((c) => (
+                <option value={c.id} key={c.id}>
+                  {c.title}
+                </option>
+              ))}
+            </select>
+            {context?.id === courseId && (
+              <p className="sample-note">
+                Lesson context: {context.lesson.title}
+              </p>
+            )}
+            {!signedIn && (
+              <p className="notice">
+                Sign in to ask the assistant. Your notes are never included in
+                questions automatically.
+              </p>
+            )}
+            {!messages.length && (
+              <div className="assistant-suggestions">
+                {[
+                  'Explain the main idea more simply',
+                  'Give me a worked example',
+                  'Ask me a practice question',
+                ].map((q) => (
+                  <ActionButton
+                    className="secondary-button"
+                    key={q}
+                    disabled={busy || !signedIn}
+                    onClick={() => {
+                      setQuestion(q)
+                      void ask(q)
+                    }}
+                  >
+                    {q}
+                  </ActionButton>
+                ))}
+              </div>
+            )}
+            <div className="assistant-messages" aria-label="Conversation">
+              {messages.map((m, i) => (
+                <article
+                  className={`assistant-message ${m.role}`}
+                  key={i}
+                  ref={
+                    m.role === 'assistant' && i === messages.length - 1
+                      ? answer
+                      : undefined
+                  }
                 >
-                  {q}
-                </ActionButton>
+                  <strong>{m.role === 'user' ? 'You' : 'MasterPrep'}</strong>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {m.content}
+                  </ReactMarkdown>
+                </article>
               ))}
             </div>
-          )}
-          <div className="assistant-messages" aria-label="Conversation">
-            {messages.map((m, i) => (
-              <article className={`assistant-message ${m.role}`} key={i}>
-                <strong>{m.role === 'user' ? 'You' : 'MasterPrep'}</strong>
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {m.content}
-                </ReactMarkdown>
-              </article>
-            ))}
           </div>
-          <div role="status">
+          <div role="status" className="assistant-status">
             {busy
               ? 'Thinking through your course material…'
               : messages.length
@@ -199,6 +321,7 @@ export function CourseAssistant({
           </div>
           {error && <p role="alert">{error}</p>}
           <form
+            className="assistant-composer"
             noValidate
             onSubmit={(e) => {
               e.preventDefault()
@@ -211,7 +334,7 @@ export function CourseAssistant({
               style={{ resize: 'none' }}
               ref={input}
               id="assistant-question"
-              rows={3}
+              rows={2}
               maxLength={6000}
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
@@ -252,11 +375,11 @@ export function CourseAssistant({
                 </ActionButton>
               )}
             </div>
+            <p className="sample-note assistant-privacy">
+              Questions and this conversation are sent to the AI provider. Chat
+              stays in this tab until cleared or the course changes.
+            </p>
           </form>
-          <p className="sample-note">
-            Questions and this conversation are sent to the AI provider. Chat
-            stays in this tab until cleared or the course changes.
-          </p>
         </div>
       )}
     </section>
