@@ -132,8 +132,6 @@ async function routeApi(request: Request, env: ApiEnv): Promise<Response> {
         { error: 'Your session could not be verified. Reload and try again.' },
         403,
       )
-    if (!(await withinLimit(env.DB, `api:${user.id}`, 120)))
-      return json({ error: 'Too many requests. Try again in a minute.' }, 429)
     if (url.pathname === '/api/logout') {
       if (request.method !== 'POST')
         return json({ error: 'Method not allowed.' }, 405)
@@ -148,6 +146,8 @@ async function routeApi(request: Request, env: ApiEnv): Promise<Response> {
         },
       )
     }
+    if (!(await withinLimit(env.DB, `api:${user.id}`, 120)))
+      return json({ error: 'Too many requests. Try again in a minute.' }, 429)
     if (url.pathname === '/api/progress') {
       if (request.method === 'GET') {
         const row = await env.DB.prepare(

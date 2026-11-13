@@ -312,6 +312,7 @@ it('limits login callbacks by IP and authenticated API requests by user across r
   for (let i = 0; i < 120; i++)
     expect((await call('progress')).status).toBe(200)
   expect((await call('progress')).status).toBe(429)
+  expect((await call('logout', 'POST', {})).status).toBe(200)
   currentUser = 'bob'
   expect((await call('progress')).status).toBe(200)
 })
