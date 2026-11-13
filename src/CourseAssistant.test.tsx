@@ -92,3 +92,15 @@ it('stops a pending response without submitting another request', async () => {
     (screen.getByLabelText('Your question') as HTMLTextAreaElement).value,
   ).toBe('Keep this question')
 })
+
+it('opens the floating chat and restores launcher focus on Escape', () => {
+  render(<CourseAssistant context={null} signedIn />)
+  const launcher = screen.getByRole('button', { name: 'Ask MasterPrep' })
+  fireEvent.click(launcher)
+  const dialog = screen.getByRole('dialog', { name: 'Ask MasterPrep' })
+  expect(document.activeElement).toBe(screen.getByLabelText('Your question'))
+  fireEvent.keyDown(dialog, { key: 'Escape' })
+  expect(screen.queryByRole('dialog')).toBeNull()
+  expect(document.activeElement).toBe(launcher)
+  expect(launcher.getAttribute('aria-expanded')).toBe('false')
+})

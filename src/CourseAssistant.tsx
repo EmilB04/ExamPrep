@@ -21,6 +21,15 @@ export function CourseAssistant({
   const [error, setError] = useState('')
   const abort = useRef<AbortController | null>(null)
   const input = useRef<HTMLTextAreaElement>(null)
+  const launcher = useRef<HTMLButtonElement>(null)
+  const closeButton = useRef<HTMLButtonElement>(null)
+  function close() {
+    setOpen(false)
+    launcher.current?.focus()
+  }
+  useEffect(() => {
+    if (open) (signedIn ? input.current : closeButton.current)?.focus()
+  }, [open, signedIn])
   useEffect(() => () => abort.current?.abort(), [])
   useEffect(() => {
     abort.current?.abort()
@@ -79,25 +88,39 @@ export function CourseAssistant({
   return (
     <section className="course-assistant" aria-label="Course assistant">
       <ActionButton
-        className="secondary-button assistant-toggle"
+        ref={launcher}
+        className="assistant-toggle"
+        aria-label="Ask MasterPrep"
+        title="Ask MasterPrep"
         aria-expanded={open}
         aria-controls="course-assistant-panel"
         onClick={() => setOpen((v) => !v)}
       >
-        <MessageCircle size={18} />
-        Ask MasterPrep
+        <MessageCircle size={25} aria-hidden="true" />
       </ActionButton>
       {open && (
-        <div className="assistant-panel panel" id="course-assistant-panel">
+        <div
+          className="assistant-panel panel"
+          id="course-assistant-panel"
+          role="dialog"
+          aria-labelledby="assistant-title"
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              e.stopPropagation()
+              close()
+            }
+          }}
+        >
           <div className="assistant-heading">
             <div>
               <div className="eyebrow">YOUR STUDY PARTNER</div>
-              <h2>Another way to understand.</h2>
+              <h2 id="assistant-title">Ask MasterPrep</h2>
             </div>
             <ActionButton
               className="icon-button"
+              ref={closeButton}
               aria-label="Close course assistant"
-              onClick={() => setOpen(false)}
+              onClick={close}
             >
               <X size={18} />
             </ActionButton>
