@@ -1,18 +1,21 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { courses, lessonsFor } from '../src/content'
 import { lessonMaterial } from '../src/recall-agent'
-import { identity, type AuthEnv } from './auth'
+import {
+  type SessionEnv,
+  readSession,
+  createSession,
+  revokeSession,
+  sessionCookie,
+  validCsrf,
+  withinLimit,
+  hashToken,
+} from './session'
 import { handleRecallCheck } from './recall-handler'
 import { validProgress } from '../src/study-data'
 
-type Statement = {
-  bind(...values: (string | number)[]): Statement
-  first<T>(): Promise<T | null>
-  run(): Promise<{ meta: { changes: number } }>
-}
-export type ApiEnv = AuthEnv & {
+export type ApiEnv = SessionEnv & {
   ANTHROPIC_API_KEY: string
-  DB?: { prepare(sql: string): Statement }
   AI_MODEL?: string
 }
 export const json = (body: unknown, status = 200) =>
@@ -22,6 +25,8 @@ export const json = (body: unknown, status = 200) =>
       'cache-control': 'no-store',
       'x-content-type-options': 'nosniff',
       vary: 'Cookie, Cf-Access-Jwt-Assertion',
+      'referrer-policy': 'no-referrer',
+      'x-frame-options': 'DENY',
     },
   })
 async function readBody(request: Request) {
@@ -49,10 +54,7 @@ async function readBody(request: Request) {
   }
   return JSON.parse(new TextDecoder().decode(body))
 }
-export async function handleApi(
-  request: Request,
-  env: ApiEnv,
-): Promise<Response> {
+async function routeApi(request: Request, env: ApiEnv): Promise<Response> {
   const url = new URL(request.url)
   if (!['GET', 'POST', 'PUT'].includes(request.method))
     return json({ error: 'Method not allowed.' }, 405)
@@ -64,30 +66,60 @@ export async function handleApi(
   )
     return json({ error: 'Expected JSON.' }, 415)
   if (url.pathname === '/api/session' && request.method === 'GET') {
-    const user = await identity(request, env)
+    const session = await readSession(request, env)
     return json({
-      user,
-      configured: !!(env.ACCESS_TEAM_DOMAIN && env.ACCESS_AUD && env.DB),
+      user: session ? { id: session.id, email: session.email } : null,
+      csrfToken: session?.csrf ?? null,
+      expiresAt: session?.expiresAt ?? null,
+      configured: !!(
+        env.ACCESS_TEAM_DOMAIN &&
+        env.ACCESS_AUD &&
+        env.DB &&
+        (!env.AUTH_ORIGIN || env.AUTH_ORIGIN === url.origin)
+      ),
     })
   }
   if (url.pathname === '/api/login' && request.method === 'GET') {
     if (!env.ACCESS_TEAM_DOMAIN || !env.ACCESS_AUD || !env.DB)
       return json({ error: 'Sign-in is not configured.' }, 503)
-    const user = await identity(request, env)
-    return user
-      ? Response.redirect(`${url.origin}/`, 302)
-      : json(
-          {
-            error: 'Sign-in requires a Cloudflare Access policy on /api/login.',
-          },
-          401,
-        )
+    if (env.AUTH_ORIGIN && url.origin !== env.AUTH_ORIGIN) {
+      return json({ error: 'Use the main MasterPrep site to sign in.' }, 403)
+    }
+    const ip = request.headers.get('cf-connecting-ip')
+    if (!ip || !(await withinLimit(env.DB, `login:${await hashToken(ip)}`, 20)))
+      return json(
+        { error: 'Too many sign-in attempts. Try again in a minute.' },
+        429,
+      )
+    const cookie = await createSession(request, env)
+    if (!cookie)
+      return json(
+        {
+          error:
+            'Email verification is required. Return to Sign in and try again.',
+        },
+        401,
+      )
+    return new Response(null, {
+      status: 303,
+      headers: {
+        location: `${url.origin}/`,
+        'set-cookie': cookie,
+        'cache-control': 'no-store',
+        'referrer-policy': 'no-referrer',
+      },
+    })
   }
   if (
-    !['/api/progress', '/api/chat', '/api/recall-check'].includes(url.pathname)
+    ![
+      '/api/progress',
+      '/api/chat',
+      '/api/recall-check',
+      '/api/logout',
+    ].includes(url.pathname)
   )
     return json({ error: 'Not found.' }, 404)
-  const user = await identity(request, env)
+  const user = await readSession(request, env)
   if (!user)
     return json(
       { error: 'Sign in to continue. Your work is kept in this browser.' },
@@ -95,6 +127,27 @@ export async function handleApi(
     )
   if (!env.DB) return json({ error: 'Cloud storage is not configured.' }, 503)
   try {
+    if (request.method !== 'GET' && !(await validCsrf(request, user)))
+      return json(
+        { error: 'Your session could not be verified. Reload and try again.' },
+        403,
+      )
+    if (url.pathname === '/api/logout') {
+      if (request.method !== 'POST')
+        return json({ error: 'Method not allowed.' }, 405)
+      await revokeSession(request, env)
+      return Response.json(
+        { signedOut: true },
+        {
+          headers: {
+            'set-cookie': sessionCookie('', 0),
+            'cache-control': 'no-store',
+          },
+        },
+      )
+    }
+    if (!(await withinLimit(env.DB, `api:${user.id}`, 120)))
+      return json({ error: 'Too many requests. Try again in a minute.' }, 429)
     if (url.pathname === '/api/progress') {
       if (request.method === 'GET') {
         const row = await env.DB.prepare(
@@ -250,6 +303,22 @@ export async function handleApi(
           'The service is unavailable. Your work has been kept; try again.',
       },
       502,
+    )
+  }
+}
+
+export async function handleApi(
+  request: Request,
+  env: ApiEnv,
+): Promise<Response> {
+  try {
+    return await routeApi(request, env)
+  } catch {
+    return json(
+      {
+        error: 'The service is unavailable. Your work is kept in this browser.',
+      },
+      503,
     )
   }
 }

@@ -2598,6 +2598,9 @@ textarea {
 }
 .profile-control {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   flex-shrink: 0;
 }
 .profile-trigger {
@@ -2692,5 +2695,43 @@ textarea {
   .topbar .theme-control button {
     min-width: 26px;
     padding-inline: 4px;
+  }
+}
+
+.header-sign-in {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  color: var(--brand);
+  background: var(--surface);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.header-sign-in:hover {
+  background: var(--surface-hover);
+  border-color: var(--brand);
+}
+@media (max-width: 600px) {
+  .profile-control {
+    gap: 8px;
+  }
+  .header-sign-in {
+    padding-inline: 9px;
+  }
+  .header-sign-in > svg {
+    display: none;
+  }
+}
+@media (max-width: 360px) {
+  .topbar .theme-control {
+    display: none;
   }
 }

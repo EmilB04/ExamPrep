@@ -334,6 +334,7 @@ export default function App() {
             <ProfileControl
               user={sync.user}
               configured={sync.configured}
+              expired={sync.sessionExpired}
               status={sync.status}
             />
           </div>
@@ -412,7 +413,7 @@ export default function App() {
           </div>
           <CourseAssistant
             context={learning || selected}
-            signedIn={!!sync.user}
+            signedIn={!!sync.user && !sync.sessionExpired}
           />
           {!storageOk && (
             <div className="storage-alert" role="alert">
@@ -422,7 +423,7 @@ export default function App() {
           )}
           <AnimatePresence mode="wait">
             <motion.div
-              inert={!sync.ready}
+              inert={!sync.ready || sync.sessionExpired}
               aria-busy={!sync.ready}
               key={
                 learning
