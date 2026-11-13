@@ -6,9 +6,7 @@ afterEach(cleanup)
 it('offers a visible email sign-in action and an accessible profile disclosure', () => {
   render(<ProfileControl user={null} configured status="Guest" />)
   expect(
-    screen
-      .getByRole('link', { name: 'Sign in', exact: true })
-      .getAttribute('href'),
+    screen.getByRole('link', { name: 'Sign in' }).getAttribute('href'),
   ).toBe('/api/login')
   const profile = screen.getByRole('button', { name: 'Profile' })
   fireEvent.click(profile)
@@ -23,7 +21,7 @@ it('offers a visible email sign-in action and an accessible profile disclosure',
 })
 it('preserves guest study with clear feedback when login is unavailable', () => {
   render(<ProfileControl user={null} configured={false} status="Guest" />)
-  fireEvent.click(screen.getByRole('button', { name: 'Sign in', exact: true }))
+  fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
   expect(screen.getByRole('alert').textContent).toContain(
     'saved in this browser',
   )
@@ -37,9 +35,7 @@ it('offers sign-in again for an expired account without treating its notes as gu
       status="Session expired"
     />,
   )
-  expect(
-    screen.getByRole('link', { name: 'Sign in', exact: true }),
-  ).toBeTruthy()
+  expect(screen.getByRole('link', { name: 'Sign in' })).toBeTruthy()
   fireEvent.click(screen.getByRole('button', { name: 'Profile' }))
   expect(screen.getByText('student@example.test')).toBeTruthy()
   expect(screen.queryByRole('button', { name: 'Sign out' })).toBeNull()
