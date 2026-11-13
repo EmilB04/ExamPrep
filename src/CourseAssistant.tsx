@@ -1,3 +1,4 @@
+import { apiFetch } from './api-client'
 import { useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -50,7 +51,7 @@ export function CourseAssistant({
     setBusy(true)
     setError('')
     try {
-      const response = await fetch('/api/chat', {
+      const response = await apiFetch('/api/chat', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         signal: controller.signal,

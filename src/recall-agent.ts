@@ -1,3 +1,4 @@
+import { apiFetch } from './api-client'
 import type { Lesson } from './content'
 
 export type RecallVerdict = 'good' | 'partial' | 'insufficient'
@@ -51,7 +52,7 @@ export async function checkRecall(
   }
   let res: Response
   try {
-    res = await fetch('/api/recall-check', {
+    res = await apiFetch('/api/recall-check', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body),

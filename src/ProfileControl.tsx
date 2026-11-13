@@ -1,3 +1,4 @@
+import { signOut } from './api-client'
 import { useEffect, useRef, useState } from 'react'
 import { LogIn, LogOut, UserRound } from 'lucide-react'
 import { ActionButton } from './ActionButton'
@@ -6,12 +7,17 @@ export function ProfileControl({
   user,
   configured,
   status,
+  expired = false,
 }: {
   user: { email: string } | null
   configured: boolean
   status: string
+  expired?: boolean
 }) {
   const [open, setOpen] = useState(false)
+  const [signInRequested, setSignInRequested] = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
+  const [error, setError] = useState('')
   const root = useRef<HTMLDivElement>(null)
   const trigger = useRef<HTMLButtonElement>(null)
   const panel = useRef<HTMLDivElement>(null)
@@ -39,6 +45,24 @@ export function ProfileControl({
   }, [open])
   return (
     <div className="profile-control" ref={root}>
+      {(!user || expired) &&
+        (configured ? (
+          <a className="header-sign-in" href="/api/login">
+            <LogIn size={16} aria-hidden="true" />
+            Sign in
+          </a>
+        ) : (
+          <ActionButton
+            className="header-sign-in"
+            onClick={() => {
+              setSignInRequested(true)
+              setOpen(true)
+            }}
+          >
+            <LogIn size={16} aria-hidden="true" />
+            Sign in
+          </ActionButton>
+        ))}
       <ActionButton
         ref={trigger}
         className="profile-trigger"
@@ -49,7 +73,9 @@ export function ProfileControl({
         onClick={() => setOpen((value) => !value)}
       >
         <UserRound size={21} aria-hidden="true" />
-        {user && <span className="profile-online" aria-hidden="true" />}
+        {user && !expired && (
+          <span className="profile-online" aria-hidden="true" />
+        )}
       </ActionButton>
       {open && (
         <div
@@ -63,21 +89,57 @@ export function ProfileControl({
           <div className="eyebrow">YOUR ACCOUNT</div>
           <strong>{user?.email || 'Studying as a guest'}</strong>
           <p>{status}</p>
-          {user ? (
-            <a className="profile-action" href="/cdn-cgi/access/logout">
+          {error && <p role="alert">{error}</p>}
+          {user && !expired ? (
+            <ActionButton
+              className="profile-action"
+              disabled={signingOut}
+              onClick={async () => {
+                setSigningOut(true)
+                setError('')
+                try {
+                  await signOut()
+                } catch (e) {
+                  setError(
+                    e instanceof Error
+                      ? e.message
+                      : 'Could not sign out. Try again.',
+                  )
+                  setSigningOut(false)
+                }
+              }}
+            >
               <LogOut size={16} />
-              Sign out
-            </a>
+              {signingOut ? 'Signing out…' : 'Sign out'}
+            </ActionButton>
           ) : configured ? (
-            <a className="profile-action" href="/api/login">
-              <LogIn size={16} />
-              Sign in to sync your studies
-            </a>
+            <>
+              <p>
+                We’ll send a one-time code to your email. No password needed.
+              </p>
+              <a className="profile-action" href="/api/login">
+                <LogIn size={16} />
+                Sign in with email
+              </a>
+            </>
           ) : (
-            <p className="sample-note">
-              Account sign-in is not configured for this deployment. Your notes
-              and progress stay in this browser.
-            </p>
+            <>
+              <ActionButton
+                className="profile-action"
+                onClick={() => setSignInRequested(true)}
+              >
+                <LogIn size={16} />
+                Sign in to sync your studies
+              </ActionButton>
+              <p
+                className="sample-note"
+                role={signInRequested ? 'alert' : undefined}
+              >
+                Cloud sign-in is not available on this deployment yet. Your
+                notes and progress are saved in this browser. You can keep
+                studying as a guest.
+              </p>
+            </>
           )}
         </div>
       )}

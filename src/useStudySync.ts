@@ -1,3 +1,4 @@
+import { apiFetch, setCsrfToken } from './api-client'
 import { useEffect, useRef, useState } from 'react'
 import {
   emptyProgress,
@@ -13,6 +14,7 @@ export function useStudySync() {
   const [progress, setProgress] = useState<Progress>(loadProgress)
   const [user, setUser] = useState<User | null>(null)
   const [configured, setConfigured] = useState(false)
+  const [sessionExpired, setSessionExpired] = useState(false)
   const [storageOk, setStorageOk] = useState(true)
   const [status, setStatus] = useState('Checking sign-in…')
   const [blocked, setBlocked] = useState(false)
@@ -24,6 +26,18 @@ export function useStudySync() {
   const initial = useRef<Progress | null>(null)
   const latest = useRef(progress)
   latest.current = progress
+  useEffect(() => {
+    const expired = () => {
+      setSessionExpired(true)
+      setBlocked(true)
+      setStatus(
+        'Your session expired. Sign in again to sync. Your work is kept in this browser.',
+      )
+    }
+    window.addEventListener('masterprep:session-expired', expired)
+    return () =>
+      window.removeEventListener('masterprep:session-expired', expired)
+  }, [])
   const accountKey = (id: string) => `masterprep.account.${id}`
   useEffect(() => {
     let active = true
@@ -42,8 +56,13 @@ export function useStudySync() {
         )
           throw new Error()
         const session = await response.json()
+        if (active)
+          setCsrfToken(
+            typeof session.csrfToken === 'string' ? session.csrfToken : null,
+          )
         if (!active) return
         setConfigured(session.configured)
+        setSessionExpired(false)
         if (!session.user) {
           setUser(null)
           setProgress(loadProgress())
@@ -80,7 +99,7 @@ export function useStudySync() {
           latest.current = initial.current
           setProgress(initial.current)
         }
-        const remote = await fetch('/api/progress', {
+        const remote = await apiFetch('/api/progress', {
           signal: AbortSignal.any([
             controller.signal,
             AbortSignal.timeout(15000),
@@ -148,7 +167,7 @@ export function useStudySync() {
       saving.current = true
       setStatus('Saving to your account…')
       try {
-        const response = await fetch('/api/progress', {
+        const response = await apiFetch('/api/progress', {
           method: 'PUT',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ progress, revision: revision.current }),
@@ -195,7 +214,7 @@ export function useStudySync() {
     setReady(false)
     setStatus('Loading cloud version…')
     try {
-      const response = await fetch('/api/progress', {
+      const response = await apiFetch('/api/progress', {
         signal: AbortSignal.timeout(15000),
       })
       if (!response.ok) throw new Error()
@@ -251,6 +270,7 @@ export function useStudySync() {
     storageOk,
     user,
     configured,
+    sessionExpired,
     status,
     blocked,
     ready,

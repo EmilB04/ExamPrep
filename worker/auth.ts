@@ -32,6 +32,8 @@ export async function identity(
         audience: env.ACCESS_AUD,
         algorithms: ['RS256'],
         requiredClaims: ['exp', 'iat', 'sub', 'email'],
+        maxTokenAge: '1h',
+        clockTolerance: 5,
       },
     )
     if (

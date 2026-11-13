@@ -10,8 +10,11 @@ vi.mock('@anthropic-ai/sdk', () => ({
   },
 }))
 import { handleApi, type ApiEnv } from './api'
+import { hashToken } from './session'
 let sqlite: DatabaseSync
 let env: ApiEnv
+let currentUser: 'alice' | 'bob' | null
+const csrf = 'c'.repeat(64)
 const progress = {
   completed: {},
   notes: { 'complex-systems': 'My private note' },
@@ -21,17 +24,29 @@ function call(
   method = 'GET',
   body?: unknown,
   origin = 'https://study.test',
+  headers: Record<string, string> = {},
 ) {
   return handleApi(
     new Request(`https://study.test/api/${path}`, {
       method,
-      headers: { origin, 'content-type': 'application/json' },
+      headers: {
+        origin,
+        'content-type': 'application/json',
+        ...(currentUser
+          ? {
+              cookie: `__Host-masterprep_session=${(currentUser === 'alice' ? 'a' : 'b').repeat(64)}`,
+              'x-csrf-token': csrf,
+            }
+          : {}),
+        ...headers,
+      },
       body: body === undefined ? undefined : JSON.stringify(body),
     }),
     env,
   )
 }
-beforeEach(() => {
+beforeEach(async () => {
+  currentUser = 'alice'
   mocks.identity.mockResolvedValue({ id: 'alice', email: 'alice@example.test' })
   mocks.create.mockResolvedValue({
     content: [{ type: 'text', text: 'Try this example.' }],
@@ -39,8 +54,25 @@ beforeEach(() => {
   })
   sqlite = new DatabaseSync(':memory:')
   sqlite.exec(readFileSync('migrations/0001_study.sql', 'utf8'))
+  sqlite.exec(readFileSync('migrations/0002_sessions.sql', 'utf8'))
+  for (const name of ['alice', 'bob'])
+    sqlite
+      .prepare(
+        'INSERT INTO auth_sessions (token_hash,user_id,email,csrf_token,expires_at,created_at) VALUES (?,?,?,?,?,?)',
+      )
+      .run(
+        await hashToken((name === 'alice' ? 'a' : 'b').repeat(64)),
+        name,
+        `${name}@example.test`,
+        csrf,
+        Math.floor(Date.now() / 1000) + 3600,
+        Math.floor(Date.now() / 1000),
+      )
   env = {
     ANTHROPIC_API_KEY: 'test',
+    ACCESS_TEAM_DOMAIN: 'example.cloudflareaccess.com',
+    ACCESS_AUD: 'test-audience',
+    AUTH_ORIGIN: 'https://study.test',
     DB: {
       prepare(sql) {
         let values: (string | number)[] = []
@@ -67,7 +99,7 @@ afterEach(() => {
   vi.clearAllMocks()
 })
 it('requires authentication and same-origin JSON for writes', async () => {
-  mocks.identity.mockResolvedValue(null)
+  currentUser = null
   expect((await call('progress')).status).toBe(401)
   expect((await call('chat', 'POST', {})).status).toBe(401)
   expect((await call('recall-check', 'POST', {})).status).toBe(401)
@@ -100,12 +132,12 @@ it('keeps records isolated and rejects stale creation and update without overwri
   expect(
     (await call('progress', 'PUT', { progress, revision: 1 })).status,
   ).toBe(409)
-  mocks.identity.mockResolvedValue({ id: 'bob', email: 'bob@example.test' })
+  currentUser = 'bob'
   expect(await (await call('progress')).json()).toEqual({
     progress: { completed: {}, notes: {} },
     revision: 0,
   })
-  mocks.identity.mockResolvedValue({ id: 'alice', email: 'alice@example.test' })
+  currentUser = 'alice'
   expect((await (await call('progress')).json()).progress.notes).toEqual({
     a: 'updated',
   })
@@ -171,4 +203,115 @@ it('applies an atomic per-user AI budget shared by chat and recall', async () =>
     ).toBe(200)
   expect((await call('recall-check', 'POST', {})).status).toBe(429)
   expect(mocks.create).toHaveBeenCalledTimes(10)
+})
+
+it('issues a rotated, secure opaque session only after verified Access login', async () => {
+  const response = await call('login', 'GET', undefined, 'https://study.test', {
+    'cf-connecting-ip': '192.0.2.1',
+  })
+  expect(response.status).toBe(303)
+  const cookie = response.headers.get('set-cookie')!
+  expect(cookie).toContain('__Host-masterprep_session=')
+  expect(cookie).toContain('HttpOnly; Secure; SameSite=Lax; Max-Age=3600')
+  expect(cookie).toContain('Path=/')
+  expect(cookie).not.toContain('Domain=')
+  expect(response.headers.get('location')).toBe('https://study.test/')
+  const token = cookie.split(';')[0].split('=')[1]
+  expect(token).toHaveLength(64)
+  const row = sqlite
+    .prepare('SELECT token_hash FROM auth_sessions WHERE user_id = ?')
+    .get('alice')!
+  expect(row.token_hash).toBe(await hashToken(token))
+  expect(row.token_hash).not.toBe(token)
+  // The previous session token was revoked by rotation.
+  expect((await call('progress')).status).toBe(401)
+  const session = await (
+    await call('session', 'GET', undefined, 'https://study.test', {
+      cookie: cookie.split(';')[0],
+    })
+  ).json()
+  expect(session.user.id).toBe('alice')
+  expect(session.csrfToken).toHaveLength(64)
+})
+it('rejects missing/incorrect CSRF tokens, forged sessions, expired sessions and raw Access assertions on data routes', async () => {
+  expect(
+    (
+      await call(
+        'progress',
+        'PUT',
+        { progress, revision: 0 },
+        'https://study.test',
+        { 'x-csrf-token': '' },
+      )
+    ).status,
+  ).toBe(403)
+  expect(
+    (
+      await call(
+        'progress',
+        'PUT',
+        { progress, revision: 0 },
+        'https://study.test',
+        { 'x-csrf-token': 'd'.repeat(64) },
+      )
+    ).status,
+  ).toBe(403)
+  expect(
+    (
+      await call('progress', 'GET', undefined, 'https://study.test', {
+        cookie: '__Host-masterprep_session=' + 'f'.repeat(64),
+      })
+    ).status,
+  ).toBe(401)
+  currentUser = null
+  expect(
+    (
+      await call('progress', 'GET', undefined, 'https://study.test', {
+        'Cf-Access-Jwt-Assertion': 'fake',
+      })
+    ).status,
+  ).toBe(401)
+  currentUser = 'alice'
+  sqlite.prepare('UPDATE auth_sessions SET expires_at = 0').run()
+  expect((await call('progress')).status).toBe(401)
+})
+it('requires a CSRF-protected POST to revoke the session, then rejects replay', async () => {
+  expect((await call('logout')).status).toBe(405)
+  expect(
+    (
+      await call('logout', 'POST', {}, 'https://study.test', {
+        'x-csrf-token': '',
+      })
+    ).status,
+  ).toBe(403)
+  const response = await call('logout', 'POST', {})
+  expect(response.status).toBe(200)
+  expect(response.headers.get('set-cookie')).toContain('Max-Age=0')
+  expect((await call('progress')).status).toBe(401)
+  const session = await call('session')
+  expect(session.headers.get('cache-control')).toBe('no-store')
+  expect((await session.json()).user).toBeNull()
+})
+it('limits login callbacks by IP and authenticated API requests by user across requests', async () => {
+  mocks.identity.mockResolvedValue(null)
+  for (let i = 0; i < 20; i++)
+    expect(
+      (
+        await call('login', 'GET', undefined, 'https://study.test', {
+          'cf-connecting-ip': '192.0.2.7',
+        })
+      ).status,
+    ).toBe(401)
+  expect(
+    (
+      await call('login', 'GET', undefined, 'https://study.test', {
+        'cf-connecting-ip': '192.0.2.7',
+      })
+    ).status,
+  ).toBe(429)
+  for (let i = 0; i < 120; i++)
+    expect((await call('progress')).status).toBe(200)
+  expect((await call('progress')).status).toBe(429)
+  currentUser = 'bob'
+  expect((await call('progress')).status).toBe(200)
 })
