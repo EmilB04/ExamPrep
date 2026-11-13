@@ -37,6 +37,7 @@ import { nextReview } from './progress'
 import { useStudySync } from './useStudySync'
 import { CourseAssistant } from './CourseAssistant'
 import { ThemeControl } from './ThemeControl'
+import { ProfileControl } from './ProfileControl'
 import { ConceptPattern } from './ConceptPattern'
 import { RecallCheck } from './RecallCheck'
 import { SpotlightSearch } from './SpotlightSearch'
@@ -329,24 +330,12 @@ export default function App() {
               <span>Search</span>
               <kbd>⌘K</kbd>
             </ActionButton>
-            {sync.user ? (
-              <a className="back-link" href="/cdn-cgi/access/logout">
-                Sign out
-              </a>
-            ) : sync.configured ? (
-              <a className="secondary-button" href="/api/login">
-                Sign in
-              </a>
-            ) : (
-              <ActionButton
-                className="secondary-button"
-                disabled
-                title="Account sign-in is not configured for this deployment."
-              >
-                Sign in
-              </ActionButton>
-            )}
             <ThemeControl />
+            <ProfileControl
+              user={sync.user}
+              configured={sync.configured}
+              status={sync.status}
+            />
           </div>
         </header>
         <main

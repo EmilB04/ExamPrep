@@ -18,3 +18,5 @@
 | Scrollbar      | src/styles.css                          | DESIGN.md       | forced-colors system fallback      | browser computed styles                     |
 | Toast          | Inline status and alert regions         | This contract   | saving, failure, AI busy           | sync and assistant component tests          |
 | CRUD           | useStudySync and worker/api.ts          | This contract   | guest, account, conflict recovery  | SQLite isolation tests and browser workflow |
+
+- Profile: the far-right circular person button opens an account disclosure. Escape restores focus to the trigger; clicking outside dismisses it. Sign-in and sign-out live in this disclosure, with an explicit guest/unconfigured state.

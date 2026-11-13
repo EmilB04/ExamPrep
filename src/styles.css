@@ -2576,3 +2576,121 @@ textarea {
     font-size: 12px;
   }
 }
+
+/* Profile is the final action in the workspace navigation. */
+.topbar {
+  flex-wrap: nowrap;
+  gap: 16px;
+}
+.breadcrumb {
+  flex: 1;
+  overflow: hidden;
+}
+.breadcrumb > svg,
+.breadcrumb .mobile-toggle {
+  flex-shrink: 0;
+}
+.topbar-actions {
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
+  gap: 12px;
+}
+.profile-control {
+  position: relative;
+  flex-shrink: 0;
+}
+.profile-trigger {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  color: var(--brand);
+  background: var(--green-tint);
+  cursor: pointer;
+}
+.profile-trigger:hover,
+.profile-trigger[aria-expanded='true'] {
+  background: var(--surface-hover);
+  border-color: var(--brand);
+}
+.profile-online {
+  position: absolute;
+  right: 1px;
+  bottom: 1px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: var(--green);
+}
+.profile-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 12px);
+  z-index: 35;
+  width: min(300px, calc(100vw - 36px));
+  padding: 22px;
+  box-shadow: 0 12px 40px #06151820;
+}
+.profile-panel strong {
+  display: block;
+  margin-top: 10px;
+  overflow-wrap: anywhere;
+  font-size: 15px;
+}
+.profile-panel p {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.profile-action {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin-top: 18px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--ink);
+  background: var(--surface-soft);
+  font-size: 13px;
+  text-decoration: none;
+}
+.profile-action:hover {
+  background: var(--surface-hover);
+}
+@media (max-width: 600px) {
+  .topbar {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+  .topbar-actions {
+    gap: 8px;
+  }
+  .breadcrumb {
+    gap: 6px;
+  }
+  .topbar .theme-control button {
+    min-width: 30px;
+    padding-inline: 6px;
+  }
+  .profile-trigger {
+    width: 40px;
+    height: 40px;
+  }
+}
+@media (max-width: 360px) {
+  .topbar .search-trigger {
+    width: 34px;
+    min-width: 34px;
+  }
+  .topbar .theme-control button {
+    min-width: 26px;
+    padding-inline: 4px;
+  }
+}
