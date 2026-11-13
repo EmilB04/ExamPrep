@@ -47,7 +47,11 @@ export function useStudySync() {
         if (!session.user) {
           setUser(null)
           setProgress(loadProgress())
-          setStatus('Guest · saved in this browser')
+          setStatus(
+            session.configured
+              ? 'Guest · saved in this browser'
+              : 'Guest · saved in this browser. Account sign-in is not configured.',
+          )
           setReady(true)
           setBlocked(false)
           return

@@ -333,10 +333,18 @@ export default function App() {
               <a className="back-link" href="/cdn-cgi/access/logout">
                 Sign out
               </a>
-            ) : (
+            ) : sync.configured ? (
               <a className="secondary-button" href="/api/login">
                 Sign in
               </a>
+            ) : (
+              <ActionButton
+                className="secondary-button"
+                disabled
+                title="Account sign-in is not configured for this deployment."
+              >
+                Sign in
+              </ActionButton>
             )}
             <ThemeControl />
           </div>

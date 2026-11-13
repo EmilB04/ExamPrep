@@ -12,7 +12,8 @@
     "test": "vitest run",
     "format": "prettier --write src vite.config.ts cloudflare.config.ts index.html tsconfig.json package.json README.md",
     "cf:build": "tsc -b && cf build --mode cloudflare",
-    "deploy": "npm run cf:build && cf deploy --prebuilt --mode cloudflare"
+    "deploy": "npm run cf:build && cf deploy --prebuilt --mode cloudflare",
+    "db:migrate": "node scripts/migrate-study.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.8.0",

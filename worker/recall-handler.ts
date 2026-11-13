@@ -108,10 +108,10 @@ export async function handleRecallCheck(
     if (error instanceof Anthropic.RateLimitError)
       return json({ error: 'The checker is busy. Try again shortly.' }, 429)
     if (error instanceof Anthropic.APIError) {
-      console.error('Anthropic API error', error.status, error.message)
+      console.error('Anthropic API error', error.status)
       return json({ error: 'The checker is unavailable right now.' }, 502)
     }
-    console.error('Recall check failed', error)
+    console.error('Recall check failed')
     return json({ error: 'The checker failed.' }, 500)
   }
 }

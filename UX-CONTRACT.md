@@ -8,3 +8,13 @@
 - Persistence: guest storage remains browser-local; signed-in state is isolated by subject. Server revisions reject stale writes. Conflicts retain local work and offer explicit recovery; no silent remote overwrite.
 - Assistant: server chooses bundled course material; conversation remains in memory, scoped to selected course, and can be cleared. Requests can be cancelled, errors retain the question, responses are advisory.
 - Scrollbars: global standards-based styling in src/styles.css; forced colors use system defaults.
+
+## Canonical UI Map
+
+| Capability     | Canonical owner                         | Source of truth | Allowed variants                   | Verification                                |
+| -------------- | --------------------------------------- | --------------- | ---------------------------------- | ------------------------------------------- |
+| Form           | Native labelled inputs and ActionButton | This contract   | notebook, recall, assistant        | component tests and browser workflow        |
+| Select/Listbox | Native select                           | This contract   | course context, exercises, reading | keyboard and native popup browser check     |
+| Scrollbar      | src/styles.css                          | DESIGN.md       | forced-colors system fallback      | browser computed styles                     |
+| Toast          | Inline status and alert regions         | This contract   | saving, failure, AI busy           | sync and assistant component tests          |
+| CRUD           | useStudySync and worker/api.ts          | This contract   | guest, account, conflict recovery  | SQLite isolation tests and browser workflow |
