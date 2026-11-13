@@ -17,9 +17,9 @@ export default defineConfig({
     env: {
       DB: bindings.d1({
         name: 'masterprep-study',
-        ...(process.env.MASTERPREP_D1_ID
-          ? { id: process.env.MASTERPREP_D1_ID }
-          : {}),
+        id:
+          process.env.MASTERPREP_D1_ID ||
+          '3b83e0d6-824c-4596-abd9-9db6a2c6147b',
       }),
       ACCESS_TEAM_DOMAIN: bindings.text(process.env.ACCESS_TEAM_DOMAIN || ''),
       ACCESS_AUD: bindings.text(process.env.ACCESS_AUD || ''),

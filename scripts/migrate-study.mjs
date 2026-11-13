@@ -1,4 +1,3 @@
-import { readFileSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 
@@ -11,20 +10,18 @@ if (
   console.error('Usage: npm run db:migrate -- <D1_DATABASE_ID> [--local]')
   process.exit(1)
 }
-const sql = readFileSync(
-  new URL('../migrations/0001_study.sql', import.meta.url),
-  'utf8',
-)
+const migrations = fileURLToPath(new URL('../migrations', import.meta.url))
 const cli = fileURLToPath(new URL('../node_modules/cf/bin/cf', import.meta.url))
 const result = spawnSync(
   process.execPath,
   [
     cli,
     'd1',
-    'raw',
+    'migrations',
+    'apply',
     databaseId,
-    '--sql',
-    sql,
+    '--dir',
+    migrations,
     ...(args.includes('--local') ? ['--local'] : []),
   ],
   { stdio: 'inherit' },
