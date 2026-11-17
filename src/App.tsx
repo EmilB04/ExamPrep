@@ -531,9 +531,11 @@ export default function App() {
                       <div className="notice">
                         <CircleHelp size={19} />
                         <p>
-                          {selected.lessons
-                            ? 'Eight imported lecture reviews and 89 questions. The reviews were written by Claude; source qualifications remain visible in each lesson. Original diagrams are not included in the export.'
-                            : 'Topic groups follow the course description. The starter lesson is illustrative and has not been checked against the full lecture materials.'}
+                          {selected.id === 'scientific-methods'
+                            ? 'Three lessons built from your Notion lecture notes (20.08 and 27.08) with 46 questions, plus one illustrative starter lesson. Built from the notes, slides, case studies and exercise PDFs; check against the originals.'
+                            : selected.lessons
+                              ? 'Eight imported lecture reviews and 89 questions. The reviews were written by Claude; source qualifications remain visible in each lesson. Original diagrams are not included in the export.'
+                              : 'Topic groups follow the course description. The starter lesson is illustrative and has not been checked against the full lecture materials.'}
                         </p>
                       </div>
                     </aside>
@@ -754,9 +756,10 @@ export default function App() {
                     <Lightbulb size={20} />
                     <p>
                       Complex Systems has eight lecture reviews and 89 quiz
-                      questions. Machine Learning and Scientific Methods each
-                      have an illustrative starter lesson; full lecture content
-                      is not available yet.
+                      questions. Scientific Methods has three lessons from your
+                      Notion notes and 46 questions. Machine Learning has an
+                      illustrative starter lesson; full lecture content is not
+                      available yet.
                     </p>
                   </div>
                 </>
@@ -933,11 +936,12 @@ export default function App() {
                         practice.
                       </p>
                       <p>
-                        Machine Learning and Scientific Methods still use
-                        illustrative examples. Lecture imports are curated; file
-                        uploads are not available yet. Source qualifications
-                        appear in the Complex Systems lessons; original diagrams
-                        were not included in the export.
+                        Scientific Methods lessons come from your Notion notes;
+                        Machine Learning still uses an illustrative example.
+                        Lecture imports are curated; file uploads are not
+                        available yet. Source qualifications appear in the
+                        Complex Systems lessons; original diagrams were not
+                        included in the export.
                       </p>
                     </div>
                   </div>

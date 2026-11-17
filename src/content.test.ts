@@ -8,7 +8,7 @@ describe('Complex Systems import', () => {
     const lessons = lessonsFor(course)
     expect(lessons).toHaveLength(8)
     expect(lessons.flatMap((l) => l.questions!)).toHaveLength(89)
-    expect(new Set(lessonCourses.map((c) => c.lesson.id)).size).toBe(10)
+    expect(new Set(lessonCourses.map((c) => c.lesson.id)).size).toBe(13)
     expect(lessons.map((l) => l.id)).toEqual(
       Array.from({ length: 8 }, (_, i) => `cs-lecture-${i + 1}`),
     )
@@ -35,5 +35,25 @@ describe('interactive examples', () => {
     expect(networkDensity(6, 6)).toBe(0.4)
     expect(networkDensity(1, 0)).toBe(0)
     expect(bitFitness([1, 0, 1, 0, 1])).toBe(3)
+  })
+})
+
+describe('Scientific Methods lessons', () => {
+  const course = courses.find((c) => c.id === 'scientific-methods')!
+  it('has three Notion-based lessons plus the starter, with valid questions', () => {
+    const lessons = lessonsFor(course)
+    expect(lessons.map((l) => l.id)).toEqual([
+      'sm-sampling-measurement',
+      'sm-central-tendency',
+      'sm-t-test',
+      'sm-research-design',
+    ])
+    for (const lesson of lessons.slice(0, 3)) {
+      expect(lesson.questions!.length).toBeGreaterThanOrEqual(8)
+      for (const q of lesson.questions!) {
+        expect(q.options[q.answer]).toBeTruthy()
+        expect(new Set(q.options).size).toBe(q.options.length)
+      }
+    }
   })
 })

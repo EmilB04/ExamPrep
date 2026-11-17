@@ -1,4 +1,5 @@
 import { complexLessons } from './complex-systems'
+import { scientificLessons } from './scientific-methods'
 export type Topic = { title: string; description: string; lessonId?: string }
 export type Question = {
   id: string
@@ -221,6 +222,17 @@ complexCourse.topics = complexLessons.map((l) => ({
 }))
 complexCourse.assessment =
   'Assessment format needs confirmation: the official page lists an oral exam (50%) and project (50%); your export describes a written December exam.'
+const scientificCourse = courses.find((c) => c.id === 'scientific-methods')!
+scientificCourse.lessons = [...scientificLessons, scientificCourse.lesson]
+scientificCourse.topics = scientificCourse.lessons.map((l) => ({
+  title: l.title,
+  description: l.questions
+    ? `${l.eyebrow} · ${l.questions.length} questions · about ${l.minutes} min`
+    : `${l.eyebrow} · starter lesson · about ${l.minutes} min`,
+  lessonId: l.id,
+}))
+scientificCourse.assessment =
+  'Final exam 2 Dec 2026, 09:00 (multiple choice, study guide provided) · 40% / portfolio · 60%. Idea paper due 19 Nov 2026, 23:59, no late submissions.'
 export const lessonsFor = (course: Course) => course.lessons || [course.lesson]
 export const lessonCourses = courses.flatMap((c) =>
   lessonsFor(c).map((lesson) => ({ ...c, lesson })),
