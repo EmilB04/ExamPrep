@@ -534,7 +534,7 @@ export default function App() {
                           {selected.id === 'scientific-methods'
                             ? 'Three lessons built from your Notion lecture notes (20.08 and 27.08) with 46 questions, plus one illustrative starter lesson. Built from the notes, slides, case studies and exercise PDFs; check against the originals.'
                             : selected.lessons
-                              ? 'Eight imported lecture reviews and 89 questions. The reviews were written by Claude; source qualifications remain visible in each lesson. Original diagrams are not included in the export.'
+                              ? 'Nine lecture reviews and 102 questions. The reviews were written by Claude; source qualifications remain visible in each lesson. Original diagrams are not included in the export.'
                               : 'Topic groups follow the course description. The starter lesson is illustrative and has not been checked against the full lecture materials.'}
                         </p>
                       </div>
@@ -755,7 +755,7 @@ export default function App() {
                   <div className="notice">
                     <Lightbulb size={20} />
                     <p>
-                      Complex Systems has eight lecture reviews and 89 quiz
+                      Complex Systems has nine lecture reviews and 102 quiz
                       questions. Scientific Methods has three lessons from your
                       Notion notes and 46 questions. Machine Learning has an
                       illustrative starter lesson; full lecture content is not
@@ -929,8 +929,8 @@ export default function App() {
                     <div>
                       <h2>Lecture reviews and source references</h2>
                       <p>
-                        The Complex Systems collection includes eight lecture
-                        reviews, 89 questions, explanations, and hints. The text
+                        The Complex Systems collection includes nine lecture
+                        reviews, 102 questions, explanations, and hints. The text
                         is split into reading sections, followed by an
                         interactive example, a lecture quiz, and recall
                         practice.

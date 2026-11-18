@@ -37,7 +37,7 @@ it('completes the selected imported lecture and restores its recall card after r
   fireEvent.click(screen.getByRole('button', { name: 'Complex Systems' }))
   expect(screen.getByText(/Assessment format needs confirmation/)).toBeTruthy()
   const starts = screen.getAllByRole('button', { name: 'Start' })
-  expect(starts).toHaveLength(8)
+  expect(starts).toHaveLength(9)
   fireEvent.click(starts[7])
   expect(
     screen.getByRole('heading', { name: complexLessons[7].title }),
@@ -60,7 +60,7 @@ it('completes the selected imported lecture and restores its recall card after r
     fireEvent.click(screen.getByRole('button', { name: 'Check answer' }))
     fireEvent.click(
       screen.getByRole('button', {
-        name: index === 11 ? 'Finish quiz' : 'Next question',
+        name: index === 12 ? 'Finish quiz' : 'Next question',
       }),
     )
   }
@@ -82,7 +82,7 @@ it('completes the selected imported lecture and restores its recall card after r
   fireEvent.click(screen.getByRole('button', { name: 'Complete lesson' }))
   const saved = JSON.parse(localStorage.getItem('masterprep.progress.v1')!)
   expect(Object.keys(saved.completed)).toEqual(['cs-lecture-8'])
-  expect(saved.completed['cs-lecture-8'].attempts).toBe(12)
+  expect(saved.completed['cs-lecture-8'].attempts).toBe(13)
   view.unmount()
   render(<App />)
   fireEvent.click(screen.getByRole('button', { name: 'Recall practice' }))

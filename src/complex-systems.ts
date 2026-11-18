@@ -88,6 +88,17 @@ const concepts = [
       'A conventional artificial neuron transforms a weighted sum through an activation function. A spiking model represents membrane-potential dynamics and discrete spikes over time, often including threshold, reset, and refractory behaviour.',
     exercise: 'neuron',
   },
+  {
+    intro:
+      'Turn an auto-regressive language model into an agent by adding a loop, tools, memory, and a harness.',
+    takeaway:
+      'An AI agent is a model plus a harness: the model generates token by token, and the harness supplies tools, skills, memory, and control.',
+    recall:
+      'What does auto-regressive mean, and what does a harness add to a language model?',
+    recallAnswer:
+      'Auto-regressive means each generated token is fed back as input to produce the next one. A harness is the software around the model: tools it can call, skills loaded on demand, memory outside the limited context, and a control loop with permissions. Together they turn a text generator into an agent that acts in an environment and observes results.',
+    exercise: 'agents',
+  },
 ]
 
 export const complexLessons: Lesson[] = imported.map((lecture, index) => {
@@ -125,11 +136,13 @@ export const complexLessons: Lesson[] = imported.map((lecture, index) => {
     exercise: concept.exercise,
     reading: lecture.reading,
     questions,
-    provenance: `Lecture ${lecture.number} · ${lecture.sourceFile} · Claude-authored review; ${lecture.number <= 4 ? 'slide-text source included in supplied export' : 'chat-derived; original slides unavailable'}.`,
+    provenance: `Lecture ${lecture.number} · ${lecture.sourceFile} · Claude-authored review; ${lecture.number <= 4 ? 'slide-text source included in supplied export' : lecture.number === 9 ? 'written from the exam topic list and general knowledge; no slides used' : 'chat-derived; original slides unavailable'}.`,
     caution:
       lecture.number === 3
         ? 'The export corrects an alpha-masking inequality. Check against the original slides.'
-        : lecture.number === 5
+        : lecture.number === 9
+          ? 'Not based on lecture slides. Check against the course material before treating it as definitive.'
+          : lecture.number === 5
           ? 'The exact adaptive SIS cutting/rewiring rule is flagged for verification against Code 16.15. Lectures 5–8 are chat-derived reviews.'
           : lecture.number > 4
             ? 'Chat-derived review. Check against the original slides before treating it as definitive.'

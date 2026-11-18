@@ -4,13 +4,13 @@ import { networkDensity, bitFitness } from './ComplexExploration'
 
 describe('Complex Systems import', () => {
   const course = courses.find((c) => c.id === 'complex-systems')!
-  it('makes all eight lectures and 89 questions available with stable unique IDs', () => {
+  it('makes all nine lectures and 102 questions available with stable unique IDs', () => {
     const lessons = lessonsFor(course)
-    expect(lessons).toHaveLength(8)
-    expect(lessons.flatMap((l) => l.questions!)).toHaveLength(89)
-    expect(new Set(lessonCourses.map((c) => c.lesson.id)).size).toBe(13)
+    expect(lessons).toHaveLength(9)
+    expect(lessons.flatMap((l) => l.questions!)).toHaveLength(102)
+    expect(new Set(lessonCourses.map((c) => c.lesson.id)).size).toBe(14)
     expect(lessons.map((l) => l.id)).toEqual(
-      Array.from({ length: 8 }, (_, i) => `cs-lecture-${i + 1}`),
+      Array.from({ length: 9 }, (_, i) => `cs-lecture-${i + 1}`),
     )
     for (const lesson of lessons) {
       expect(lesson.reading).not.toMatch(/^## Quiz:/m)
