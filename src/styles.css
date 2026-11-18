@@ -2943,3 +2943,29 @@ textarea {
 .assistant-actions :is(.primary-button, .secondary-button, .back-link) {
   font-size: 12px;
 }
+
+.exam-practice {
+  margin-top: 28px;
+}
+.exam-practice h3 {
+  margin: 22px 0 10px;
+}
+.exam-practice h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 10px;
+}
+.exam-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.exam-answer {
+  display: grid;
+  gap: 12px;
+}
+.exam-answer .takeaway ul {
+  margin: 8px 0;
+  padding-left: 18px;
+}

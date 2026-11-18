@@ -40,6 +40,7 @@ import { ThemeControl } from './ThemeControl'
 import { ProfileControl } from './ProfileControl'
 import { ConceptPattern } from './ConceptPattern'
 import { RecallCheck } from './RecallCheck'
+import { ExamPractice } from './ExamPractice'
 import { SpotlightSearch } from './SpotlightSearch'
 import type { SearchItem } from './search'
 
@@ -513,6 +514,9 @@ export default function App() {
                           </div>
                         )
                       })}
+                      {selected.id === 'complex-systems' && (
+                        <ExamPractice lessons={lessonsFor(selected)} />
+                      )}
                     </section>
                     <aside>
                       <div className="panel">
@@ -930,8 +934,8 @@ export default function App() {
                       <h2>Lecture reviews and source references</h2>
                       <p>
                         The Complex Systems collection includes nine lecture
-                        reviews, 102 questions, explanations, and hints. The text
-                        is split into reading sections, followed by an
+                        reviews, 102 questions, explanations, and hints. The
+                        text is split into reading sections, followed by an
                         interactive example, a lecture quiz, and recall
                         practice.
                       </p>
