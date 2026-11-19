@@ -8,7 +8,7 @@ describe('Complex Systems import', () => {
     const lessons = lessonsFor(course)
     expect(lessons).toHaveLength(9)
     expect(lessons.flatMap((l) => l.questions!)).toHaveLength(102)
-    expect(new Set(lessonCourses.map((c) => c.lesson.id)).size).toBe(14)
+    expect(new Set(lessonCourses.map((c) => c.lesson.id)).size).toBe(23)
     expect(lessons.map((l) => l.id)).toEqual(
       Array.from({ length: 9 }, (_, i) => `cs-lecture-${i + 1}`),
     )
@@ -55,5 +55,30 @@ describe('Scientific Methods lessons', () => {
         expect(new Set(q.options).size).toBe(q.options.length)
       }
     }
+  })
+})
+
+describe('Machine Learning lessons', () => {
+  const course = courses.find((c) => c.id === 'machine-learning')!
+  it('has nine source-based lessons plus the starter, with valid questions', () => {
+    const lessons = lessonsFor(course)
+    expect(lessons).toHaveLength(10)
+    expect(lessons[9].id).toBe('ml-generalisation')
+    const real = lessons.slice(0, 9)
+    expect(real.flatMap((l) => l.questions!)).toHaveLength(122)
+    const ids = real.flatMap((l) => l.questions!.map((q) => q.id))
+    expect(new Set(ids).size).toBe(ids.length)
+    for (const lesson of real) {
+      expect(lesson.provenance).toBeTruthy()
+      expect(lesson.reading).toMatch(/^## /m)
+      for (const q of lesson.questions!) {
+        expect(q.options[q.answer]).toBeTruthy()
+        expect(new Set(q.options).size).toBe(q.options.length)
+        expect(q.explanation.length).toBeGreaterThan(10)
+      }
+    }
+  })
+  it('states the exam format from the last lecture', () => {
+    expect(course.assessment).toContain('3 hours')
   })
 })

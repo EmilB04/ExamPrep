@@ -533,9 +533,11 @@ export default function App() {
                         <p>
                           {selected.id === 'scientific-methods'
                             ? 'Three lessons built from your Notion lecture notes (20.08 and 27.08) with 46 questions, plus one illustrative starter lesson. Built from the notes, slides, case studies and exercise PDFs; check against the originals.'
-                            : selected.lessons
-                              ? 'Nine lecture reviews and 102 questions. The reviews were written by Claude; source qualifications remain visible in each lesson. Original diagrams are not included in the export.'
-                              : 'Topic groups follow the course description. The starter lesson is illustrative and has not been checked against the full lecture materials.'}
+                            : selected.id === 'machine-learning'
+                              ? 'Nine lessons with 122 questions from the lecture slides (Roland, lectures 1-5; Marius, lectures 6-10), your Notion notes, the reading guide and your Notion quiz, plus one illustrative starter lesson. Notes were written by Claude; slide images and equations were not readable, so check formulas against the originals.'
+                              : selected.lessons
+                                ? 'Nine lecture reviews and 102 questions. The reviews were written by Claude; source qualifications remain visible in each lesson. Original diagrams are not included in the export.'
+                                : 'Topic groups follow the course description. The starter lesson is illustrative and has not been checked against the full lecture materials.'}
                         </p>
                       </div>
                     </aside>
@@ -757,9 +759,9 @@ export default function App() {
                     <p>
                       Complex Systems has nine lecture reviews and 102 quiz
                       questions. Scientific Methods has three lessons from your
-                      Notion notes and 46 questions. Machine Learning has an
-                      illustrative starter lesson; full lecture content is not
-                      available yet.
+                      Notion notes and 46 questions. Machine Learning has nine
+                      lessons and 122 questions from the lecture slides, your
+                      Notion notes and the reading guide.
                     </p>
                   </div>
                 </>
@@ -930,18 +932,18 @@ export default function App() {
                       <h2>Lecture reviews and source references</h2>
                       <p>
                         The Complex Systems collection includes nine lecture
-                        reviews, 102 questions, explanations, and hints. The text
-                        is split into reading sections, followed by an
+                        reviews, 102 questions, explanations, and hints. The
+                        text is split into reading sections, followed by an
                         interactive example, a lecture quiz, and recall
                         practice.
                       </p>
                       <p>
                         Scientific Methods lessons come from your Notion notes;
-                        Machine Learning still uses an illustrative example.
-                        Lecture imports are curated; file uploads are not
-                        available yet. Source qualifications appear in the
-                        Complex Systems lessons; original diagrams were not
-                        included in the export.
+                        Machine Learning lessons come from the lecture slides,
+                        Notion notes and reading guide. Lecture imports are
+                        curated; file uploads are not available yet. Source
+                        qualifications appear in the Complex Systems lessons;
+                        original diagrams were not included in the export.
                       </p>
                     </div>
                   </div>

@@ -1,0 +1,242 @@
+[
+  {
+    "cat": "Classical ML",
+    "question": "In C5.0 output, what does the notation `compensated (174.6/24.8)` at a leaf mean?",
+    "options": [
+      "174.6 training cases reach this leaf; 24.8 are misclassified",
+      "174.6% accuracy; 24.8% error rate",
+      "174.6 total cases; 24.8 test cases",
+      "Confidence 174.6%; lift 24.8"
+    ],
+    "answer": 0,
+    "explanation": "In C5.0 leaf notation, `(n/m)` means n cases reach the leaf and m of them are misclassified. Non-integer values occur because C5.0 splits cases with unknown attribute values, sending fractions down each branch."
+  },
+  {
+    "cat": "Classical ML",
+    "question": "What is the key difference between C5.0 and Cubist?",
+    "options": [
+      "C5.0 handles only numeric data; Cubist handles only categorical",
+      "C5.0 produces classification models (categories); Cubist produces numeric prediction models",
+      "C5.0 uses neural networks internally; Cubist uses decision trees",
+      "C5.0 requires R; Cubist requires Python"
+    ],
+    "answer": 1,
+    "explanation": "C5.0 is a classification system — its leaf predicts a class (e.g. 'primary', 'negative'). Cubist is its sister system for numeric prediction — each rule's 'then' part is a linear equation that predicts a continuous value (e.g. miles per gallon)."
+  },
+  {
+    "cat": "Classical ML",
+    "question": "In a Cubist ruleset, what does 'relative error' measure?",
+    "options": [
+      "The fraction of rules that are wrong",
+      "The ratio of average absolute error to the error of always predicting the mean",
+      "The percentage of test cases mispredicted",
+      "The R² value subtracted from 1"
+    ],
+    "answer": 1,
+    "explanation": "Relative error = MAE ÷ (error from always predicting the training mean). A value < 1 means the model beats the naive baseline. A value close to 0 is excellent."
+  },
+  {
+    "cat": "Classical ML",
+    "question": "When should you use the C5.0 option `-s` (discrete value subsets)?",
+    "options": [
+      "When the dataset has more than 1,000 cases",
+      "When you want cross-validation results",
+      "When a dataset has important discrete attributes with more than 4–5 values",
+      "When the target attribute is continuous"
+    ],
+    "answer": 2,
+    "explanation": "The `-s` flag groups discrete attribute values into subsets rather than creating a separate branch for each value. This prevents excessive fragmentation (high fan-out) when an attribute has many values. The tutorial recommends it for discrete attributes with > 4–5 values."
+  },
+  {
+    "cat": "Classical ML",
+    "question": "What does Cubist's 'composite model' (`-i` flag) do differently from a pure rule-based model?",
+    "options": [
+      "It builds multiple independent models and averages their predictions",
+      "It combines rule-based prediction with k-nearest neighbor adjustment",
+      "It uses random forests instead of linear rules",
+      "It applies boosting to reduce bias"
+    ],
+    "answer": 1,
+    "explanation": "A composite model finds the k nearest neighbors of a test case, then adjusts each neighbor's target value using the rule model: `T(y) + M(x) - M(y)`. This corrects for the difference the model predicts between the test case and the neighbor, rather than using the raw neighbor value."
+  },
+  {
+    "cat": "Classical ML",
+    "question": "Classifium's main design advantage is described as:",
+    "options": [
+      "Very fast training speed on large datasets",
+      "Support for deep learning architectures",
+      "Exceptionally little overfitting, including on large datasets with thorough cross-validation",
+      "Full compatibility with the R caret package"
+    ],
+    "answer": 2,
+    "explanation": "Classifium is described in its user guide as designed to give very little overfitting, so it works well on new, unseen data. Even experienced statisticians can be fooled by overfitting, which is why this is the main design goal."
+  },
+  {
+    "cat": "Tools & Implementation",
+    "question": "In the caret package, what does `trainControl(method = 'repeatedcv', repeats = 3)` configure?",
+    "options": [
+      "Three separate models are trained and their predictions averaged",
+      "10-fold cross-validation repeated 3 times (30 total resamples)",
+      "A 3-fold cross-validation repeated 10 times",
+      "Random bootstrapping with 3 iterations"
+    ],
+    "answer": 1,
+    "explanation": "By default, `method = 'repeatedcv'` uses 10 folds (controlled by the `number` argument). With `repeats = 3`, the full 10-fold CV is run 3 times on different random splits, giving 30 resamples total. This produces more stable estimates of model performance."
+  },
+  {
+    "cat": "Tools & Implementation",
+    "question": "In scikit-learn, what is the purpose of calling `.fit_transform()` on the training set but only `.transform()` on the test set?",
+    "options": [
+      "The test set needs fewer transformations for speed",
+      "To avoid data leakage — the scaler must learn parameters only from training data",
+      "`.transform()` applies PCA; `.fit_transform()` does not",
+      "It is just a convention with no functional difference"
+    ],
+    "answer": 1,
+    "explanation": "`.fit_transform()` computes scaling parameters (e.g., mean and std) from the training data AND applies them. `.transform()` on the test set applies ONLY the already-computed parameters. If you fit on the test set, you leak information about the test distribution into preprocessing — a form of data leakage."
+  },
+  {
+    "cat": "Tools & Implementation",
+    "question": "In R's formula syntax `y ~ x1 + x2 + x3`, what does `~` mean?",
+    "options": [
+      "Approximately equal to",
+      "Separates the response variable (left) from predictors (right) in a model formula",
+      "Pipe operator — passes the left side to the right side function",
+      "Matrix multiplication operator"
+    ],
+    "answer": 1,
+    "explanation": "In R's formula language, `~` means 'is modeled by'. `y ~ x1 + x2` says 'model y as a function of x1 and x2'. This syntax is used throughout R's modeling ecosystem — in lm(), glm(), and caret's `train()` function."
+  },
+  {
+    "cat": "Tools & Implementation",
+    "question": "What does the caret `metric = 'ROC'` argument do in `train()`?",
+    "options": [
+      "Plots the ROC curve automatically after training",
+      "Instructs caret to choose the model with the largest area under the ROC curve across tuning parameters",
+      "Enables multiclass ROC evaluation",
+      "Requires that class probabilities are NOT computed"
+    ],
+    "answer": 1,
+    "explanation": "When metric = 'ROC', caret evaluates each candidate hyperparameter setting by its area under the ROC curve (computed via cross-validation) and selects the setting with the highest AUC. This requires classProbs = TRUE and summaryFunction = twoClassSummary in trainControl(), because ROC is based on predicted probabilities."
+  },
+  {
+    "cat": "Deep Learning",
+    "question": "What problem did the original batch normalization paper say it primarily solves (Ch. 8 of D2L)?",
+    "options": [
+      "Overfitting by randomly dropping neurons",
+      "Internal covariate shift — stabilizing the distribution of layer inputs during training",
+      "Vanishing gradients in shallow networks",
+      "Reducing the number of parameters in convolutional layers"
+    ],
+    "answer": 1,
+    "explanation": "Batch normalization normalizes the inputs to each layer (zero mean, unit variance) across a mini-batch. This reduces 'internal covariate shift' — the changing distribution of layer inputs as earlier layer weights update — allowing higher learning rates and more stable training."
+  },
+  {
+    "cat": "Deep Learning",
+    "question": "In the Deep Learning book (Goodfellow et al.), the 'bias-variance tradeoff' describes:",
+    "options": [
+      "The tradeoff between model accuracy and inference speed",
+      "The tension between a model being too simple (high bias, underfitting) and too complex (high variance, overfitting)",
+      "The balance between L1 and L2 regularization",
+      "How batch size affects gradient noise"
+    ],
+    "answer": 1,
+    "explanation": "High bias = the model systematically fails to capture the true patterns (underfitting). High variance = the model is too sensitive to training data fluctuations (overfitting). As model capacity increases, bias typically decreases but variance increases. Finding the right balance is the core challenge in ML."
+  },
+  {
+    "cat": "Deep Learning",
+    "question": "What does 'dropout' do during training in a neural network?",
+    "options": [
+      "Removes entire layers that are not contributing to learning",
+      "Randomly zeroes out neurons with probability p, forcing the network to learn redundant representations",
+      "Reduces the learning rate when validation loss plateaus",
+      "Clips gradient magnitudes to prevent exploding gradients"
+    ],
+    "answer": 1,
+    "explanation": "Dropout randomly disables (zeroes) each neuron with probability p during each training step. At test time all neurons are active and the activations are scaled so that their expected size matches training (classic dropout scales by (1-p) at test time; inverted dropout scales by 1/(1-p) during training). This prevents co-adaptation of neurons and acts as an implicit ensemble of many sub-networks."
+  },
+  {
+    "cat": "Deep Learning",
+    "question": "In the Transformer architecture, what are 'queries', 'keys', and 'values'?",
+    "options": [
+      "Database lookup operations borrowed from SQL",
+      "Q, K, V are learned linear projections of input embeddings: the scores are QKᵀ/√dₖ, a softmax turns them into weights, and the output is softmax(QKᵀ/√dₖ)·V",
+      "The three types of loss functions used in training",
+      "Input, hidden state, and output in an RNN cell"
+    ],
+    "answer": 1,
+    "explanation": "In multi-head attention, each token's embedding is projected into three spaces: Query (what am I looking for?), Key (what do I contain?), Value (what do I give?). Scaled dot-products of Q and K give the scores, a softmax turns them into weights, and the weights are used to sum the Values. This lets each position attend to all other positions."
+  },
+  {
+    "cat": "Deep Learning",
+    "question": "What distinguishes an LSTM from a vanilla RNN?",
+    "options": [
+      "LSTMs process sequences in reverse order",
+      "LSTMs have gating mechanisms (input, forget, output gates) and a cell state that can carry information across long sequences",
+      "LSTMs use convolutional layers instead of fully connected layers",
+      "LSTMs do not use backpropagation"
+    ],
+    "answer": 1,
+    "explanation": "Vanilla RNNs suffer from the vanishing gradient problem — gradients shrink to near-zero over long sequences, making it impossible to learn long-range dependencies. LSTMs solve this with a 'cell state' (a conveyor belt) and three gates: the forget gate (what to erase), input gate (what to write), and output gate (what to read), allowing gradients to flow unchanged across many timesteps."
+  },
+  {
+    "cat": "LLMs & Fine-Tuning",
+    "question": "According to Stephen Wolfram's article, what is the fundamental operation ChatGPT performs?",
+    "options": [
+      "Retrieving facts from a database indexed during training",
+      "Predicting the next token given all previous tokens, repeatedly",
+      "Running a grammar checker and then a factual verifier",
+      "Translating the input into a logical formula and evaluating it"
+    ],
+    "answer": 1,
+    "explanation": "ChatGPT is a next-token predictor. Given a sequence of tokens, it assigns a probability distribution over all ~50,000 possible next tokens and samples from it. Text is generated token-by-token. The 'temperature' parameter controls how peaked (deterministic) or flat (random) that distribution is."
+  },
+  {
+    "cat": "LLMs & Fine-Tuning",
+    "question": "What is 'temperature' in the context of LLM text generation?",
+    "options": [
+      "The GPU temperature during inference, which affects output quality",
+      "A hyperparameter controlling randomness: higher temperature = more diverse/random output",
+      "The number of tokens generated per second",
+      "A measure of how confident the model is in its output"
+    ],
+    "answer": 1,
+    "explanation": "Temperature T scales the logits before the softmax: logits ÷ T. Temperature = 1 → standard distribution. Temperature → 0 → model always picks the most probable token (deterministic/greedy). High temperature (>1) → distribution flattens → more random, creative, but potentially incoherent outputs."
+  },
+  {
+    "cat": "LLMs & Fine-Tuning",
+    "question": "What does LoRA (Low-Rank Adaptation) do when fine-tuning an LLM?",
+    "options": [
+      "Trains the entire model from scratch on the new dataset",
+      "Freezes the original weights and adds small trainable low-rank matrices (adapters) to selected layers",
+      "Compresses the model to 4-bit precision for faster inference",
+      "Removes layers from the model to reduce its size"
+    ],
+    "answer": 1,
+    "explanation": "LoRA keeps the pre-trained weights frozen and adds small adapter matrices A and B such that the weight update ΔW = BA, where B and A are low-rank (e.g., rank 8–64). Only A and B are trained, typically < 1% of total parameters. This drastically reduces memory and compute requirements while preserving most of the pre-trained model's knowledge."
+  },
+  {
+    "cat": "LLMs & Fine-Tuning",
+    "question": "What is the main advantage of QLoRA over standard LoRA?",
+    "options": [
+      "QLoRA trains faster by skipping validation during fine-tuning",
+      "QLoRA quantizes the base model to 4-bit precision, dramatically reducing VRAM requirements",
+      "QLoRA produces better accuracy on all tasks than standard LoRA",
+      "QLoRA uses query-based attention instead of key-value attention"
+    ],
+    "answer": 1,
+    "explanation": "QLoRA = Quantized LoRA. The frozen base model weights are loaded in 4-bit (NF4) quantization instead of 16/32-bit, cutting their memory by about 4x. LoRA adapters are trained in 16-bit precision. This allows fine-tuning a 7B parameter model on a consumer GPU with 6-8 GB VRAM, whereas full fine-tuning needs far more (the weights alone are about 28 GB in fp32, plus gradients and optimizer state)."
+  },
+  {
+    "cat": "Evaluation & Concepts",
+    "question": "You have a dataset where 95% of cases are 'negative' and 5% are 'positive'. A model achieves 95% accuracy. What is the most important additional metric to check?",
+    "options": [
+      "Training time in seconds",
+      "Precision and Recall (or F1 score) on the positive class",
+      "The number of layers in the model",
+      "The relative error compared to the mean predictor"
+    ],
+    "answer": 1,
+    "explanation": "On imbalanced datasets, accuracy is misleading — a model that always predicts 'negative' achieves 95% accuracy without learning anything useful. Precision (of the positive class predictions that are correct) and Recall (of all actual positives that are detected) reveal whether the model is actually detecting the rare class. F1 = 2·P·R/(P+R) balances both."
+  }
+]
