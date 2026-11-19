@@ -2943,3 +2943,174 @@ textarea {
 .assistant-actions :is(.primary-button, .secondary-button, .back-link) {
   font-size: 12px;
 }
+
+/* Glossary hover terms */
+.markdown strong.term {
+  position: relative;
+  cursor: help;
+  border-bottom: 1px dotted var(--accent, var(--green));
+  outline: none;
+}
+.markdown strong.term:focus-visible {
+  outline: 2px solid var(--accent, var(--green));
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+.term-tip {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  width: max-content;
+  max-width: min(300px, 78vw);
+  padding: 10px 12px;
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.16);
+  font-size: 12.5px;
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: left;
+  white-space: normal;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-3px);
+  transition:
+    opacity 0.14s ease,
+    transform 0.14s ease,
+    visibility 0.14s;
+  pointer-events: none;
+}
+.markdown strong.term:hover .term-tip,
+.markdown strong.term:focus .term-tip,
+.markdown strong.term:focus-within .term-tip {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .term-tip {
+    transition: none;
+  }
+}
+
+/* ML explorations */
+.ml-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 14px;
+  font-size: 12px;
+}
+.ml-table th,
+.ml-table td {
+  text-align: left;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+.ml-table th {
+  font-size: 10px;
+  letter-spacing: 0.6px;
+  color: var(--strong);
+}
+.ml-table input[type='range'] {
+  min-height: 20px;
+  min-width: 80px;
+}
+.bar-cell {
+  width: 30%;
+}
+.bar-cell i {
+  display: block;
+  height: 8px;
+  min-width: 2px;
+  background: var(--green);
+  border-radius: 4px;
+}
+.confusion {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+}
+.confusion .cell {
+  padding: 14px 8px;
+  text-align: center;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.cell.good {
+  background: color-mix(in srgb, var(--green) 22%, transparent);
+}
+.cell.bad {
+  background: color-mix(in srgb, var(--orange) 22%, transparent);
+}
+.conv-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: flex-start;
+  font-size: 11px;
+}
+.cell-grid {
+  display: grid;
+  gap: 3px;
+  margin-top: 6px;
+}
+.cell-grid .cell {
+  min-width: 26px;
+  padding: 5px 3px;
+  text-align: center;
+  font-size: 11px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.cell-grid .cell.on {
+  background: color-mix(in srgb, var(--orange) 32%, var(--surface));
+  border-color: var(--orange);
+}
+.cell-grid .cell.filter {
+  background: color-mix(in srgb, var(--green) 20%, var(--surface));
+}
+.cell-grid .cell.dim {
+  opacity: 0.5;
+}
+
+.illustration button svg {
+  width: auto;
+  flex: none;
+}
+.cell-grid .cell {
+  min-height: 28px;
+  line-height: 18px;
+}
+.diverge {
+  position: relative;
+  display: block;
+  height: 10px;
+  border-radius: 5px;
+  background: var(--line);
+}
+.diverge::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -2px;
+  bottom: -2px;
+  width: 1px;
+  background: var(--subtle);
+}
+.diverge i {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 5px;
+}
+.term-tip.flip {
+  left: auto;
+  right: 0;
+}

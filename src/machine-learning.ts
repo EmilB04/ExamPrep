@@ -33,6 +33,7 @@ const make = (
     recallAnswer: string
     provenance: string
     caution?: string
+    exercise?: string
   },
   reading: string,
   questions: Question[],
@@ -54,6 +55,7 @@ const make = (
   questions,
   provenance: meta.provenance,
   caution: meta.caution,
+  exercise: meta.exercise,
 })
 
 /* ------------------------------------------------------------------ */
@@ -1747,6 +1749,7 @@ export const mlLessons: Lesson[] = [
   make(
     'ml-trees-entropy',
     {
+      exercise: 'ml-entropy',
       title: 'Decision trees, entropy and information gain',
       eyebrow: 'Lectures 1-2 · trees',
       intro:
@@ -1766,6 +1769,7 @@ export const mlLessons: Lesson[] = [
   make(
     'ml-evaluation-preprocessing',
     {
+      exercise: 'ml-confusion',
       title: 'Overfitting, cross-validation and metrics',
       eyebrow: 'Lectures 2-3 · evaluation',
       intro:
@@ -1787,6 +1791,7 @@ export const mlLessons: Lesson[] = [
   make(
     'ml-ensembles',
     {
+      exercise: 'ml-boosting',
       title: 'Random forests, boosting and XGBoost',
       eyebrow: 'Lectures 2-4 · ensembles',
       intro:
@@ -1807,6 +1812,7 @@ export const mlLessons: Lesson[] = [
   make(
     'ml-perceptron-xor',
     {
+      exercise: 'ml-xor',
       title: 'Perceptrons, XOR and network types',
       eyebrow: 'Lectures 3-5 · neural nets',
       intro:
@@ -1825,6 +1831,7 @@ export const mlLessons: Lesson[] = [
   make(
     'ml-mlp-backprop',
     {
+      exercise: 'ml-gradient',
       title: 'Multilayer networks and backpropagation',
       eyebrow: 'Lecture 6 · forward and backward',
       intro:
@@ -1843,6 +1850,7 @@ export const mlLessons: Lesson[] = [
   make(
     'ml-cnn',
     {
+      exercise: 'ml-conv',
       title: 'Convolutional networks and training basics',
       eyebrow: 'Lecture 7 · CNN',
       intro:
@@ -1864,6 +1872,7 @@ export const mlLessons: Lesson[] = [
   make(
     'ml-deep-cnn',
     {
+      exercise: 'ml-vanishing',
       title: 'Going deep: AlexNet, VGG, batch norm, ResNet',
       eyebrow: 'Lecture 8 · depth',
       intro:
@@ -1885,6 +1894,7 @@ export const mlLessons: Lesson[] = [
   make(
     'ml-rnn-attention',
     {
+      exercise: 'ml-attention',
       title: 'Recurrent networks, LSTM, attention and transformers',
       eyebrow: 'Lectures 9-10 · sequences',
       intro:
