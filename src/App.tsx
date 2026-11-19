@@ -1169,7 +1169,10 @@ function LearningSession({
               <>
                 <h2>{lesson.intro}</h2>
                 {lesson.reading ? (
-                  <LectureReading text={lesson.reading} />
+                  <LectureReading
+                    text={lesson.reading}
+                    glossary={course.id === 'machine-learning'}
+                  />
                 ) : (
                   <div className="reading-grid">
                     <div>

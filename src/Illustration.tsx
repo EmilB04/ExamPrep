@@ -2,6 +2,7 @@ import { ActionButton } from './ActionButton'
 import { useState } from 'react'
 import { RotateCcw } from 'lucide-react'
 import { ComplexExploration } from './ComplexExploration'
+import { MlExploration } from './MlExploration'
 
 export function Illustration({
   kind,
@@ -13,6 +14,7 @@ export function Illustration({
   const [value, setValue] = useState(3)
   const [generation, setGeneration] = useState(0)
   const [method, setMethod] = useState('experience')
+  if (kind.startsWith('ml-')) return <MlExploration kind={kind} />
   if (['network', 'evolution', 'agents', 'neuron', 'neural-ca'].includes(kind))
     return <ComplexExploration kind={kind} />
   if (kind === 'machine-learning')

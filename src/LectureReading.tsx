@@ -4,8 +4,59 @@ import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { motion } from 'motion/react'
+import { useId, useRef, type ReactNode } from 'react'
+import { lookupTerm } from './glossary'
 
-export function LectureReading({ text }: { text: string }) {
+function Term({
+  children,
+  glossary,
+}: {
+  children?: ReactNode
+  glossary: boolean
+}) {
+  const id = useId()
+  const ref = useRef<HTMLElement>(null)
+  const [flip, setFlip] = useState(false)
+  const text =
+    typeof children === 'string'
+      ? children
+      : Array.isArray(children)
+        ? children.filter((c) => typeof c === 'string').join('')
+        : ''
+  const definition = glossary && text ? lookupTerm(text) : undefined
+  if (!definition) return <strong>{children}</strong>
+  const place = () => {
+    const rect = ref.current?.getBoundingClientRect()
+    if (rect) setFlip(rect.left + 300 > window.innerWidth - 12)
+  }
+  return (
+    <strong
+      ref={ref}
+      className="term"
+      tabIndex={0}
+      aria-describedby={id}
+      onMouseEnter={place}
+      onFocus={place}
+    >
+      {children}
+      <span
+        role="tooltip"
+        id={id}
+        className={flip ? 'term-tip flip' : 'term-tip'}
+      >
+        {definition}
+      </span>
+    </strong>
+  )
+}
+
+export function LectureReading({
+  text,
+  glossary = false,
+}: {
+  text: string
+  glossary?: boolean
+}) {
   const sections = text.split(/(?=^## )/m).filter((s) => s.trim())
   const [index, setIndex] = useState(0)
   const heading = (section: string, i: number) =>
@@ -43,6 +94,9 @@ export function LectureReading({ text }: { text: string }) {
           remarkPlugins={[remarkGfm]}
           components={{
             a: (props) => <a {...props} target="_blank" rel="noreferrer" />,
+            strong: (props) => (
+              <Term glossary={glossary}>{props.children}</Term>
+            ),
             img: (props) => (
               <span>
                 [Source image: {props.alt || 'not included in export'}]
