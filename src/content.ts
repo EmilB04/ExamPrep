@@ -1,4 +1,5 @@
 import { complexLessons } from './complex-systems'
+import { mlLessons, mlExamNotice } from './machine-learning'
 import { scientificLessons } from './scientific-methods'
 export type Topic = { title: string; description: string; lessonId?: string }
 export type Question = {
@@ -222,6 +223,16 @@ complexCourse.topics = complexLessons.map((l) => ({
 }))
 complexCourse.assessment =
   'Assessment format needs confirmation: the official page lists an oral exam (50%) and project (50%); your export describes a written December exam.'
+const mlCourse = courses.find((c) => c.id === 'machine-learning')!
+mlCourse.lessons = [...mlLessons, mlCourse.lesson]
+mlCourse.topics = mlCourse.lessons.map((l) => ({
+  title: l.title,
+  description: l.questions
+    ? `${l.eyebrow} · ${l.questions.length} questions · about ${l.minutes} min`
+    : `${l.eyebrow} · starter lesson · about ${l.minutes} min`,
+  lessonId: l.id,
+}))
+mlCourse.assessment = mlExamNotice
 const scientificCourse = courses.find((c) => c.id === 'scientific-methods')!
 scientificCourse.lessons = [...scientificLessons, scientificCourse.lesson]
 scientificCourse.topics = scientificCourse.lessons.map((l) => ({
