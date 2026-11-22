@@ -8,11 +8,13 @@ export function ProfileControl({
   configured,
   status,
   expired = false,
+  onSignIn,
 }: {
-  user: { email: string } | null
+  user: { username: string } | null
   configured: boolean
   status: string
   expired?: boolean
+  onSignIn?: () => void
 }) {
   const [open, setOpen] = useState(false)
   const [signInRequested, setSignInRequested] = useState(false)
@@ -24,7 +26,7 @@ export function ProfileControl({
   useEffect(() => {
     if (!open) return
     const action = panel.current?.querySelector<HTMLElement>(
-      'a, button:not([disabled])',
+      'a, button:not([disabled]), input',
     )
     ;(action || panel.current)?.focus()
     function outside(event: PointerEvent) {
@@ -45,24 +47,19 @@ export function ProfileControl({
   }, [open])
   return (
     <div className="profile-control" ref={root}>
-      {(!user || expired) &&
-        (configured ? (
-          <a className="header-sign-in" href="/api/login">
-            <LogIn size={16} aria-hidden="true" />
-            Sign in
-          </a>
-        ) : (
-          <ActionButton
-            className="header-sign-in"
-            onClick={() => {
-              setSignInRequested(true)
-              setOpen(true)
-            }}
-          >
-            <LogIn size={16} aria-hidden="true" />
-            Sign in
-          </ActionButton>
-        ))}
+      {(!user || expired) && (
+        <ActionButton
+          className="header-sign-in"
+          onClick={() => {
+            if (configured && onSignIn) return onSignIn()
+            setSignInRequested(true)
+            setOpen(true)
+          }}
+        >
+          <LogIn size={16} aria-hidden="true" />
+          Sign in
+        </ActionButton>
+      )}
       <ActionButton
         ref={trigger}
         className="profile-trigger"
@@ -87,7 +84,7 @@ export function ProfileControl({
           aria-label="Profile details"
         >
           <div className="eyebrow">YOUR ACCOUNT</div>
-          <strong>{user?.email || 'Studying as a guest'}</strong>
+          <strong>{user?.username || 'Studying as a guest'}</strong>
           <p>{status}</p>
           {error && <p role="alert">{error}</p>}
           {user && !expired ? (
@@ -114,32 +111,28 @@ export function ProfileControl({
             </ActionButton>
           ) : configured ? (
             <>
-              <p>
-                We’ll send a one-time code to your email. No password needed.
-              </p>
-              <a className="profile-action" href="/api/login">
-                <LogIn size={16} />
-                Sign in with email
-              </a>
-            </>
-          ) : (
-            <>
+              <p>Create a username and PIN to sync your studies.</p>
               <ActionButton
                 className="profile-action"
-                onClick={() => setSignInRequested(true)}
+                onClick={() => {
+                  setOpen(false)
+                  onSignIn?.()
+                }}
               >
-                <LogIn size={16} />
-                Sign in to sync your studies
+                <LogIn size={16} aria-hidden="true" />
+                Sign in or create account
               </ActionButton>
-              <p
-                className="sample-note"
-                role={signInRequested ? 'alert' : undefined}
-              >
-                Cloud sign-in is not available on this deployment yet. Your
-                notes and progress are saved in this browser. You can keep
-                studying as a guest.
-              </p>
             </>
+          ) : (
+            <p
+              className="sample-note"
+              role={signInRequested ? 'alert' : undefined}
+            >
+              Account sign-in needs a secure (https) connection to the study
+              database, which this deployment does not have. Your notes and
+              progress are saved in this browser. You can keep studying as a
+              guest.
+            </p>
           )}
         </div>
       )}

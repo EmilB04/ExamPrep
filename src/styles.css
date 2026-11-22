@@ -2718,7 +2718,7 @@ textarea {
   right: 0;
   top: calc(100% + 12px);
   z-index: 35;
-  width: min(300px, calc(100vw - 36px));
+  width: min(320px, calc(100vw - 36px));
   padding: 22px;
   box-shadow: 0 12px 40px #06151820;
 }
@@ -3113,4 +3113,95 @@ textarea {
 .term-tip.flip {
   left: auto;
   right: 0;
+}
+
+.auth-form {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+}
+.auth-form label {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.auth-form input {
+  min-height: 40px;
+  width: 100%;
+}
+.auth-form .profile-action {
+  justify-content: center;
+  border: 0;
+  cursor: pointer;
+}
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+.auth-tabs button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.auth-tabs button[aria-pressed='true'] {
+  background: var(--surface);
+  color: var(--brand);
+}
+.auth-link {
+  justify-self: start;
+  padding: 6px 0;
+  border: 0;
+  background: none;
+  color: var(--brand);
+  font-size: 12px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.auth-code {
+  display: block;
+  margin: 12px 0 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--surface-soft);
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  text-align: center;
+  user-select: all;
+}
+
+.account-page {
+  max-width: 460px;
+  margin: 24px auto;
+}
+.account-page h1 {
+  margin: 8px 0 20px;
+  overflow-wrap: anywhere;
+}
+.account-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+.account-card .auth-form {
+  margin-top: 18px;
+}
+.account-note {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px !important;
+  font-size: 12px !important;
+}
+.account-note svg {
+  flex-shrink: 0;
+  margin-top: 2px;
 }

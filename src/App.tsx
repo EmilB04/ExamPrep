@@ -38,12 +38,14 @@ import { useStudySync } from './useStudySync'
 import { CourseAssistant } from './CourseAssistant'
 import { ThemeControl } from './ThemeControl'
 import { ProfileControl } from './ProfileControl'
+import { AccountPage } from './AccountPage'
 import { ConceptPattern } from './ConceptPattern'
 import { RecallCheck } from './RecallCheck'
 import { SpotlightSearch } from './SpotlightSearch'
 import type { SearchItem } from './search'
 
-type Page = 'overview' | 'courses' | 'review' | 'notes' | 'materials'
+type Page =
+  'overview' | 'courses' | 'review' | 'notes' | 'materials' | 'account'
 const nav = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'courses', label: 'Courses', icon: BookOpen },
@@ -142,6 +144,10 @@ export default function App() {
     ) ||
     lessonCourses.find((c) => !progress.completed[c.lesson.id]) ||
     lessonCourses[0]
+  useEffect(() => {
+    if (page === 'account' && sync.user && !sync.sessionExpired && sync.ready)
+      setPage('overview')
+  }, [page, sync.user, sync.sessionExpired, sync.ready])
   function navigate(p: Page) {
     setPage(p)
     setSelected(null)
@@ -336,6 +342,7 @@ export default function App() {
               configured={sync.configured}
               expired={sync.sessionExpired}
               status={sync.status}
+              onSignIn={() => navigate('account')}
             />
           </div>
         </header>
@@ -346,7 +353,7 @@ export default function App() {
           <div className="account-status panel">
             <div>
               <strong>
-                {sync.user ? sync.user.email : 'Your study workspace'}
+                {sync.user ? sync.user.username : 'Your study workspace'}
               </strong>
               <p role="status">{sync.status}</p>
             </div>
@@ -423,7 +430,7 @@ export default function App() {
           )}
           <AnimatePresence mode="wait">
             <motion.div
-              inert={!sync.ready || sync.sessionExpired}
+              inert={page !== 'account' && (!sync.ready || sync.sessionExpired)}
               aria-busy={!sync.ready}
               key={
                 learning
@@ -543,6 +550,13 @@ export default function App() {
                     </aside>
                   </div>
                 </>
+              ) : page === 'account' ? (
+                <AccountPage
+                  user={sync.user}
+                  expired={sync.sessionExpired}
+                  configured={sync.configured}
+                  status={sync.status}
+                />
               ) : page === 'overview' ? (
                 <>
                   <div className="page-heading">

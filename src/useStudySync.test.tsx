@@ -4,7 +4,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { useStudySync } from './useStudySync'
 const empty = { notes: {}, completed: {} }
 const guest = { notes: { course: 'Guest notes' }, completed: {} }
-const user = { id: 'alice', email: 'alice@example.test' }
+const user = { id: 'alice', username: 'alice' }
 const response = (data: unknown, status = 200) =>
   Response.json(data, { status })
 beforeEach(() => localStorage.clear())

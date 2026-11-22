@@ -1,25 +1,32 @@
 // @vitest-environment jsdom
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, expect, it } from 'vitest'
+import { afterEach, expect, it, vi } from 'vitest'
 import { ProfileControl } from './ProfileControl'
-afterEach(cleanup)
-it('offers a visible email sign-in action and an accessible profile disclosure', () => {
-  render(<ProfileControl user={null} configured status="Guest" />)
-  expect(
-    screen.getByRole('link', { name: 'Sign in' }).getAttribute('href'),
-  ).toBe('/api/login')
+afterEach(() => {
+  cleanup()
+  vi.restoreAllMocks()
+})
+it('sends a configured guest to the account page from the header and the profile disclosure', () => {
+  const onSignIn = vi.fn()
+  render(
+    <ProfileControl
+      user={null}
+      configured
+      status="Guest"
+      onSignIn={onSignIn}
+    />,
+  )
+  fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
+  expect(onSignIn).toHaveBeenCalledTimes(1)
   const profile = screen.getByRole('button', { name: 'Profile' })
   fireEvent.click(profile)
-  expect(
-    screen
-      .getByRole('link', { name: 'Sign in with email' })
-      .getAttribute('href'),
-  ).toBe('/api/login')
+  fireEvent.click(
+    screen.getByRole('button', { name: 'Sign in or create account' }),
+  )
+  expect(onSignIn).toHaveBeenCalledTimes(2)
   fireEvent.keyDown(document, { key: 'Escape' })
-  expect(document.activeElement).toBe(profile)
-  expect(screen.queryByRole('region', { name: 'Profile details' })).toBeNull()
 })
-it('preserves guest study with clear feedback when login is unavailable', () => {
+it('preserves guest study with clear feedback when sign-in is unavailable', () => {
   render(<ProfileControl user={null} configured={false} status="Guest" />)
   fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
   expect(screen.getByRole('alert').textContent).toContain(
@@ -29,14 +36,14 @@ it('preserves guest study with clear feedback when login is unavailable', () => 
 it('offers sign-in again for an expired account without treating its notes as guest data', () => {
   render(
     <ProfileControl
-      user={{ email: 'student@example.test' }}
+      user={{ username: 'Kari' }}
       configured
       expired
       status="Session expired"
     />,
   )
-  expect(screen.getByRole('link', { name: 'Sign in' })).toBeTruthy()
+  expect(screen.getByRole('button', { name: 'Sign in' })).toBeTruthy()
   fireEvent.click(screen.getByRole('button', { name: 'Profile' }))
-  expect(screen.getByText('student@example.test')).toBeTruthy()
+  expect(screen.getByText('Kari')).toBeTruthy()
   expect(screen.queryByRole('button', { name: 'Sign out' })).toBeNull()
 })

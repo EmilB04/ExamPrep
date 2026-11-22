@@ -8,7 +8,7 @@ import {
 } from './progress'
 import { validProgress } from './study-data'
 
-type User = { id: string; email: string }
+type User = { id: string; username: string }
 type Snapshot = { progress: Progress; revision: number; dirty: boolean }
 export function useStudySync() {
   const [progress, setProgress] = useState<Progress>(loadProgress)
@@ -37,6 +37,11 @@ export function useStudySync() {
     window.addEventListener('masterprep:session-expired', expired)
     return () =>
       window.removeEventListener('masterprep:session-expired', expired)
+  }, [])
+  useEffect(() => {
+    const signedIn = () => setRetry((n) => n + 1)
+    window.addEventListener('masterprep:signed-in', signedIn)
+    return () => window.removeEventListener('masterprep:signed-in', signedIn)
   }, [])
   const accountKey = (id: string) => `masterprep.account.${id}`
   useEffect(() => {
@@ -69,7 +74,7 @@ export function useStudySync() {
           setStatus(
             session.configured
               ? 'Guest · saved in this browser'
-              : 'Guest · saved in this browser. Account sign-in is not configured.',
+              : 'Guest · saved in this browser. Account sign-in needs a secure (https) connection.',
           )
           setReady(true)
           setBlocked(false)
