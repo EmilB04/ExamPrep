@@ -4,6 +4,8 @@ import { hashToken, withinLimit } from './session'
 export const PIN_RE = /^\d{4,6}$/
 export const USERNAME_MAX = 20
 export const MAX_FAILED = 5
+// Total PIN attempts per name per day, across all IPs.
+const DAILY_ATTEMPTS = 20
 export const LOCKOUT_SECONDS = 15 * 60
 // Repeat lockouts double (15m, 30m, 1h) but stay capped at an hour so an anonymous
 // attacker cannot lock an owner out for long; recovery has its own counter and lock.
@@ -219,43 +221,37 @@ export async function login(
   const invalid = validateUsername(usernameInput)
   if (invalid || typeof pin !== 'string' || !PIN_RE.test(pin))
     return fail('bad_credentials', 401)
+  // ONE throttle per name hash, applied BEFORE any lookup, so a real account and
+  // an unknown name are indistinguishable by construction: same counters, same
+  // windows, same 429. Two tiers: a short burst limit, and a daily budget that
+  // bounds slow guessing (a lost-PIN owner still gets in with the recovery code).
+  // Each check is one atomic upsert, so parallel guesses cannot outrun it.
+  const nameKey = await hashToken(
+    (usernameInput as string).trim().toLowerCase(),
+  )
+  const burstOk = await withinLimit(
+    db,
+    `pin:${nameKey}`,
+    MAX_FAILED,
+    LOCKOUT_SECONDS,
+  )
+  const dayOk = await withinLimit(
+    db,
+    `pin-day:${nameKey}`,
+    DAILY_ATTEMPTS,
+    86400,
+  )
+  if (!burstOk || !dayOk) return locked()
   const row = await lookup(db, (usernameInput as string).trim())
   // Unknown name and wrong PIN answer identically so the form can't list accounts.
   if (!row) {
     await hashPin(pin, newSalt()) // keep timing similar
-    // Unknown names get the same attempt limit and the same 'locked' answer.
-    const name = (usernameInput as string).trim().toLowerCase()
-    if (
-      !(await withinLimit(
-        db,
-        `unknown:${await hashToken(name)}`,
-        MAX_FAILED,
-        LOCKOUT_SECONDS,
-      ))
-    )
-      return locked()
     return fail('bad_credentials', 401)
-  }
-  if (
-    !(await claimAttempt(
-      db,
-      row.username,
-      'failed',
-      'locked_until',
-      'lock_count',
-      MAX_FAILED,
-      LOCKOUT_SECONDS,
-    ))
-  ) {
-    const current = await lookup(db, row.username)
-    return locked(current?.locked_until ?? now() + LOCKOUT_SECONDS)
   }
   if (!timingSafeEqual(await hashPin(pin, row.pin_salt), row.pin_hash))
     return fail('bad_credentials', 401)
   await db
-    .prepare(
-      'UPDATE players SET failed = 0, locked_until = NULL, lock_count = 0, last_seen = ? WHERE username = ?',
-    )
+    .prepare('UPDATE players SET last_seen = ? WHERE username = ?')
     .bind(now(), row.username)
     .run()
   return { ok: true, username: row.username }

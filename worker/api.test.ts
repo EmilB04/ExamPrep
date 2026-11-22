@@ -422,37 +422,38 @@ it('rejects weak PINs and reserved usernames', async () => {
     ).status,
   ).toBe(200)
 })
-it('lengthens each repeat lockout and resets it after a good login', async () => {
+it('applies the same burst and daily limits to real and unknown names', async () => {
   await auth({ action: 'register', username: 'Kari', pin: '4821' })
-  const fail = async () => {
-    for (let i = 0; i < 5; i++)
-      await auth(
-        { action: 'login', username: 'Kari', pin: '0000' },
-        { 'cf-connecting-ip': `192.0.2.${i + 50}` },
-      )
+  let n = 0
+  const attempt = (username: string, pin = '0000') =>
+    auth(
+      { action: 'login', username, pin },
+      { 'cf-connecting-ip': `192.0.2.${(n++ % 200) + 20}` },
+    )
+  const advance = (ms: number) => vi.setSystemTime(Date.now() + ms)
+  vi.useFakeTimers({ toFake: ['Date'] })
+  try {
+    const trace = async (username: string) => {
+      const out: number[] = []
+      // four bursts of five, each followed by a pause past the 15 minute window
+      for (let burst = 0; burst < 5; burst++) {
+        for (let i = 0; i < 6; i++) out.push((await attempt(username)).status)
+        advance(16 * 60 * 1000)
+      }
+      return out
+    }
+    const real = await trace('Kari')
+    const ghost = await trace('Ghost')
+    expect(ghost).toEqual(real)
+    // 5 allowed per burst, then locked, and the daily budget (20) ends later bursts
+    expect(real.slice(0, 6)).toEqual([401, 401, 401, 401, 401, 429])
+    expect(real.slice(-6)).toEqual([429, 429, 429, 429, 429, 429])
+    // the correct PIN is also refused once locked, and works again after the window
+    advance(25 * 60 * 60 * 1000)
+    expect((await attempt('Kari', '4821')).status).toBe(200)
+  } finally {
+    vi.useRealTimers()
   }
-  const until = () =>
-    sqlite
-      .prepare('SELECT locked_until u, lock_count c FROM players')
-      .get() as { u: number; c: number }
-  await fail()
-  const first = until()
-  const now = Math.floor(Date.now() / 1000)
-  expect(first.u - now).toBeGreaterThan(14 * 60)
-  expect(first.u - now).toBeLessThanOrEqual(15 * 60)
-  sqlite.prepare('UPDATE players SET locked_until = 1').run()
-  vi.setSystemTime(Date.now())
-  sqlite.prepare('DELETE FROM request_limits').run()
-  await fail()
-  const second = until()
-  expect(second.c).toBe(2)
-  expect(second.u - now).toBeGreaterThan(29 * 60)
-  sqlite.prepare('UPDATE players SET locked_until = 1').run()
-  sqlite.prepare('DELETE FROM request_limits').run()
-  expect(
-    (await auth({ action: 'login', username: 'Kari', pin: '4821' })).status,
-  ).toBe(200)
-  expect(until().c).toBe(0)
 })
 it('stops parallel guesses from outrunning the attempt limit', async () => {
   await auth({ action: 'register', username: 'Kari', pin: '4821' })
