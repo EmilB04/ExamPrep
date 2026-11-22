@@ -11,6 +11,7 @@ import {
   withinLimit,
   hashToken,
 } from './session'
+import { login, recover, register, validateUsername } from './auth'
 import { handleRecallCheck } from './recall-handler'
 import { validProgress } from '../src/study-data'
 
@@ -24,7 +25,7 @@ export const json = (body: unknown, status = 200) =>
     headers: {
       'cache-control': 'no-store',
       'x-content-type-options': 'nosniff',
-      vary: 'Cookie, Cf-Access-Jwt-Assertion',
+      vary: 'Cookie',
       'referrer-policy': 'no-referrer',
       'x-frame-options': 'DENY',
     },
@@ -68,47 +69,95 @@ async function routeApi(request: Request, env: ApiEnv): Promise<Response> {
   if (url.pathname === '/api/session' && request.method === 'GET') {
     const session = await readSession(request, env)
     return json({
-      user: session ? { id: session.id, email: session.email } : null,
+      user: session ? { id: session.id, username: session.username } : null,
       csrfToken: session?.csrf ?? null,
       expiresAt: session?.expiresAt ?? null,
-      configured: !!(
-        env.ACCESS_TEAM_DOMAIN &&
-        env.ACCESS_AUD &&
-        env.DB &&
-        (!env.AUTH_ORIGIN || env.AUTH_ORIGIN === url.origin)
-      ),
+      configured: !!env.DB && url.protocol === 'https:',
     })
   }
-  if (url.pathname === '/api/login' && request.method === 'GET') {
-    if (!env.ACCESS_TEAM_DOMAIN || !env.ACCESS_AUD || !env.DB)
-      return json({ error: 'Sign-in is not configured.' }, 503)
-    if (env.AUTH_ORIGIN && url.origin !== env.AUTH_ORIGIN) {
-      return json({ error: 'Use the main MasterPrep site to sign in.' }, 403)
-    }
+  if (url.pathname === '/api/auth') {
+    if (request.method !== 'POST')
+      return json({ error: 'Method not allowed.' }, 405)
+    if (!env.DB || url.protocol !== 'https:')
+      return json({ error: 'not_configured' }, 503)
     const ip = request.headers.get('cf-connecting-ip')
-    if (!ip || !(await withinLimit(env.DB, `login:${await hashToken(ip)}`, 20)))
-      return json(
-        { error: 'Too many sign-in attempts. Try again in a minute.' },
-        429,
-      )
-    const cookie = await createSession(request, env)
-    if (!cookie)
-      return json(
+    if (!ip || !(await withinLimit(env.DB, `auth:${await hashToken(ip)}`, 20)))
+      return json({ error: 'locked', retryAfter: 60 }, 429)
+    let body: Record<string, unknown>
+    try {
+      body = await readBody(request)
+    } catch {
+      return json({ error: 'bad_body' }, 400)
+    }
+    if (!body || typeof body !== 'object')
+      return json({ error: 'bad_body' }, 400)
+    const limited = (retryAfter: number) =>
+      Response.json(
+        { error: 'locked', retryAfter },
         {
-          error:
-            'Email verification is required. Return to Sign in and try again.',
+          status: 429,
+          headers: {
+            'cache-control': 'no-store',
+            'retry-after': String(retryAfter),
+          },
         },
-        401,
       )
-    return new Response(null, {
-      status: 303,
-      headers: {
-        location: `${url.origin}/`,
-        'set-cookie': cookie,
-        'cache-control': 'no-store',
-        'referrer-policy': 'no-referrer',
+    // Layered limits, all hashed: new accounts per IP per day, and attempts per
+    // username per minute across ALL IPs (a distributed guesser still hits it).
+    if (
+      body.action === 'register' &&
+      !(await withinLimit(env.DB, `register:${await hashToken(ip)}`, 10, 86400))
+    )
+      return limited(3600)
+    if (
+      (body.action === 'login' || body.action === 'recover') &&
+      !validateUsername(body.username) &&
+      !(await withinLimit(
+        env.DB,
+        `name:${await hashToken((body.username as string).trim().toLowerCase())}`,
+        10,
+      ))
+    )
+      return limited(60)
+    const result =
+      body.action === 'register'
+        ? await register(env.DB, body.username, body.pin)
+        : body.action === 'login'
+          ? await login(env.DB, body.username, body.pin)
+          : body.action === 'recover'
+            ? await recover(env.DB, body.username, body.code, body.newPin)
+            : null
+    if (!result) return json({ error: 'bad_action' }, 400)
+    if (!result.ok)
+      return Response.json(
+        { error: result.error, retryAfter: result.retryAfter },
+        {
+          status: result.status,
+          headers: {
+            'cache-control': 'no-store',
+            ...(result.retryAfter
+              ? { 'retry-after': String(result.retryAfter) }
+              : {}),
+          },
+        },
+      )
+    const session = await createSession(request, env, result.username)
+    if (!session) return json({ error: 'not_configured' }, 503)
+    return Response.json(
+      {
+        user: { id: result.username, username: result.username },
+        csrfToken: session.csrf,
+        expiresAt: session.expiresAt,
+        recoveryCode: result.recoveryCode ?? null,
       },
-    })
+      {
+        headers: {
+          'set-cookie': session.cookie,
+          'cache-control': 'no-store',
+          'referrer-policy': 'no-referrer',
+        },
+      },
+    )
   }
   if (
     ![

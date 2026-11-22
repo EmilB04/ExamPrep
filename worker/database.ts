@@ -1,5 +1,5 @@
 export type Statement = {
-  bind(...values: (string | number)[]): Statement
+  bind(...values: (string | number | null)[]): Statement
   first<T>(): Promise<T | null>
   run(): Promise<{ meta: { changes: number } }>
 }
