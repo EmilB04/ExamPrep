@@ -22,7 +22,7 @@ const messages: Record<string, string> = {
 function describe(error: string, retryAfter?: number) {
   if (error === 'locked') {
     const minutes = Math.max(1, Math.ceil((retryAfter ?? 60) / 60))
-    return `Too many attempts. Try again in about ${minutes} minute${minutes === 1 ? '' : 's'}.`
+    return `Too many attempts. Try again in ${minutes} minute${minutes === 1 ? '' : 's'} or more.`
   }
   return messages[error] ?? messages.service_failed
 }

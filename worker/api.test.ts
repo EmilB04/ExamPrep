@@ -468,19 +468,57 @@ it('stops parallel guesses from outrunning the attempt limit', async () => {
   expect(results.filter((r) => r.status === 401)).toHaveLength(5)
   expect(results.filter((r) => r.status === 429)).toHaveLength(5)
 })
-it('limits attempts per username across different IPs, and sign-ups per IP per day', async () => {
-  const codes: number[] = []
-  for (let i = 0; i < 12; i++)
-    codes.push(
-      (
+it('limits attempts per username across IPs, answers unknown and locked names identically, and sweeps expired counters', async () => {
+  await auth({ action: 'register', username: 'Real', pin: '4821' })
+  const run = async (username: string) => {
+    const out: Response[] = []
+    for (let i = 0; i < 6; i++)
+      out.push(
         await auth(
-          { action: 'login', username: 'Victim', pin: '4821' },
-          { 'cf-connecting-ip': `203.0.113.${i}` },
-        )
-      ).status,
+          { action: 'login', username, pin: '0000' },
+          {
+            'cf-connecting-ip': `203.0.113.${i + (username === 'Real' ? 20 : 0)}`,
+          },
+        ),
+      )
+    return out
+  }
+  const real = await run('Real')
+  const ghost = await run('Ghost')
+  // Same statuses, same bodies, same headers: a lockout does not reveal an account.
+  expect(real.map((r) => r.status)).toEqual([401, 401, 401, 401, 401, 429])
+  expect(ghost.map((r) => r.status)).toEqual(real.map((r) => r.status))
+  expect(await real[5].json()).toEqual(await ghost[5].json())
+  expect(real[5].headers.get('retry-after')).toBe(
+    ghost[5].headers.get('retry-after'),
+  )
+  // Expired windows of every bucket are swept globally.
+  sqlite
+    .prepare(
+      "INSERT INTO request_limits (bucket, minute, requests) VALUES ('stale', 1, 1)",
     )
-  expect(codes.slice(0, 10).every((c) => c === 401)).toBe(true)
-  expect(codes.slice(10)).toEqual([429, 429])
+    .run()
+  await auth(
+    { action: 'login', username: 'Real', pin: '4821' },
+    { 'cf-connecting-ip': '192.0.2.250' },
+  )
+  expect(
+    sqlite
+      .prepare("SELECT COUNT(*) n FROM request_limits WHERE bucket = 'stale'")
+      .get()!.n,
+  ).toBe(0)
+  // Invalid names never create per-name buckets.
+  await auth(
+    { action: 'login', username: '<script>', pin: '4821' },
+    { 'cf-connecting-ip': '192.0.2.251' },
+  )
+  expect(
+    sqlite
+      .prepare(
+        "SELECT COUNT(*) n FROM request_limits WHERE bucket LIKE 'name:%'",
+      )
+      .get()!.n,
+  ).toBeLessThanOrEqual(3)
   const results: number[] = []
   for (let i = 0; i < 11; i++)
     results.push(

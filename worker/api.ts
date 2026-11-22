@@ -11,7 +11,7 @@ import {
   withinLimit,
   hashToken,
 } from './session'
-import { login, recover, register } from './auth'
+import { login, recover, register, validateUsername } from './auth'
 import { handleRecallCheck } from './recall-handler'
 import { validProgress } from '../src/study-data'
 
@@ -111,10 +111,10 @@ async function routeApi(request: Request, env: ApiEnv): Promise<Response> {
       return limited(3600)
     if (
       (body.action === 'login' || body.action === 'recover') &&
-      typeof body.username === 'string' &&
+      !validateUsername(body.username) &&
       !(await withinLimit(
         env.DB,
-        `name:${await hashToken(body.username.trim().toLowerCase())}`,
+        `name:${await hashToken((body.username as string).trim().toLowerCase())}`,
         10,
       ))
     )

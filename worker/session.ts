@@ -105,8 +105,10 @@ export async function validCsrf(request: Request, session: Session) {
   return difference === 0
 }
 /**
- * Fixed-window counter in D1. `windowSeconds` lets one table hold per-minute and
- * per-day buckets; each bucket only ever cleans up its own old windows.
+ * Fixed-window counter in D1. `windowSeconds` (a multiple of 60) lets one table
+ * hold per-minute and per-day buckets. The `minute` column stores the minute at
+ * which the window ENDS, so one global sweep removes every expired row of every
+ * bucket, including buckets that are never touched again.
  */
 export async function withinLimit(
   db: Database,
@@ -114,16 +116,18 @@ export async function withinLimit(
   limit: number,
   windowSeconds = 60,
 ) {
-  const slot = Math.floor(Date.now() / (windowSeconds * 1000))
+  const nowMs = Date.now()
+  const slot = Math.floor(nowMs / (windowSeconds * 1000))
+  const endsAt = ((slot + 1) * windowSeconds) / 60
   const result = await db
     .prepare(
       'INSERT INTO request_limits (bucket, minute, requests) VALUES (?, ?, 1) ON CONFLICT(bucket, minute) DO UPDATE SET requests = requests + 1 RETURNING requests',
     )
-    .bind(bucket, slot)
+    .bind(bucket, endsAt)
     .first<{ requests: number }>()
   await db
-    .prepare('DELETE FROM request_limits WHERE bucket = ? AND minute < ?')
-    .bind(bucket, slot)
+    .prepare('DELETE FROM request_limits WHERE minute < ?')
+    .bind(Math.floor(nowMs / 60000))
     .run()
   return !!result && result.requests <= limit
 }

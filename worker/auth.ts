@@ -1,11 +1,13 @@
 import type { Database } from './database'
+import { hashToken, withinLimit } from './session'
 
 export const PIN_RE = /^\d{4,6}$/
 export const USERNAME_MAX = 20
 export const MAX_FAILED = 5
 export const LOCKOUT_SECONDS = 15 * 60
-// Each repeat lockout doubles (15m, 30m, 1h, ...) up to a day; a good login resets it.
-const MAX_LOCKOUT_SECONDS = 24 * 60 * 60
+// Repeat lockouts double (15m, 30m, 1h) but stay capped at an hour so an anonymous
+// attacker cannot lock an owner out for long; recovery has its own counter and lock.
+const MAX_LOCKOUT_SECONDS = 60 * 60
 const RECOVER_MAX_FAILED = 10
 const RECOVER_LOCKOUT_SECONDS = 60 * 60
 // Workers cap PBKDF2 at 100000; the attempt lockout is what actually stops guessing.
@@ -136,8 +138,9 @@ export type AuthResult =
   | { ok: false; error: string; status: number; retryAfter?: number }
 const fail = (error: string, status: number, retryAfter?: number) =>
   ({ ok: false, error, status, retryAfter }) as const
-const locked = (until: number) =>
-  fail('locked', 429, Math.max(1, until - now()))
+// Every PIN lock reports the same fixed hint, real account or not, so the
+// response never reveals whether a name exists (or how long its lock really is).
+const locked = (_until?: number) => fail('locked', 429, LOCKOUT_SECONDS)
 
 async function lookup(db: Database, username: string) {
   return db
@@ -220,6 +223,17 @@ export async function login(
   // Unknown name and wrong PIN answer identically so the form can't list accounts.
   if (!row) {
     await hashPin(pin, newSalt()) // keep timing similar
+    // Unknown names get the same attempt limit and the same 'locked' answer.
+    const name = (usernameInput as string).trim().toLowerCase()
+    if (
+      !(await withinLimit(
+        db,
+        `unknown:${await hashToken(name)}`,
+        MAX_FAILED,
+        LOCKOUT_SECONDS,
+      ))
+    )
+      return locked()
     return fail('bad_credentials', 401)
   }
   if (
