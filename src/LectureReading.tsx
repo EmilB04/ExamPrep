@@ -12,7 +12,7 @@ function Term({
   glossary,
 }: {
   children?: ReactNode
-  glossary: boolean
+  glossary?: string
 }) {
   const id = useId()
   const ref = useRef<HTMLElement>(null)
@@ -23,7 +23,7 @@ function Term({
       : Array.isArray(children)
         ? children.filter((c) => typeof c === 'string').join('')
         : ''
-  const definition = glossary && text ? lookupTerm(text) : undefined
+  const definition = glossary && text ? lookupTerm(glossary, text) : undefined
   if (!definition) return <strong>{children}</strong>
   const place = () => {
     const rect = ref.current?.getBoundingClientRect()
@@ -52,10 +52,10 @@ function Term({
 
 export function LectureReading({
   text,
-  glossary = false,
+  glossary,
 }: {
   text: string
-  glossary?: boolean
+  glossary?: string
 }) {
   const sections = text.split(/(?=^## )/m).filter((s) => s.trim())
   const [index, setIndex] = useState(0)

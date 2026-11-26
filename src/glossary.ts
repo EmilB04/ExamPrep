@@ -1,8 +1,11 @@
+import { complexSystemsGlossary } from './glossary-complex'
+import { scientificMethodsGlossary } from './glossary-methods'
+
 /**
  * Short definitions for bold terms in lecture readings. Keys are lower case.
  * A bold phrase with no entry here is rendered as ordinary bold text.
  */
-const entries: Record<string, string> = {
+const machineLearningGlossary: Record<string, string> = {
   'activation map':
     'The output of a convolution layer after the bias is added and an activation function such as ReLU is applied to a feature map.',
   adam: 'An optimiser that gives each parameter its own adaptive step size. It combines a moving average of the gradients (momentum) with a moving average of the squared gradients.',
@@ -268,15 +271,27 @@ const aliases: Record<string, string> = {
   'regression with cubist': 'cubist',
 }
 
-export function lookupTerm(text: string): string | undefined {
+const glossaries: Record<string, Record<string, string>> = {
+  'machine-learning': machineLearningGlossary,
+  'complex-systems': complexSystemsGlossary,
+  'scientific-methods': scientificMethodsGlossary,
+}
+
+/** Look up a bold phrase in the glossary of one course. */
+export function lookupTerm(courseId: string, text: string): string | undefined {
+  const entries = glossaries[courseId]
+  if (!entries) return undefined
   const key = text
     .trim()
     .toLowerCase()
     .replace(/[.:?!,;]+$/, '')
-  const direct = entries[key] ?? entries[aliases[key]]
+  const direct =
+    entries[key] ??
+    (courseId === 'machine-learning' ? entries[aliases[key]] : undefined)
   if (direct) return direct
   const singular = key.endsWith('s') ? key.slice(0, -1) : key
   return entries[singular]
 }
 
-export const glossaryTerms = Object.keys(entries)
+export const glossaryTerms = (courseId: string) =>
+  Object.keys(glossaries[courseId] ?? {})

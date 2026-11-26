@@ -122,18 +122,44 @@ describe('ML illustrations render and respond', () => {
   })
 })
 
+describe('glossaries per course', () => {
+  it('defines terms from each course in that course only', () => {
+    expect(lookupTerm('complex-systems', 'Preferential attachment')).toContain(
+      'rich get richer',
+    )
+    expect(lookupTerm('complex-systems', 'Rule 90')).toContain('XOR')
+    expect(lookupTerm('scientific-methods', 'p-value')).toContain(
+      'null hypothesis',
+    )
+    expect(lookupTerm('scientific-methods', 'Stratified')).toContain('strata')
+    expect(lookupTerm('machine-learning', 'Stratified')).toContain(
+      'class proportions',
+    )
+    expect(lookupTerm('complex-systems', 'Stratified')).toBeUndefined()
+    expect(lookupTerm('unknown-course', 'entropy')).toBeUndefined()
+  })
+})
+
 describe('glossary hover terms', () => {
   it('defines known terms and ignores others', () => {
-    expect(lookupTerm('internal node')).toContain('tests one feature')
-    expect(lookupTerm('Hyperparameters')).toContain('chosen before training')
-    expect(lookupTerm('Decision trees')).toContain('series of questions')
-    expect(lookupTerm('Entropy')).toContain('uncertainty')
-    expect(lookupTerm('not')).toBeUndefined()
+    expect(lookupTerm('machine-learning', 'internal node')).toContain(
+      'tests one feature',
+    )
+    expect(lookupTerm('machine-learning', 'Hyperparameters')).toContain(
+      'chosen before training',
+    )
+    expect(lookupTerm('machine-learning', 'Decision trees')).toContain(
+      'series of questions',
+    )
+    expect(lookupTerm('machine-learning', 'Entropy')).toContain('uncertainty')
+    expect(lookupTerm('machine-learning', 'not')).toBeUndefined()
   })
   it('renders a tooltip only for glossary readings', () => {
     const text =
       '## Trees\n\nAn **internal node** tests one feature, **zzz** no.'
-    const { rerender } = render(<LectureReading text={text} glossary />)
+    const { rerender } = render(
+      <LectureReading text={text} glossary="machine-learning" />,
+    )
     const tip = screen.getByRole('tooltip', { hidden: true })
     expect(tip.textContent).toContain('tests one feature')
     expect(screen.getAllByRole('tooltip', { hidden: true })).toHaveLength(1)

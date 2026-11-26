@@ -41,6 +41,8 @@ import { ProfileControl } from './ProfileControl'
 import { AccountPage } from './AccountPage'
 import { ConceptPattern } from './ConceptPattern'
 import { RecallCheck } from './RecallCheck'
+import { ExamMode } from './ExamMode'
+import { examFormats } from './exam'
 import { SpotlightSearch } from './SpotlightSearch'
 import type { SearchItem } from './search'
 
@@ -68,6 +70,7 @@ export default function App() {
   const [page, setPage] = useState<Page>('overview')
   const [selected, setSelected] = useState<Course | null>(null)
   const [learning, setLearning] = useState<Course | null>(null)
+  const [exam, setExam] = useState<Course | null>(null)
   const sync = useStudySync()
   const { progress, setProgress, storageOk } = sync
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -152,6 +155,7 @@ export default function App() {
     setPage(p)
     setSelected(null)
     setLearning(null)
+    setExam(null)
     setMobileOpen(false)
     setReviewId(null)
     setRevealed(false)
@@ -159,6 +163,7 @@ export default function App() {
   }
   function openCourse(c: Course) {
     setLearning(null)
+    setExam(null)
     setSelected(c)
     setPage('courses')
     setMobileOpen(false)
@@ -444,7 +449,9 @@ export default function App() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.18 }}
             >
-              {learning ? (
+              {exam ? (
+                <ExamMode course={exam} onExit={() => setExam(null)} />
+              ) : learning ? (
                 <LearningSession
                   course={learning}
                   onBack={() => {
@@ -535,6 +542,22 @@ export default function App() {
                           <ExternalLink size={14} />
                         </a>
                       </div>
+                      {examFormats[selected.id] && (
+                        <div className="panel exam-panel">
+                          <h3>Final exam practice</h3>
+                          <p>{examFormats[selected.id].summary}</p>
+                          <ActionButton
+                            className="primary-button"
+                            onClick={() => {
+                              setExam(selected)
+                              window.scrollTo(0, 0)
+                            }}
+                          >
+                            Start {examFormats[selected.id].title.toLowerCase()}
+                            <ArrowRight size={15} />
+                          </ActionButton>
+                        </div>
+                      )}
                       <div className="notice">
                         <CircleHelp size={19} />
                         <p>
@@ -1183,10 +1206,7 @@ function LearningSession({
               <>
                 <h2>{lesson.intro}</h2>
                 {lesson.reading ? (
-                  <LectureReading
-                    text={lesson.reading}
-                    glossary={course.id === 'machine-learning'}
-                  />
+                  <LectureReading text={lesson.reading} glossary={course.id} />
                 ) : (
                   <div className="reading-grid">
                     <div>
